@@ -1,0 +1,49 @@
+{
+	"easycom": {
+		"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
+	},
+	"pages": [
+		{
+			"path": "pages/tabs/book"
+		},
+		{
+			"path": "pages/tabs/discord"
+		},
+		{
+			"path": "pages/tabs/user"
+		},
+		{
+			"path":"pages/read/read"
+		}
+	],
+	"tabBar": {
+		"color": "#828282",
+		"selectedColor": "#828282",
+		"backgroundColor": "#FFFFFF",
+		"borderStyle":"white",
+		"list": [
+			{
+				"pagePath": "pages/tabs/book",
+				"iconPath": "/static/tabs/home.png",
+				"selectedIconPath": "/static/tabs/home.png",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/tabs/discord",
+				"iconPath": "/static/tabs/discord.png",
+				"selectedIconPath": "/static/tabs/discord.png",
+				"text": "发现"
+			},
+			{
+				"pagePath": "pages/tabs/user",
+				"iconPath": "/static/tabs/user.png",
+				"selectedIconPath": "/static/tabs/user.png",
+				"text": "我的"
+			}
+		]
+	},
+	"globalStyle": {
+		"navigationStyle":"custom",
+		"backgroundColor": "#F8F8F8"
+	}
+}
