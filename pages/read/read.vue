@@ -1,13 +1,21 @@
 <template>
 	<view class="read">
-		<view class="navbar" :style="{ transform: !isShowToolbar ? 'translateY(-'+(44+statusBarHeight)+'px)' : 'none' }">
+		<view class="navbar" :style="{ transform: !isShowToolbar ? 'translateY(-' + (44 + statusBarHeight) + 'px)' : 'none' }">
 			<u-navbar @rightClick="rightClick" :autoBack="true" class="main" :fixed="false"></u-navbar>
 		</view>
-		<view class="content">
+		<view class="content" :style="{backgroundColor:currentBgColor}">
 			<view class="content-main">
 				<status-placeholder></status-placeholder>
 				<view class="top">690、鲸岛之下的秘密</view>
-				<view class="text" :style="{height: 'calc(100% - '+(60+statusBarHeight)+'px)',transition:needAnimation?' all .5s':'none',transform: 'translateX(' + currentX + 'px)' }">
+				<view
+					class="text"
+					:style="{
+						height: 'calc(100% - ' + (60 + statusBarHeight) + 'px)',
+						transition: needAnimation ? ' all .5s' : 'none',
+						transform: 'translateX(' + currentX + 'px)',
+						fontSize:textFontSize+'px'
+					}"
+				>
 					<view id="textElement">
 						&nbsp;&nbsp;&nbsp;&nbsp;苏木满意地望着众人的反应，鼻孔中轻哼一声表示不屑。
 						<br />
@@ -180,7 +188,13 @@
 				<view class="tap-right" @click="pageChange(1)"></view>
 			</view>
 		</view>
-		<bottom-toolbar :isShow="isShowToolbar"></bottom-toolbar>
+		<bottom-toolbar 
+		:isShow="isShowToolbar" 
+		@changeFontSzie="changeFontSzie" 
+		:fontSize="textFontSize"
+		@changeBgColor="changeBgColor"
+		:bgColor="readBgColor"
+		></bottom-toolbar>
 	</view>
 </template>
 
@@ -191,16 +205,18 @@ export default {
 	components: { statusPlaceholder, bottomToolbar },
 	data() {
 		return {
-			isShowToolbar: false,
-			screenWidth: 0,
-			textWidth: 0,
-			currentX: 0,
-			currentPage: 1,
-			totalPage: 1,
-			currentTime: '',
-			timer: undefined,
-			needAnimation:true,
-			statusBarHeight:0
+			isShowToolbar: false, //是否显示工具栏
+			screenWidth: 0, //屏幕宽度
+			currentX: 0, //左右翻页位移
+			currentPage: 1, //当前页码
+			totalPage: 1, //总页数
+			currentTime: '', //当前时间
+			timer: undefined, //时间循环
+			needAnimation: true, //是否显示翻页动画
+			statusBarHeight: 0, //状态栏高度
+			textFontSize: 14 ,//小说字体大小
+			readBgColor:['rgb(248, 248, 248)','rgb(255, 241, 210)','rgb(34, 32, 28)'],
+			currentBgColor:'rgb(248, 248, 248)',
 		};
 	},
 	onUnload() {
@@ -209,12 +225,17 @@ export default {
 	mounted() {
 		const systemInfo = getApp().globalData.systemInfo;
 		this.screenWidth = systemInfo.windowWidth;
-		this.statusBarHeight=systemInfo.statusBarHeight;
+		this.statusBarHeight = systemInfo.statusBarHeight;
 		this.refreshTime();
 		this.computePageNum();
 	},
 	methods: {
+		//左右翻页
 		pageChange(direction = 1) {
+			if (this.isShowToolbar) {
+				this.isShowToolbar = false;
+				return;
+			}
 			if (direction == 1) {
 				this.currentX -= this.screenWidth;
 				this.currentPage++;
@@ -234,6 +255,7 @@ export default {
 				this.currentTime = hour + ':' + minute;
 			}, 6000);
 		},
+		//计算页数
 		computePageNum() {
 			const query = uni.createSelectorQuery().in(this);
 			query
@@ -243,6 +265,16 @@ export default {
 					console.log(this.totalPage);
 				})
 				.exec();
+		},
+		//改变阅读字体大小
+		changeFontSzie(size=14){
+			console.log(size)
+			this.textFontSize=size
+			this.computePageNum()
+		},
+		//改变背景颜色
+		changeBgColor(colorIndex){
+			this.currentBgColor=this.readBgColor[colorIndex]
 		}
 	}
 };
@@ -256,14 +288,13 @@ export default {
 		position: absolute;
 		top: 0;
 		left: 0;
-		transition: all 0.5s;
+		transition: transform 0.5s;
 		height: auto;
 		z-index: 2;
 		width: 100%;
 	}
 
 	.content {
-		background-color: rgb(255, 241, 210);
 		height: 100%;
 		width: 100%;
 		position: relative;

@@ -1,17 +1,14 @@
 <template>
   <view
     class="status-placeholder"
-    :style="{ height: statusBarHeight + 'px','background-color': bgColor}"
+    :style="{ height: statusBarHeight + 'px'}"
   ></view>
 </template>
 
 <script>
 export default {
   props: {
-    bgColor: {
-      type: String,
-      default: 'rgb(255, 241, 210)'
-    }
+
   },
   data () {
     return {

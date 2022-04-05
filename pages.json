@@ -15,7 +15,10 @@
 		{
 			"path":"pages/read/read"
 		}
-	],
+	    ,{
+            "path" : "pages/search/search"  
+        }
+    ],
 	"tabBar": {
 		"color": "#828282",
 		"selectedColor": "#828282",
