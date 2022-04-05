@@ -1,13 +1,13 @@
 <template>
 	<view class="read">
-		<view class="navbar" :style="{ transform: !isShowToolbar ? 'translateY(-44px)' : 'none' }">
+		<view class="navbar" :style="{ transform: !isShowToolbar ? 'translateY(-'+(44+statusBarHeight)+'px)' : 'none' }">
 			<u-navbar @rightClick="rightClick" :autoBack="true" class="main" :fixed="false"></u-navbar>
 		</view>
 		<view class="content">
 			<view class="content-main">
 				<status-placeholder></status-placeholder>
 				<view class="top">690、鲸岛之下的秘密</view>
-				<view class="text" :style="{transition:needAnimation?' all .5s':'none',transform: 'translateX(' + currentX + 'px)' }">
+				<view class="text" :style="{height: 'calc(100% - '+(60+statusBarHeight)+'px)',transition:needAnimation?' all .5s':'none',transform: 'translateX(' + currentX + 'px)' }">
 					<view id="textElement">
 						&nbsp;&nbsp;&nbsp;&nbsp;苏木满意地望着众人的反应，鼻孔中轻哼一声表示不屑。
 						<br />
@@ -199,15 +199,17 @@ export default {
 			totalPage: 1,
 			currentTime: '',
 			timer: undefined,
-			needAnimation:true
+			needAnimation:true,
+			statusBarHeight:0
 		};
 	},
 	onUnload() {
 		clearInterval(this.timer);
 	},
 	mounted() {
-		const systemInfo = uni.getSystemInfoSync();
+		const systemInfo = getApp().globalData.systemInfo;
 		this.screenWidth = systemInfo.windowWidth;
+		this.statusBarHeight=systemInfo.statusBarHeight;
 		this.refreshTime();
 		this.computePageNum();
 	},
@@ -253,6 +255,7 @@ export default {
 	.navbar {
 		position: absolute;
 		top: 0;
+		left: 0;
 		transition: all 0.5s;
 		height: auto;
 		z-index: 2;
@@ -264,6 +267,7 @@ export default {
 		height: 100%;
 		width: 100%;
 		position: relative;
+		overflow: hidden;
 		.tap {
 			position: absolute;
 			top: 0;
@@ -302,10 +306,11 @@ export default {
 				flex-direction: row;
 				justify-content: space-between;
 				line-height: 30px;
+				width: 100%;
 			}
 
 			.text {
-				height: calc(100% - 60px);
+				// height: calc(100% - 60px);
 				columns: calc(750rpx - 20px) 1;
 				column-gap: 20px;
 				transform: translateX(0);

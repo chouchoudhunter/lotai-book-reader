@@ -1,9 +1,10 @@
 <script>
 export default {
 	globalData: {
-		text: 'text'
+		systemInfo: {}
 	},
 	onLaunch: function() {
+		this.globalData.systemInfo=uni.getSystemInfoSync()
 		console.log('App Launch');
 	},
 	onShow: function() {

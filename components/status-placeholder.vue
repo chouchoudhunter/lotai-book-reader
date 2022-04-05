@@ -20,7 +20,7 @@ export default {
   },
   created () {
     // 手机系统信息+状态栏高度
-    const info = uni.getSystemInfoSync()
+    const info = getApp().globalData.systemInfo
     this.statusBarHeight = info.statusBarHeight
   }
 }
