@@ -17,9 +17,9 @@
 			<view class="row">
 				<view class="book" @click="goReadPage()">
 					<view class="img">
-						<u-image width="100%" height="100%" mode="aspectFill" src="https://www.xbiquge.la/files/article/image/56/56523/56523s.jpg" />
+						<u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" />
 					</view>
-					<view class="name">谭雅战记</view>
+					<view class="name">夜的命名术</view>
 				</view>
 				<view class="book">
 					<view class="img">

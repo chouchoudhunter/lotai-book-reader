@@ -16,43 +16,14 @@
 				</view>
 			</view>
 			<view class="search-detail" v-show="showSearchDetail">
-				<view class="book">
+				<view class="book" v-for="(book, i) in books" :key="i">
 					<view class="status">连载中</view>
 					<view class="status-a"></view>
-					<view class="img">
-						<u-image
-							width="100%"
-							height="100%"
-							mode="aspectFill"
-							src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180"
-						></u-image>
-					</view>
+					<view class="img"><u-image width="100%" height="100%" mode="aspectFill" :src="book.img"></u-image></view>
 					<view class="info">
-						<view class="title">穹顶之上</view>
-						<view class="author">人间武库</view>
-						<view class="desc">人是史诗年代里的人，只是原本从未想过，会成为史诗里灿烂的名字。</view>
-						<view class="tags">
-							<view class="tag">科幻</view>
-							<view class="tag">末世</view>
-						</view>
-						<view class="star"><u-rate :count="5" current="4" active-color="#f5e100" :disabled="true"></u-rate></view>
-					</view>
-				</view>
-				<view class="book">
-					<view class="status">连载中</view>
-					<view class="status-a"></view>
-					<view class="img">
-						<u-image
-							width="100%"
-							height="100%"
-							mode="aspectFill"
-							src="https://dss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=2638425926,2697157004&fm=179&app=35&f=JPEG?w=267&h=356&s=35A248B780424EEE0D850DFB0300D01E"
-						></u-image>
-					</view>
-					<view class="info">
-						<view class="title">穹顶之上</view>
-						<view class="author">人间武库</view>
-						<view class="desc">人是史诗年代里的人，只是原本从未想过，会成为史诗里灿烂的名字。</view>
+						<view class="title">{{book.title}}</view>
+						<view class="author">{{book.author}}</view>
+						<view class="desc">{{book.desc}}</view>
 						<view class="tags">
 							<view class="tag">科幻</view>
 							<view class="tag">末世</view>
@@ -67,29 +38,36 @@
 
 <script>
 import statusPlaceholder from '@/components/status-placeholder.vue';
-import {request} from '@/untils/http.js'
+import { request } from '@/untils/http.js';
 export default {
 	components: { statusPlaceholder },
 	data() {
 		return {
 			keyword: '',
-			showSearchDetail: true
+			showSearchDetail: true,
+			books: []
 		};
 	},
 	methods: {
 		search(key) {
 			if (key) {
 				this.showSearchDetail = true;
-				this.getBooks()
+				this.getBooks();
 			}
 		},
 		clearKeyword() {
 			this.showSearchDetail = false;
 		},
-		getBooks(){
-			request('getSearchResult',{keyword:this.keyword}).then(res=>{
-				console.log(res)
-			})
+		getBooks() {
+			this.books=[]
+			request('getSearchResult', { keyword: this.keyword }).then(async res => {
+				for (let index in res.data) {
+					await request('getBookInfo', { bookUrl: res.data[index] }).then(res => {
+						console.log(res);
+						this.books.push(res.data)
+					});
+				}
+			});
 		}
 	}
 };
@@ -170,6 +148,10 @@ export default {
 					.desc {
 						font-size: 12px;
 						color: #c6c6c6;
+						height: 32px;
+						overflow: hidden;
+						-webkit-box-orient: vertical;
+						-webkit-line-clamp: 2;
 					}
 					.tags {
 						display: flex;
