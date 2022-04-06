@@ -16,15 +16,21 @@
 		<view class="books">
 			<view class="row">
 				<view class="book" @click="goReadPage()">
-					<img src="https://www.xbiquge.la/files/article/image/56/56523/56523s.jpg" />
+					<view class="img">
+						<u-image width="100%" height="100%" mode="aspectFill" src="https://www.xbiquge.la/files/article/image/56/56523/56523s.jpg" />
+					</view>
 					<view class="name">谭雅战记</view>
 				</view>
 				<view class="book">
-					<img src="https://www.xbiquge.la/files/article/image/56/56523/56523s.jpg" />
+					<view class="img">
+						<u-image width="100%" height="100%" mode="aspectFill" src="https://www.xbiquge.la/files/article/image/56/56523/56523s.jpg" />
+					</view>
 					<view class="name">谭雅战记</view>
 				</view>
 				<view class="book">
-					<img src="https://www.xbiquge.la/files/article/image/56/56523/56523s.jpg" />
+					<view class="img">
+						<u-image width="100%" height="100%" mode="aspectFill" src="https://www.xbiquge.la/files/article/image/56/56523/56523s.jpg" />
+					</view> 
 					<view class="name">谭雅战记</view>
 				</view>
 			</view>
@@ -132,14 +138,16 @@ export default {
 
 			.book {
 				width: 33%;
+				// height: 120px;
 				padding: 20rpx;
 
 				.name {
-					font-size: 24rpx;
+					font-size: 14px;
 				}
 
-				img {
+				.img {
 					width: 100%;
+					height: 120px;
 					border-radius: 4rpx;
 					overflow: hidden;
 					box-shadow: 0 4rpx 14rpx 0 $shadow-gray;
