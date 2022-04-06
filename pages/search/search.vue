@@ -24,7 +24,7 @@
 							width="100%"
 							height="100%"
 							mode="aspectFill"
-							src="https://dss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=2638425926,2697157004&fm=179&app=35&f=JPEG?w=267&h=356&s=35A248B780424EEE0D850DFB0300D01E"
+							src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180"
 						></u-image>
 					</view>
 					<view class="info">
@@ -67,6 +67,7 @@
 
 <script>
 import statusPlaceholder from '@/components/status-placeholder.vue';
+import {request} from '@/untils/http.js'
 export default {
 	components: { statusPlaceholder },
 	data() {
@@ -79,10 +80,16 @@ export default {
 		search(key) {
 			if (key) {
 				this.showSearchDetail = true;
+				this.getBooks()
 			}
 		},
 		clearKeyword() {
 			this.showSearchDetail = false;
+		},
+		getBooks(){
+			request('getSearchResult',{keyword:this.keyword}).then(res=>{
+				console.log(res)
+			})
 		}
 	}
 };

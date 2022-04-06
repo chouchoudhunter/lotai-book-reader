@@ -1,8 +1,22 @@
-const request=require('request')
 const superagent=require('superagent')
 const charset=require('superagent-charset')
+
+const headers={
+	'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36'
+}
+charset(superagent);
+const reqGet=function(url,keyword=''){
+	return new Promise((resolve,reject)=>{
+		superagent.get(url+keyword).charset('gbk').set(headers).buffer(true).then(res => {
+			resolve(res.text)
+		}).catch(err=>{
+			reject(err)
+		})
+	})
+}
 module.exports = {
-	request:request,
 	superagent:superagent,
-	charset:charset
+	charset:charset,
+	reqGet:reqGet
+	
 }
