@@ -4,7 +4,7 @@
 		<view class="top">
 			<view class="left">
 				<h1>{{ date.headline }}</h1>
-				<h2>{{ date.content }}</h2>
+				<h2 :style="{ opacity: dateContentOpacity }">{{ date.content }}</h2>
 			</view>
 			<view class="right">
 				<view id="month">{{ date.month }}</view>
@@ -13,12 +13,27 @@
 				<view id="str"></view>
 			</view>
 		</view>
+		<view class="preBook">
+			<image src="../../static/tabs/gou.png" mode="widthFix" class="smallIcon" @click="openTool(0)"></image>
+			<view class="left">
+				<view class="img"><u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" /></view>
+			</view>
+			<view class="right">
+				<view class="title">夜的命名术</view>
+				<view class="info">已读至 第五十六章</view>
+				<u-line-progress height="22" :striped-active="true" active-color="#2979ff" :striped="true" :percent="70"></u-line-progress>
+				<view class="func">
+					<u-button size="mini"shape="circle" :ripple="true" type="primary" :custom-style="btnStyle">继续阅读</u-button>
+				</view>
+			</view>
+		</view>
 		<view class="books">
-			<view class="row">
-				<view class="book" @click="goReadPage()">
+			<view class="book-item" @click="goReadPage()">
+				<view>
 					<view class="img"><u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" /></view>
 					<view class="name">夜的命名术</view>
 				</view>
+
 			</view>
 		</view>
 		<u-back-top :scroll-top="scrollTop" top="300"></u-back-top>
@@ -37,6 +52,12 @@ export default {
 				year: '2022',
 				headline: '早上好，读者',
 				content: '请享受美好的阅读时光'
+			},
+			dateContentOpacity: 1,
+			btnStyle:{
+				backgroundImage: 'linear-gradient(to right, #296dff, #55aaff)',
+				// width:'60px',
+				fontSize:'13px'
 			}
 		};
 	},
@@ -68,10 +89,14 @@ export default {
 				this.date.headline = '夜深了，早点睡';
 			}
 			uni.request({
-				url: 'https://v1.hitokoto.cn/?c=c&c=a&c=b&c=i&c=h&max_length=20'
+				url: 'https://v1.hitokoto.cn/?c=c&c=a&c=b&c=i&c=h&max_length=18'
 			}).then(res => {
-				this.date.content=res[1].data.hitokoto
+				this.date.content = res[1].data.hitokoto;
 			});
+			this.dateContentOpacity = 0;
+			setTimeout(() => {
+				this.dateContentOpacity = 1;
+			}, 200);
 		},
 		goReadPage() {
 			let data = {
@@ -92,7 +117,7 @@ export default {
 	padding: 0 40rpx;
 
 	.top {
-		margin: 40rpx 0;
+		margin: 10px 0 10px 0;
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
@@ -106,6 +131,8 @@ export default {
 			h2 {
 				color: $text-gray;
 				font-size: 28rpx;
+				transition: opacity 0.2s;
+				opacity: 1;
 			}
 		}
 
@@ -142,29 +169,69 @@ export default {
 			}
 		}
 	}
-
+	.preBook {
+		background-color: #f3f3f3;
+		height: 110px;
+		margin: 40px 10px 0 10px;
+		padding: 10px;
+		border-radius: 5px;
+		display: flex;
+		flex-direction: row;
+		position: relative;
+		.smallIcon{
+			width: 20px;
+			position: absolute;
+			right: 7px;
+			top:7px
+		}
+		.left{
+			position: relative;
+			.img{
+				width: 90px;
+				height: 120px;
+				border-radius: 4px;
+				overflow: hidden;
+				position: relative;
+				top: -30px;
+				left: 0;
+			}
+		}
+		.right{
+			margin-left: 10px;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			width: calc(100% - 90px);
+			.title{
+				font-size: 16px;
+			}
+			.info{
+				font-size: 12px;
+				color: #919191;
+			}
+		}
+	}
 	.books {
-		.row {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		.book-item {
+			width: 33%;
+			padding: 10px;
 			display: flex;
 			flex-direction: row;
-			justify-content: space-between;
+			justify-content: center;
+			.name {
+				font-size: 14px;
+				margin: 5px 0;
+			}
 
-			.book {
-				width: 33%;
-				// height: 120px;
-				padding: 20rpx;
-
-				.name {
-					font-size: 14px;
-				}
-
-				.img {
-					width: 100%;
-					height: 120px;
-					border-radius: 4rpx;
-					overflow: hidden;
-					box-shadow: 0 4rpx 14rpx 0 $shadow-gray;
-				}
+			.img {
+				width: 90px;
+				height: 120px;
+				border-radius: 4px;
+				overflow: hidden;
+				box-shadow: 0 4rpx 14rpx 0 $shadow-gray;
 			}
 		}
 	}
