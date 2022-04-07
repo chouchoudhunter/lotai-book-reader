@@ -56,7 +56,6 @@
 				</view>
 				<view class="right"></view>
 			</swiper-item>
-			<swiper-item class="swiperItem"><view class="swiper-item uni-bg-blue">C</view></swiper-item>
 		</swiper>
 	</view>
 </template>
@@ -71,13 +70,10 @@ export default {
 			isLight: true,
 			tagList: [
 				{
-					name: '男生'
-				},
-				{
-					name: '女生'
-				},
-				{
 					name: '排行'
+				},
+				{
+					name: '精选'
 				}
 			],
 			currentTag: 0,
