@@ -8,7 +8,7 @@
 			:current="currentTag"
 			:indicator-dots="false"
 			:duration="500"
-			:style="{ height: 'calc(100% -' + 62 + statusBarHeight + 'px)' }"
+			:style="{ height: swiperHeight+'px' }"
 			@change="changeSwiper"
 		>
 			<swiper-item class="swiperItem">
@@ -82,12 +82,15 @@ export default {
 			],
 			currentTag: 0,
 			statusBarHeight: 0,
+			swiperHeight:0,
 			swiper1Tag:0
 		};
 	},
 	mounted() {
 		const systemInfo = getApp().globalData.systemInfo;
 		this.statusBarHeight = systemInfo.statusBarHeight;
+		this.swiperHeight=systemInfo.windowHeight-systemInfo.statusBarHeight-152
+		console.log(systemInfo)
 	},
 	onShow() {
 		console.log('bbb');
@@ -115,11 +118,11 @@ export default {
 
 <style lang="scss">
 .discord {
+	height: 100%;
 	.top {
 		padding: 15px 20px;
 	}
 	.swiper {
-		height: 500px;
 		background-color: #efefef;
 		.swiperItem {
 			display: flex;
@@ -149,6 +152,7 @@ export default {
 			}
 			.right {
 				width: calc(100% - 70px);
+				height: 100%;
 				padding: 10px;
 				.cates {
 					display: flex;
