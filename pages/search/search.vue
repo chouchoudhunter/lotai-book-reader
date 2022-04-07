@@ -16,7 +16,7 @@
 				</view>
 			</view>
 			<view class="search-detail" v-show="showSearchDetail">
-				<view class="book" v-for="(book, i) in books" :key="i">
+				<view class="book" v-for="(book, i) in books" :key="i" @click="goBookInfo(book)">
 					<view class="status">连载中</view>
 					<view class="status-a"></view>
 					<view class="img"><u-image width="100%" height="100%" mode="aspectFill" :src="book.img"></u-image></view>
@@ -44,11 +44,17 @@ export default {
 	data() {
 		return {
 			keyword: '',
-			showSearchDetail: true,
+			showSearchDetail: false,
 			books: []
 		};
 	},
 	methods: {
+		goBookInfo(data){
+			data=this.$u.queryParams(data)
+			uni.navigateTo({
+				url:'../book-info/book-info'+data,
+			})
+		},
 		search(key) {
 			if (key) {
 				this.showSearchDetail = true;

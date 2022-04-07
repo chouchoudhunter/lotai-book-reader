@@ -18,6 +18,15 @@
 	    ,{
             "path" : "pages/search/search"  
         }
+        ,{
+            "path" : "pages/book-info/book-info",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"tabBar": {
 		"color": "#828282",

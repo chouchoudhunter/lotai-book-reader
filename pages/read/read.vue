@@ -1,185 +1,27 @@
 <template>
 	<view class="read">
+		<left-tool ref="leftTool" :chapterList="chapterList" :currentChapterIndex="currentChapterIndex"></left-tool>
 		<view class="navbar" :style="{ transform: !isShowToolbar ? 'translateY(-' + (44 + statusBarHeight) + 'px)' : 'none' }">
-			<u-navbar @rightClick="rightClick" :autoBack="true" class="main" :fixed="false"></u-navbar>
+			<u-navbar :autoBack="true" class="main" :fixed="false"></u-navbar>
 		</view>
-		<view class="content" :style="{backgroundColor:currentBgColor}">
+		<view class="content" :style="{ backgroundColor: currentBgColor }">
 			<view class="content-main">
 				<status-placeholder></status-placeholder>
-				<view class="top">690、鲸岛之下的秘密</view>
+				<view class="top">{{ content.title }}</view>
 				<view
 					class="text"
 					:style="{
 						height: 'calc(100% - ' + (60 + statusBarHeight) + 'px)',
 						transition: needAnimation ? ' all .5s' : 'none',
 						transform: 'translateX(' + currentX + 'px)',
-						fontSize:textFontSize+'px'
+						fontSize: textFontSize + 'px'
 					}"
 				>
-					<view id="textElement">
-						&nbsp;&nbsp;&nbsp;&nbsp;苏木满意地望着众人的反应，鼻孔中轻哼一声表示不屑。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;虽然今天挑战杨开已经被苏木给定下了，但是围聚在此地的人并没有离开，他们不知道杨开到底怎么得罪了苏木，自然是要留下来看看热闹。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;又等了一会，杨开依然不见踪影，苏木有些沉不住气了：“他人呢？”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;“不知道，平时他早就出来扫地了，可今日不知为什么到现在还没来，苏少，要不要去他住的地方看看？”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;苏木想了想，点头道：“也好，区区一个扫地小厮，竟敢让本少苦等，待会要他好看！”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;杨开住在什么地方也不是秘密，苏木身边的几个人当下为他引路。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;看热闹的人也浩浩荡荡跟了过来。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;片刻后，一群人抵达杨开的小屋前，看着那寒酸至极，四处漏风的木屋，苏木没来由一阵爽快，指着木屋道：“那小子就住在这？”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;“回苏少，杨开是试炼弟子，衣食住行都得自己打理，宗门是不会管他的。这大概是他自己搭建起来的屋子。”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;“好好好。”苏木畅快无比，一想起下雨天杨开就要被淋成落汤鸡，心情大爽。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;轻咳一声，收敛笑意，苏木龙行虎步走上前去，朗声喝道：“呔那杨开，给本少滚出来受死！”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;这一喊声若洪钟却满是仇怨，饱含了一种血与泪的控诉，直让围观的一群人听的心头一颤，暗道杨开与这苏木之间的梁子恐怕不小啊。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;苏木威风凛凛，八风不动，喊完之后满是期待地盯着木屋的门，想象杨开屁滚尿流从里面跑出来告饶的场景，越想越是得意。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;可等来等去，屋内竟是没半点动静。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;苏木的脸面有些挂不住，又一声怒吼：“杨开，识相的快快滚出来，要不然我们可要冲进去了。”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;还是没动静。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;苏木也觉得有些不对劲了，如果杨开真的在里面的话，总该喘个气的，难道他不在？
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;偏过头，苏木冲手底下一人打了个眼色，那人连忙窜出去，一脚踹开木屋的门，身手矫健地奔到里头。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;不多时，这人又跑了出来，对苏木道：“苏少，里面没人，而且还有些积灰，看样子这小子知道大祸临头，已经在前几日就跑了。”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;“跑了？”苏木差点呕血，自己处心积虑准备了好几日，今天还带了这么多人来撑场面，那个杨开居然跑了？
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;这就好像气势汹汹的一拳打出去，却一下砸在棉花上，让苏木有一种说不出的无力和郁闷感。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;“说起来，这几日还真的没看到杨开。”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;“识时务者为俊杰，杨开得罪了这位苏木，估计是知道大祸临头，便离开了宗门。”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;“怪不得等到现在他也不出现。”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;“哎，杨开走了，以后可没有白捡的贡献点了。”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;围观的人窃窃低语，却一字不落地传入苏木的耳中。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;虽然得意，可没能报仇，苏木心中依然不爽。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;脸色阴沉地想了片刻，苏木也不得不接受这个现实，愤愤道：“便宜了这小子，不过此仇不报，我心恨难消，给我放把火把这破屋子给烧了。”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;众人大惊，就连苏木带来的人也是迟疑万分，一人道：“苏少，在宗门内纵火，这不好吧？”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;“怕什么？”苏木一瞪眼，“天塌下来有我顶着，再说了，这又不是宗门的产业，烧了便烧了，有什么了不起的。这破烂房子，留着它玷了少爷的法眼。”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;听他这么说，众人才打消心头的顾虑，反正人家苏少有靠山，烧一间破屋子确实没什么。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;当下便有人去取火种，寻枯草。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;片刻后，一切准备妥当，苏木脸神色狰狞地举着一个当场制作出来的火把，熊熊燃烧的火光印得他脸都扭曲了。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;“杨开，日后莫再叫我碰到你，否则定让你生不如死！”苏木咬牙切齿骂了一声，正准备将手上的火把丢进木屋，身边却传来一股血腥气，肩膀上被人一拍，有人问：“这是干啥？”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;苏木想都没想到便答道：“烧房子啊。”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;“干什么要烧我的房子？”来人的声音有些恼意。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;“你的房子？”苏木猛撇嘴，扭头朝来人看去，这一看，苏木顿时如兔子一般迅速朝旁边跳了几步，动作矫健的不象话，摆出一副防备的架势，面色惊慌万分，一身汗毛都一根根倒竖起来。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;实在是因为来人的造型太恐怖了，衣衫破烂不堪，头发乱如杂草，肮脏无比，不但如此，他身上还有无数道血痕，衣服上血迹斑斑，肩头上搭了一个小包裹，包裹鼓鼓囊囊，也不知装了些啥。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;微风拂来，此人破烂的裤子风中凌乱，露出一腿茁壮成长的腿毛。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;最让苏木受不了便是此人身上的味道，一股血腥和汗臭味夹杂在一起，让人闻之欲呕，三日咽不下饭食。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;这造型，这派头，奇葩呀。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;要是手上再拿个破碗，那活脱脱就是一个吃百家饭的乞丐！
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;不过……怎地感觉有些面熟？
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;苏木仔细打量着来人，越看越是疑惑，想了片刻后突然一拍大腿：“杨开！”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;这不是杨开是谁？虽然造型变了，面容上也满是污垢，可对与杨开有仇怨的苏木来说，怎会不认得？怎能不认得？
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;杨开也认出了苏木，咧嘴一笑，露出森白的獠牙：“这不是在乌梅镇大展神威行侠仗义的苏师弟么？”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;一声揶揄，让苏木脸上一阵青一阵红，跳脚道：“杨开，天堂有路你不走，地狱无门你闯进来！今日你死定了。”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;“你要找我麻烦？”杨开眉头皱了皱。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;“废话！”苏木得意样样，“你以为我是来看望你的么？”
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;“你找我麻烦直接找我就是，烧我房子作甚？”杨开质问。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;苏木赶紧把火把给扔了，冲上去猛踩，好像踩的是杨开本人，无比解气，好半晌才把火把给踩灭。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;这一阵耽搁，总算是让围观的人回过神来，直到此刻众人才知道，杨开并不是怕了苏木离开了凌霄阁，而是出去不知办什么事了。
-						<br />
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;只是办什么事能把自己搞的这么凄凉？这血流的也太多了吧？还有他衣服上的划痕，明显是被什么利器破开的，他跟谁打了一架么？而且是那种生死之战？
-						<br />
-					</view>
+					<view id="textElement" v-html="content.text"></view>
 				</view>
 				<view class="bottom">
 					<view class="battery">{{ currentTime }}</view>
-					<view class="pages">{{ currentPage }}/{{ totalPage }}页</view>
+					<view class="pages">{{ totalPage ? currentPage + '/' + totalPage + '页' : '' }}</view>
 				</view>
 			</view>
 			<view class="tap">
@@ -188,36 +30,46 @@
 				<view class="tap-right" @click="pageChange(1)"></view>
 			</view>
 		</view>
-		<bottom-toolbar 
-		:isShow="isShowToolbar" 
-		@changeFontSzie="changeFontSzie" 
-		:fontSize="textFontSize"
-		@changeBgColor="changeBgColor"
-		:bgColor="readBgColor"
-		></bottom-toolbar>
+		<bottom-toolbar :isShow="isShowToolbar" @changeFontSzie="changeFontSzie" :fontSize="textFontSize" @changeBgColor="changeBgColor" :bgColor="readBgColor" @openLeftTool="openLeftTool"></bottom-toolbar>
 	</view>
 </template>
 
 <script>
 import statusPlaceholder from '@/components/status-placeholder.vue';
 import bottomToolbar from './components/bottom-toolbar.vue';
+import leftTool from './components/left-tool.vue';
+import { request } from '@/untils/http.js';
+const tempContent={
+	title:'',
+	text:'',
+	status:1
+}
 export default {
-	components: { statusPlaceholder, bottomToolbar },
+	components: { statusPlaceholder, bottomToolbar, leftTool },
 	data() {
 		return {
 			isShowToolbar: false, //是否显示工具栏
 			screenWidth: 0, //屏幕宽度
 			currentX: 0, //左右翻页位移
 			currentPage: 1, //当前页码
-			totalPage: 1, //总页数
+			totalPage: '', //总页数
 			currentTime: '', //当前时间
 			timer: undefined, //时间循环
 			needAnimation: true, //是否显示翻页动画
 			statusBarHeight: 0, //状态栏高度
-			textFontSize: 14 ,//小说字体大小
-			readBgColor:['rgb(248, 248, 248)','rgb(255, 241, 210)','rgb(34, 32, 28)'],
-			currentBgColor:'rgb(248, 248, 248)',
+			textFontSize: 24, //小说字体大小
+			readBgColor: ['rgb(248, 248, 248)', 'rgb(255, 241, 210)', 'rgb(34, 32, 28)'],
+			currentBgColor: 'rgb(248, 248, 248)',
+			content: {...tempContent},
+			preContent:{...tempContent},
+			nextContent:{...tempContent},
+			chapterList:[],
+			currentChapterIndex:0,//当前章节序号
+			book:{}
 		};
+	},
+	onLoad: function(option) {
+		this.book = option;
 	},
 	onUnload() {
 		clearInterval(this.timer);
@@ -227,21 +79,118 @@ export default {
 		this.screenWidth = systemInfo.windowWidth;
 		this.statusBarHeight = systemInfo.statusBarHeight;
 		this.refreshTime();
-		this.computePageNum();
+		this.getChapterList()
 	},
 	methods: {
+		//获得章节目录
+		getChapterList(){
+			request('getChapterList',{bookUrl:this.book.bookUrl}).then(res=>{
+				this.chapterList=res.data
+				if(!this.content.text){
+					this.loadChapter(this.currentChapterIndex)
+				}
+			})
+		},
+		//打开左边工具栏（目录）
+		openLeftTool(){
+			this.$refs.leftTool.switchTool()
+			this.isShowToolbar=false
+		},
+		//加载章节
+		loadChapter(index,nextOrPre='') {
+			let url=''
+			if(nextOrPre=='pre'){
+				url=this.chapterList[index].url
+				while(!url && index>0){
+					index--;
+					url=this.chapterList[index].url
+				}
+				if(index<=0){
+					this.preContent.status=0//第一页了
+					return
+				}
+			}else if(nextOrPre=='next'){
+				url=this.chapterList[index].url
+				while(!url && index< this.chapterList.length){
+					index++;
+					url=this.chapterList[index].url
+				}
+				if(index>=this.chapterList.length){
+					this.nextContent.status=0//最后一页了
+					return
+				}
+			}else{
+				url=this.chapterList[index].url
+				while(!url && index< this.chapterList.length){
+					index++;
+					url=this.chapterList[index].url
+					this.currentChapterIndex=index
+				}
+			}
+			request('getBookChapter', { bookUrl: url}).then(res => {
+				if(nextOrPre=='next'){
+					this.nextContent=res.data
+				}else if(nextOrPre=='pre'){
+					this.preContent=res.data
+				}else{
+					this.content = res.data
+					this.computePageNum();
+					this.loadChapter(this.currentChapterIndex+1,'next')
+					this.loadChapter(this.currentChapterIndex-1,'pre')
+				}
+			});
+		},
 		//左右翻页
-		pageChange(direction = 1) {
+		async pageChange(dir = 1) {
+			//如果底部工具栏打开就关闭工具栏
 			if (this.isShowToolbar) {
 				this.isShowToolbar = false;
 				return;
 			}
-			if (direction == 1) {
-				this.currentX -= this.screenWidth;
-				this.currentPage++;
-			} else if (direction == 0) {
-				this.currentX += this.screenWidth;
-				this.currentPage--;
+			if (dir == 1) {
+				if (this.currentPage + 1 > this.totalPage) {
+					this.currentX -= this.screenWidth;//改变页面位置
+					this.currentPage = 1;//修改页面下标
+					setTimeout(()=>{
+						this.needAnimation=false
+						this.currentX=0
+						this.preContent=this.content
+						this.content=this.nextContent
+						this.currentChapterIndex++
+						this.computePageNum();
+						this.loadChapter(this.currentChapterIndex+1,'next')
+						setTimeout(()=>{
+							this.needAnimation=true
+						},100)
+					},500)
+				} else {
+					this.currentX -= this.screenWidth;
+					this.currentPage++;
+				}
+			} else if (dir == 0) {
+				if(this.currentPage==1){
+					if(this.preContent.status==0){
+						return
+					}
+					this.currentX += this.screenWidth;
+					this.currentPage=this.totalPage
+					setTimeout(async ()=>{
+						this.needAnimation=false
+						this.nextContent=this.content
+						this.content=this.preContent
+						this.currentChapterIndex--
+						this.loadChapter(this.currentChapterIndex-1,'pre')
+						await this.computePageNum();
+						this.currentX=this.screenWidth*(this.totalPage-1)*(-1)
+						setTimeout(()=>{
+							this.needAnimation=true
+						},100)
+					},500)
+				}else{
+					this.currentX += this.screenWidth;
+					this.currentPage--;
+				}
+				
 			}
 		},
 		//时间
@@ -257,24 +206,24 @@ export default {
 		},
 		//计算页数
 		computePageNum() {
-			const query = uni.createSelectorQuery().in(this);
-			query
-				.select('#textElement')
-				.boundingClientRect(data => {
-					this.totalPage = Math.ceil(data.width / this.screenWidth);
-					console.log(this.totalPage);
-				})
-				.exec();
+			setTimeout(() => {
+				const query = uni.createSelectorQuery().in(this);
+				query
+					.select('#textElement')
+					.boundingClientRect(data => {
+						this.totalPage = Math.ceil(data.width / this.screenWidth);
+					})
+					.exec();
+			}, 100);
 		},
 		//改变阅读字体大小
-		changeFontSzie(size=14){
-			console.log(size)
-			this.textFontSize=size
-			this.computePageNum()
+		changeFontSzie(size = 14) {
+			this.textFontSize = size;
+			this.computePageNum();
 		},
 		//改变背景颜色
-		changeBgColor(colorIndex){
-			this.currentBgColor=this.readBgColor[colorIndex]
+		changeBgColor(colorIndex) {
+			this.currentBgColor = this.readBgColor[colorIndex];
 		}
 	}
 };

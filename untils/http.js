@@ -10,7 +10,7 @@ export function request(name='',data={}) {
 			if(res.status==1){
 				resolve(res)
 			}else{
-				vm.$u.toast('错误:'+res.msg);
+				vm.$u.toast('已知错误:'+res.msg);
 			}
 			
 		}).catch(err=>{

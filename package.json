@@ -1,0 +1,21 @@
+{
+  "name": "lotai-book-reader",
+  "version": "1.0.0",
+  "description": "免费小说阅读app",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chouchoudhunter/lotai-book-reader.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chouchoudhunter/lotai-book-reader/issues"
+  },
+  "homepage": "https://github.com/chouchoudhunter/lotai-book-reader#readme",
+  "dependencies": {}
+}

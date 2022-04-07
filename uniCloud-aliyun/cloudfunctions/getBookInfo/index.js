@@ -7,24 +7,20 @@ let {
 	urlencode,
 	toJson
 } = require('untils')
-const url = 'http://www.530p.com/'
 /**
  * 获取书本详细信息
  */
 exports.main = async (event, context) => {
-	let result=await reqGet(url+event.bookUrl)
-	const info=getBookInfo(result)
-	return toJson(info)
-};
-
-function getBookInfo(html){
+	let result=await reqGet(event.bookUrl)
 	let info={
 		img:'',
 		title:'',
 		author:'',
-		desc:''
+		desc:'',
+		bookUrl:''
 	}
-	let $=cheerio.load(html)
+	info.bookUrl=event.bookUrl
+	let $=cheerio.load(result)
 	info.title=$('.tna a').text()
 	$('.ffw tr').each((index,element)=>{
 		if(index==0){
@@ -38,5 +34,5 @@ function getBookInfo(html){
 			info.desc=$(element).find('td').contents().last().text()
 		}
 	})
-	return info
-}
+	return toJson(info)
+};

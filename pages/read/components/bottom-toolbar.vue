@@ -30,7 +30,7 @@
 			</view>
 		</view>
 		<view class="bar">
-			<image src="../../../static/read/list.png" mode="widthFix" class="image"></image>
+			<image src="../../../static/read/list.png" mode="widthFix" class="image" @click="openTool(0)"></image>
 			<image src="../../../static/read/sun.png" mode="widthFix" class="image sun" @click="openTool(1)"></image>
 			<image src="../../../static/read/font-size.png" mode="widthFix" class="image" @click="openTool(2)"></image>
 		</view>
@@ -71,7 +71,10 @@ export default {
 	methods: {
 		//打开工具栏详情
 		openTool(currentOpenTool = -1) {
-			if (this.showTool) {
+			if(currentOpenTool==0){
+				this.showTool=false
+				this.$emit('openLeftTool')
+			}else if (this.showTool) {
 				if (currentOpenTool == this.currentOpenTool) {
 					this.showTool = false;
 				} else {

@@ -3,72 +3,85 @@
 		<status-placeholder></status-placeholder>
 		<view class="top">
 			<view class="left">
-				<h1>早上好，读者</h1>
-				<h2>请享受美好的阅读时光</h2>
+				<h1>{{ date.headline }}</h1>
+				<h2>{{ date.content }}</h2>
 			</view>
 			<view class="right">
-				<view id="month">12</view>
-				<view id="year">2018</view>
-				<view id="day">30</view>
+				<view id="month">{{ date.month }}</view>
+				<view id="year">{{ date.year }}</view>
+				<view id="day">{{ date.day }}</view>
 				<view id="str"></view>
 			</view>
 		</view>
 		<view class="books">
 			<view class="row">
 				<view class="book" @click="goReadPage()">
-					<view class="img">
-						<u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" />
-					</view>
+					<view class="img"><u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" /></view>
 					<view class="name">夜的命名术</view>
-				</view>
-				<view class="book">
-					<view class="img">
-						<u-image width="100%" height="100%" mode="aspectFill" src="https://www.xbiquge.la/files/article/image/56/56523/56523s.jpg" />
-					</view>
-					<view class="name">谭雅战记</view>
-				</view>
-				<view class="book">
-					<view class="img">
-						<u-image width="100%" height="100%" mode="aspectFill" src="https://www.xbiquge.la/files/article/image/56/56523/56523s.jpg" />
-					</view> 
-					<view class="name">谭雅战记</view>
 				</view>
 			</view>
 		</view>
 		<u-back-top :scroll-top="scrollTop" top="300"></u-back-top>
 	</view>
 </template>
-
 <script>
 import statusPlaceholder from '@/components/status-placeholder.vue';
 export default {
 	components: { statusPlaceholder },
 	data() {
 		return {
-			scrollTop: 0
+			scrollTop: 0,
+			date: {
+				day: '07',
+				month: '04',
+				year: '2022',
+				headline: '早上好，读者',
+				content: '请享受美好的阅读时光'
+			}
 		};
 	},
 	onPageScroll(e) {
 		this.scrollTop = e.scrollTop;
 	},
 	onShow() {
-		console.log('aaa');
+		this.changeDate();
 	},
 	onLoad() {},
 	methods: {
+		changeDate() {
+			let time = new Date();
+			this.date.day = ('0' + time.getDate()).slice(-2);
+			this.date.month = ('0' + (time.getMonth() + 1)).slice(-2);
+			this.date.year = time.getFullYear();
+			const nowHour = time.getHours();
+			if (nowHour >= 6 && nowHour < 10) {
+				this.date.headline = '早上好，读者';
+			} else if (nowHour >= 10 && nowHour < 12) {
+				this.date.headline = '上午好，读者';
+			} else if (nowHour >= 12 && nowHour < 14) {
+				this.date.headline = '中午好，读者';
+			} else if (nowHour >= 14 && nowHour < 18) {
+				this.date.headline = '下午好，读者';
+			} else if (nowHour >= 18 && nowHour < 22) {
+				this.date.headline = '晚上好，读者';
+			} else if (nowHour >= 22) {
+				this.date.headline = '夜深了，早点睡';
+			}
+			uni.request({
+				url: 'https://v1.hitokoto.cn/?c=c&c=a&c=b&c=i&c=h&max_length=20'
+			}).then(res => {
+				this.date.content=res[1].data.hitokoto
+			});
+		},
 		goReadPage() {
+			let data = {
+				bookUrl: 'dushi/yedemingmingshu-294013/'
+			};
+			data = this.$u.queryParams(data);
 			uni.navigateTo({
-				url: '../read/read'
+				url: '../read/read' + data
 			});
 		}
-		// change () {
-		//   this.isLight = !this.isLight
-		//   if (this.isLight) {
-		//     window.document.documentElement.setAttribute('data-theme', 'light')
-		//   } else {
-		//     window.document.documentElement.setAttribute('data-theme', 'dark')
-		//   }
-		// }
 	}
 };
 </script>
@@ -134,7 +147,7 @@ export default {
 		.row {
 			display: flex;
 			flex-direction: row;
-			justify-content: space-around;
+			justify-content: space-between;
 
 			.book {
 				width: 33%;
