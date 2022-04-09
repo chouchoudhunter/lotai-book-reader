@@ -13,7 +13,7 @@
 						<view class="tag">末世</view>
 					</view>
 					<view class="func">
-						<u-button :ripple="true" class="btn-left">加入书架</u-button>
+						<u-button :ripple="true" class="btn-left" @click="switchToMyBooks">{{isInMyBooks?'移出书架':'加入书架'}}</u-button>
 						<u-button type="primary" :ripple="true" :custom-style="btnStyle" @click="goRead()">开始阅读</u-button>
 					</view>
 					
@@ -29,13 +29,6 @@
 </template>
 
 <script>
-const tempBook = {
-	img: '',
-	title: '',
-	author: '',
-	desc: '',
-	bookUrl: ''
-};
 export default {
 	data() {
 		return {
@@ -45,13 +38,31 @@ export default {
 			}
 		};
 	},
+	computed:{
+		isInMyBooks(){
+			return this.$store.getters.getBookIsInMyBooks(this.book)
+		}
+	},
 	onLoad: function(option) {
 		this.book = option;
-		console.log(option);
+		console.log(this.isInMyBooks)
 	},
 	methods:{
+		switchToMyBooks(){
+			if(this.isInMyBooks){
+				this.$store.commit('books/DELETE_MY_BOOKS',this.book)
+			}else{
+				let data={...this.book}
+				data.readIndex=0
+				data.readPage=1
+				this.$store.commit('books/ADD_MY_BOOKS',data)
+			}
+		},
 		goRead(){
-			let data=this.$u.queryParams(this.book)
+			let data={...this.book}
+			data.readIndex=0
+			data.readPage=1
+			data=this.$u.queryParams(data)
 			uni.navigateTo({
 				url:'../read/read'+data
 			})

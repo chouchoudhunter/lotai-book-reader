@@ -28,12 +28,11 @@
 			</view>
 		</view>
 		<view class="books">
-			<view class="book-item" @click="goReadPage()">
+			<view class="book-item" v-for="(book,index) in myBooks" :key="index" @click="goReadPage(book)">
 				<view>
-					<view class="img"><u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" /></view>
-					<view class="name">夜的命名术</view>
+					<view class="img"><u-image width="100%" height="100%" mode="aspectFill" :src="book.img" /></view>
+					<view class="name">{{book.title}}</view>
 				</view>
-
 			</view>
 		</view>
 		<u-back-top :scroll-top="scrollTop" top="300"></u-back-top>
@@ -61,13 +60,20 @@ export default {
 			}
 		};
 	},
+	computed:{
+		isNightMode(){
+			return this.$store.getters.getIsNightMode()
+		},
+		myBooks(){
+			return this.$store.getters.getMyBooks
+		}
+	},
 	onPageScroll(e) {
 		this.scrollTop = e.scrollTop;
 	},
 	onShow() {
 		this.changeDate();
 	},
-	onLoad() {},
 	methods: {
 		changeDate() {
 			let time = new Date();
@@ -98,11 +104,8 @@ export default {
 				this.dateContentOpacity = 1;
 			}, 200);
 		},
-		goReadPage() {
-			let data = {
-				bookUrl: 'dushi/yedemingmingshu-294013/'
-			};
-			data = this.$u.queryParams(data);
+		goReadPage(book) {
+			let data = this.$u.queryParams(book);
 			uni.navigateTo({
 				url: '../read/read' + data
 			});
@@ -117,7 +120,7 @@ export default {
 	padding: 0 40rpx;
 
 	.top {
-		margin: 10px 0 10px 0;
+		padding: 10px 0 10px 0;
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
@@ -213,8 +216,8 @@ export default {
 	}
 	.books {
 		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
+		flex-direction: row; 
+		flex-wrap: wrap;
 		.book-item {
 			width: 33%;
 			padding: 10px;

@@ -5,20 +5,20 @@
 				<status-placeholder></status-placeholder>
 				<view class="top">
 					<view class="top-top">
-						<view class="img"><u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" /></view>
+						<view class="img"><u-image width="100%" height="100%" mode="aspectFill" :src="book.img" /></view>
 						<view class="info">
 							<view class="title">
-								夜的命名术
+								{{book.title}}
 								<u-icon size="30" name="arrow-right"></u-icon>
 							</view>
-							<view class="author">会说话的肘子</view>
+							<view class="author">{{book.author}}</view>
 							<view class="status">连载至557章 更新5小时前</view>
-							<view class="status2">当前阅读进度50%</view>
+							<view class="status2">当前阅读进度{{readPos}}%</view>
 						</view>
 					</view>
 					<u-tabs class="func" :list="funcList" :is-scroll="false" :current="currentFunc" @change="changeFunc"></u-tabs>
 				</view>
-				<scroll-view class="bottom" :scroll-y="true">
+				<scroll-view class="bottom" :scroll-y="true" :style="{height:toolHeight+'px'}">
 					<view
 						v-for="(item, index) in chapterList"
 						:key="index"
@@ -51,16 +51,36 @@ export default {
 		currentChapterIndex: {
 			type: Number,
 			default: 0
+		},
+		book: {
+			type: Object,
+			default: {
+				author: "",
+				bookUrl: "",
+				desc: "",
+				readIndex: 1,
+				readPage: 3,
+				title: ""
+			}
 		}
 	},
 	data() {
 		return {
 			show: false,
 			funcList: [{ name: '目录' }, { name: '书签' }],
-			currentFunc: 0
+			currentFunc: 0,
+			toolHeight:0,
+			readPos:0
 		};
 	},
+	mounted() {
+		const systemInfo = getApp().globalData.systemInfo
+		this.toolHeight=systemInfo.windowHeight-systemInfo.statusBarHeight-170
+	},
 	methods: {
+		changeReadPos(){
+			this.readPos=(this.book.readIndex/this.chapterList.length).toFixed(3)*100
+		},
 		changeFunc(index) {
 			this.currentFunc = index;
 		},
@@ -115,7 +135,6 @@ export default {
 			}
 		}
 		.bottom {
-			height: calc(100% - 170px);
 			background-color: #f9f9f9;
 			width: 100%;
 			position: relative;

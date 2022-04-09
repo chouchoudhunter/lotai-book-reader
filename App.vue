@@ -5,13 +5,22 @@ export default {
 	},
 	onLaunch: function() {
 		this.globalData.systemInfo=uni.getSystemInfoSync()
-		
+		this.initBooks()
 	},
 	onShow: function() {
 		
 	},
 	onHide: function() {
 		
+	},
+	methods:{
+		initBooks(){
+			const myBooks=uni.getStorageSync('myBooks')
+			const data={
+				myBooks:myBooks?myBooks:[]
+			}
+			this.$store.commit('books/INIT_BOOKS',data)
+		}
 	}
 };
 </script>

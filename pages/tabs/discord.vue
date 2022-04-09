@@ -86,7 +86,6 @@ export default {
 		const systemInfo = getApp().globalData.systemInfo;
 		this.statusBarHeight = systemInfo.statusBarHeight;
 		this.swiperHeight=systemInfo.windowHeight-systemInfo.statusBarHeight-152
-		console.log(systemInfo)
 	},
 	onShow() {
 		console.log('bbb');
