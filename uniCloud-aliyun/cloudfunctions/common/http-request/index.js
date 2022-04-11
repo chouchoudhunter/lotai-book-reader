@@ -18,6 +18,6 @@ const reqGet=function(url='',keyword=''){
 module.exports = {
 	superagent:superagent,
 	charset:charset,
-	reqGet:reqGet
-	
+	reqGet:reqGet,
+	headers:headers
 }
