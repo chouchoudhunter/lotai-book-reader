@@ -2,11 +2,11 @@
 	<view class="read">
 		<left-tool ref="leftTool" :chapterList="chapterList" :currentChapterIndex="currentChapterIndex" :book="this.book" @changeChapter="changeChapter"></left-tool>
 		<view class="navbar" :style="{ transform: !isShowToolbar ? 'translateY(-' + (44 + statusBarHeight) + 'px)' : 'none' }">
-			<u-navbar :autoBack="true" class="main" :fixed="false">
-				<view slot="right"><image class="icon" src="../../static/read/light.png"></image></view>
+			<u-navbar :background="{backgroundColor:color.bgPage}" :border-bottom="false" :autoBack="true" class="main" :fixed="false">
+				<view slot="right"><image class="icon" :src="'../../static/read/'+(isNightMode?'night':'light')+'.png'" @click="changeNight"></image></view>
 			</u-navbar>
 		</view>
-		<view class="content" :style="{ backgroundColor: currentBgColor }">
+		<view class="content" :style="{ backgroundColor: readSetting.currentBgColor }">
 			<view class="content-main">
 				<status-placeholder></status-placeholder>
 				<view class="top">{{ content.title }}</view>
@@ -16,7 +16,9 @@
 						height: 'calc(100% - ' + (60 + statusBarHeight) + 'px)',
 						transition: needAnimation ? ' all .5s' : 'none',
 						transform: 'translateX(' + currentX + 'px)',
-						fontSize: textFontSize + 'px'
+						fontSize: readSetting.fontSize + 'px',
+						lineHeight:readSetting.lineHeight+'px',
+						color:readSetting.currentBgColor==readSetting.bgColor[2]?'#cacaca':'#000000'
 					}"
 				>
 					<view id="textElement" v-html="content.text"></view>
@@ -34,10 +36,7 @@
 		</view>
 		<bottom-toolbar
 			:isShow="isShowToolbar"
-			@changeFontSzie="changeFontSzie"
-			:fontSize="textFontSize"
-			@changeBgColor="changeBgColor"
-			:bgColor="readBgColor"
+			v-model="readSetting"
 			@openLeftTool="openLeftTool"
 		></bottom-toolbar>
 	</view>
@@ -66,22 +65,28 @@ export default {
 			timer: undefined, //时间循环
 			needAnimation: true, //是否显示翻页动画
 			statusBarHeight: 0, //状态栏高度
-			textFontSize: 24, //小说字体大小
-			readBgColor: ['rgb(248, 248, 248)', 'rgb(255, 241, 210)', 'rgb(34, 32, 28)'],
-			currentBgColor: 'rgb(248, 248, 248)',
 			content: { ...tempContent },
 			preContent: { ...tempContent },
 			nextContent: { ...tempContent },
 			chapterList: [],
 			currentChapterIndex: 0, //当前章节序号
 			book: {},
-			isChangeChapter: true
+			isChangeChapter: true,
 		};
 	},
 	computed: {
 		isInMyBooks() {
 			return this.$store.getters.getBookIsInMyBooks(this.book);
-		}
+		},
+		readSetting(){
+			return this.$store.getters.getReadSetting
+		},
+		isNightMode() {
+			return this.$store.getters.getIsNightMode;
+		},
+		color() {
+			return this.$store.getters.getColor;
+		},
 	},
 	onLoad: function(option) {
 		this.book = option;
@@ -93,6 +98,7 @@ export default {
 		if (this.isInMyBooks) {
 			this.setBookInfo();
 		}
+		this.setHistoryBook()
 	},
 	mounted() {
 		const systemInfo = getApp().globalData.systemInfo;
@@ -102,10 +108,21 @@ export default {
 		this.getChapterList();
 	},
 	methods: {
+		changeNight() {
+			this.$store.commit('setting/SET_NIGHT')
+		},
 		//跳转章节
 		changeChapter(chapterIndex) {
 			//
 		},
+		//更新到历史记录
+		setHistoryBook(){
+			let data = { ...this.book };
+			data.readIndex = this.currentChapterIndex;
+			data.readPage = this.currentPage;
+			this.$store.commit('books/ADD_HISTORY_BOOKS', data);
+		},
+		//更新我的书架
 		setBookInfo() {
 			let data = { ...this.book };
 			data.readIndex = this.currentChapterIndex;
@@ -271,13 +288,8 @@ export default {
 		},
 		//改变阅读字体大小
 		changeFontSzie(size = 14) {
-			this.textFontSize = size;
 			this.computePageNum();
 		},
-		//改变背景颜色
-		changeBgColor(colorIndex) {
-			this.currentBgColor = this.readBgColor[colorIndex];
-		}
 	}
 };
 </script>
@@ -306,6 +318,7 @@ export default {
 		width: 100%;
 		position: relative;
 		overflow: hidden;
+		transition: background-color .5s;
 		.tap {
 			position: absolute;
 			top: 0;
@@ -332,7 +345,7 @@ export default {
 		.content-main {
 			height: 100%;
 			position: relative;
-			margin: 0 10px;
+			margin: 0 12px;
 
 			.top {
 				height: 30px;
@@ -349,9 +362,8 @@ export default {
 
 			.text {
 				// height: calc(100% - 60px);
-				columns: calc(750rpx - 20px) 1;
-				column-gap: 20px;
-				transform: translateX(0);
+				columns: calc(750rpx - 24px) 1;
+				column-gap: 24px;
 			}
 		}
 	}

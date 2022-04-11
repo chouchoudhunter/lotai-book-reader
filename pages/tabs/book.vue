@@ -1,41 +1,78 @@
 <template>
-	<view class="book">
+	<view class="book" :style="{ backgroundColor: color.bgPage }">
 		<status-placeholder></status-placeholder>
 		<view class="top">
 			<view class="left">
-				<h1>{{ date.headline }}</h1>
-				<h2 :style="{ opacity: dateContentOpacity }">{{ date.content }}</h2>
+				<h1 :style="{ color: color.normalText }">{{ date.headline }}</h1>
+				<h2 :style="{ opacity: dateContentOpacity, color: color.secText }">{{ date.content }}</h2>
 			</view>
 			<view class="right">
-				<view id="month">{{ date.month }}</view>
-				<view id="year">{{ date.year }}</view>
-				<view id="day">{{ date.day }}</view>
+				<view id="month" :style="{ color: color.normalText }">{{ date.month }}</view>
+				<view id="year" :style="{ color: color.secText }">{{ date.year }}</view>
+				<view id="day" :style="{ color: color.normalText }">{{ date.day }}</view>
 				<view id="str"></view>
 			</view>
 		</view>
-		<view class="preBook">
+		<view class="preBook" :style="{ 'background-color': color.cardBg }" v-if="myBooks[0]">
 			<image src="../../static/tabs/gou.png" mode="widthFix" class="smallIcon" @click="openTool(0)"></image>
 			<view class="left">
-				<view class="img"><u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" /></view>
+				<view class="img"><u-image width="100%" height="100%" mode="aspectFill" :src="myBooks[0].img" /></view>
 			</view>
 			<view class="right">
-				<view class="title">夜的命名术</view>
-				<view class="info">已读至 第五十六章</view>
+				<view class="title" :style="{ color: color.normalText }">{{ myBooks[0].title }}</view>
+				<view class="info" :style="{ color: color.secText }">已读至 第五十六章</view>
 				<u-line-progress height="22" :striped-active="true" active-color="#2979ff" :striped="true" :percent="70"></u-line-progress>
-				<view class="func">
-					<u-button size="mini"shape="circle" :ripple="true" type="primary" :custom-style="btnStyle">继续阅读</u-button>
-				</view>
+				<view class="func"><u-button size="mini" shape="circle" :ripple="true" type="primary" :custom-style="btnStyle">继续阅读</u-button></view>
 			</view>
 		</view>
 		<view class="books">
-			<view class="book-item" v-for="(book,index) in myBooks" :key="index" @click="goReadPage(book)">
+			<view class="book-item" v-for="(book, index) in myBooks" :key="index" @click="goReadPage(book)" @longtap="openBookFunc(book)">
 				<view>
-					<view class="img"><u-image width="100%" height="100%" mode="aspectFill" :src="book.img" /></view>
-					<view class="name">{{book.title}}</view>
+					<view class="img" :style="{ 'box-shadow': isNightMode ? 'none' : '' }"><u-image width="100%" height="100%" mode="aspectFill" :src="book.img" /></view>
+					<view class="name" :style="{ color: color.normalText }">{{ book.title }}</view>
+				</view>
+			</view>
+			<view class="book-item" @click="goDiscordTab()" v-show="!myBooks.length">
+				<view>
+					<view class="book-item-block" :style="{ 'background-color': color.cardBg,'box-shadow': isNightMode ? 'none' : '' }">
+						<u-icon name="plus" size="80" :color="color.secText"></u-icon>
+					</view>
 				</view>
 			</view>
 		</view>
+		<u-popup v-model="bookFuncShow" mode="bottom">
+			<view class="book-func">
+				<view class="book-info">
+					<view class="img"><u-image width="100%" height="100%" mode="aspectFill" :src="bookFunc.img" /></view>
+					<view class="info">
+						<view class="title">{{ bookFunc.title }}</view>
+						<view class="author">{{ bookFunc.author }}</view>
+						<view class="desc">更新到第885章</view>
+					</view>
+				</view>
+				<view class="book-btn">
+					<view class="item">
+						<u-icon name="../../static/home/top.png" color="#000000" size="50"></u-icon>
+						置顶本书
+					</view>
+					<view class="item">
+						<u-icon name="../../static/home/swipe.png" color="#000000" size="40"></u-icon>
+						清除缓存
+					</view>
+					<view class="item">
+						<u-icon name="../../static/home/download.png" color="#000000" size="40"></u-icon>
+						下载本书
+					</view>
+					<view class="item" @click="openDeleteToast">
+						<u-icon name="../../static/home/trash.png" color="#000000" size="40"></u-icon>
+						删除本书
+					</view>
+				</view>
+			</view>
+		</u-popup>
+		<u-modal v-model="toastDelete" content="确定要删除本书吗？" :show-cancel-button="true" @confirm="deleteBook"></u-modal>
 		<u-back-top :scroll-top="scrollTop" top="300"></u-back-top>
+		<u-tabbar :list="tabList" :bg-color="color.bgPage" :border-top="false" active-color="#296dff" :inactive-color="color.normalText"></u-tabbar>
 	</view>
 </template>
 <script>
@@ -44,7 +81,33 @@ export default {
 	components: { statusPlaceholder },
 	data() {
 		return {
+			tabList: [
+				{
+					iconPath: '../../static/tabs/home.png',
+					selectedIconPath: '../../static/tabs/home.png',
+					text: '首页',
+					customIcon: false,
+					pagePath: '/pages/tabs/book'
+				},
+				{
+					iconPath: '../../static/tabs/discord.png',
+					selectedIconPath: '../../static/tabs/discord.png',
+					text: '发现',
+					customIcon: false,
+					pagePath: '/pages/tabs/discord'
+				},
+				{
+					iconPath: '../../static/tabs/user.png',
+					selectedIconPath: '../../static/tabs/user.png',
+					text: '我的',
+					customIcon: false,
+					pagePath: '/pages/tabs/user'
+				}
+			],
 			scrollTop: 0,
+			bookFuncShow: false,
+			bookFunc: {},
+			toastDelete: false,
 			date: {
 				day: '07',
 				month: '04',
@@ -53,28 +116,53 @@ export default {
 				content: '请享受美好的阅读时光'
 			},
 			dateContentOpacity: 1,
-			btnStyle:{
+			btnStyle: {
 				backgroundImage: 'linear-gradient(to right, #296dff, #55aaff)',
-				// width:'60px',
-				fontSize:'13px'
+				fontSize: '13px'
 			}
 		};
 	},
-	computed:{
-		isNightMode(){
-			return this.$store.getters.getIsNightMode()
+	computed: {
+		isNightMode() {
+			return this.$store.getters.getIsNightMode;
 		},
-		myBooks(){
-			return this.$store.getters.getMyBooks
+		color() {
+			return this.$store.getters.getColor;
+		},
+		myBooks() {
+			return this.$store.getters.getMyBooks;
 		}
 	},
 	onPageScroll(e) {
 		this.scrollTop = e.scrollTop;
 	},
+	onLoad() {
+		uni.setTabBarStyle({
+			backgroundColor: this.isNightMode ? '#101010' : '#fff',
+			borderStyle: this.isNightMode ? 'black' : 'white'
+		});
+	},
 	onShow() {
 		this.changeDate();
 	},
 	methods: {
+		goDiscordTab(){
+			uni.switchTab({
+				url:'./discord'
+			})
+		},
+		openDeleteToast() {
+			this.toastDelete = true;
+		},
+		deleteBook() {
+			this.$store.commit('books/DELETE_MY_BOOKS', this.bookFunc);
+			this.bookFunc = {};
+			this.bookFuncShow = false;
+		},
+		openBookFunc(book) {
+			this.bookFuncShow = true;
+			this.bookFunc = book;
+		},
 		changeDate() {
 			let time = new Date();
 			this.date.day = ('0' + time.getDate()).slice(-2);
@@ -116,9 +204,45 @@ export default {
 
 <style lang="scss">
 .book {
-	background-color: var(--bgColor);
+	overflow: scroll;
+	height: 100%;
 	padding: 0 40rpx;
-
+	.book-func {
+		padding: 20px;
+		.book-info {
+			display: flex;
+			flex-direction: row;
+			.img {
+				width: 75px;
+				height: 100px;
+				border-radius: 4px;
+				overflow: hidden;
+			}
+			.info {
+				margin-left: 15px;
+				padding-top: 15px;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				.title {
+					font-size: 16px;
+				}
+			}
+		}
+		.book-btn {
+			margin-top: 20px;
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			.item {
+				width: 25%;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: space-between;
+			}
+		}
+	}
 	.top {
 		padding: 10px 0 10px 0;
 		display: flex;
@@ -132,7 +256,6 @@ export default {
 			}
 
 			h2 {
-				color: $text-gray;
 				font-size: 28rpx;
 				transition: opacity 0.2s;
 				opacity: 1;
@@ -148,7 +271,6 @@ export default {
 			#year {
 				font-size: 28rpx;
 				font-weight: normal;
-				color: $text-gray;
 			}
 
 			#month {
@@ -173,7 +295,6 @@ export default {
 		}
 	}
 	.preBook {
-		background-color: #f3f3f3;
 		height: 110px;
 		margin: 40px 10px 0 10px;
 		padding: 10px;
@@ -181,15 +302,15 @@ export default {
 		display: flex;
 		flex-direction: row;
 		position: relative;
-		.smallIcon{
+		.smallIcon {
 			width: 20px;
 			position: absolute;
 			right: 7px;
-			top:7px
+			top: 7px;
 		}
-		.left{
+		.left {
 			position: relative;
-			.img{
+			.img {
 				width: 90px;
 				height: 120px;
 				border-radius: 4px;
@@ -199,24 +320,23 @@ export default {
 				left: 0;
 			}
 		}
-		.right{
+		.right {
 			margin-left: 10px;
 			display: flex;
 			flex-direction: column;
 			justify-content: space-between;
 			width: calc(100% - 90px);
-			.title{
+			.title {
 				font-size: 16px;
 			}
-			.info{
+			.info {
 				font-size: 12px;
-				color: #919191;
 			}
 		}
 	}
 	.books {
 		display: flex;
-		flex-direction: row; 
+		flex-direction: row;
 		flex-wrap: wrap;
 		.book-item {
 			width: 33%;
@@ -224,6 +344,16 @@ export default {
 			display: flex;
 			flex-direction: row;
 			justify-content: center;
+			.book-item-block{
+				width: 90px;
+				height: 120px;
+				border-radius: 4px;
+				box-shadow: 0 4rpx 14rpx 0 rgba(172, 172, 172, 0.5);
+				display: flex;
+				flex-direction: row;
+				justify-content: center;
+				align-items: center;
+			}
 			.name {
 				font-size: 14px;
 				margin: 5px 0;
@@ -234,7 +364,7 @@ export default {
 				height: 120px;
 				border-radius: 4px;
 				overflow: hidden;
-				box-shadow: 0 4rpx 14rpx 0 $shadow-gray;
+				box-shadow: 0 4rpx 14rpx 0 rgba(172, 172, 172, 0.5);
 			}
 		}
 	}

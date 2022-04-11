@@ -47,7 +47,7 @@
                 "ad" : {}
             },
             "splashscreen" : {
-                "androidStyle" : "default"
+                "androidStyle" : "common"
             }
         }
     },

@@ -1,58 +1,34 @@
 <template>
-	<view class="user">
+	<view class="user" :style="{backgroundColor:color.bgPage}">
 		<status-placeholder></status-placeholder>
 		<view class="navbar">
-			<view class="left">我的</view>
-			<view class="right"><u-icon name="setting" size="38"></u-icon></view>
+			<view class="left" :style="{color:color.normalText}">我的</view>
+			<view class="right"><image class="icon" :src="'../../static/read/'+(isNightMode?'night':'light')+'.png'" @click="changeNight"></image></view>
 		</view>
 		<view class="avatar">
 			<u-image width="200rpx" height="200rpx" shape="circle" mode="aspectFit" src="https://img0.baidu.com/it/u=1967997459,1022958762&fm=26&fmt=auto"></u-image>
 		</view>
-		<u-gap height="16" bg-color="rgb(245, 245, 245)"></u-gap>
+		<u-gap height="16" :bg-color="color.cardBg"></u-gap>
 		<view class="main">
 			<view class="history">
-				<u-cell-group>
-					<u-cell-item title="浏览历史" :border-bottom="false" value="更多"></u-cell-item>
+				<u-cell-group :border="false">
+					<u-cell-item title="浏览历史" :title-style="{color:color.normalText}" :bg-color="color.bgPage" :border-bottom="false" value="更多" @click="goHistory()"></u-cell-item>
 					<scroll-view :scroll-x="true">
-						<view class="books">
-							<view class="book">
-								<view class="img"><u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" /></view>
-								<view class="title">夜的命名术</view>
-								<view class="author">会说话的肘子</view>
-							</view>
-							<view class="book">
-								<view class="img"><u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" /></view>
-								<view class="title">夜的命名术</view>
-								<view class="author">会说话的肘子</view>
-							</view>
-							<view class="book">
-								<view class="img"><u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" /></view>
-								<view class="title">夜的命名术</view>
-								<view class="author">会说话的肘子</view>
-							</view>
-							<view class="book">
-								<view class="img"><u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" /></view>
-								<view class="title">夜的命名术</view>
-								<view class="author">会说话的肘子</view>
-							</view>
-							<view class="book">
-								<view class="img"><u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" /></view>
-								<view class="title">夜的命名术</view>
-								<view class="author">会说话的肘子</view>
-							</view>
-							<view class="book">
-								<view class="img"><u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" /></view>
-								<view class="title">夜的命名术</view>
-								<view class="author">会说话的肘子</view>
+						<view class="books" :style="{backgroundColor:color.bgPage}">
+							<view class="book" v-for="(item,index) in historyBooks" :key="index" @click="goRead(item)">
+								<view class="img"><u-image width="100%" height="100%" mode="aspectFill" :src="item.img" /></view>
+								<view class="title" :style="{color:color.normalText}">{{item.title}}</view>
+								<view class="author" :style="{color:color.secText}">{{item.author}}</view>
 							</view>
 						</view>
 					</scroll-view>
-					<u-cell-item title="关于我们" :border-bottom="false"></u-cell-item>
-					<u-cell-item title="意见反馈" :border-bottom="false"></u-cell-item>
-					<u-cell-item title="软件设置" value="新版本" :border-bottom="false"></u-cell-item>
+					<u-cell-item title="免责声明" :title-style="{color:color.normalText}" :bg-color="color.bgPage" :border-bottom="false" @click="goDeclaration()"></u-cell-item>
+					<u-cell-item title="意见反馈" :title-style="{color:color.normalText}" :bg-color="color.bgPage" :border-bottom="false" @click="goFeedback()"></u-cell-item>
+					<u-cell-item title="软件设置" :title-style="{color:color.normalText}" :bg-color="color.bgPage" value="新版本" :border-bottom="false" @click="goSetting()"></u-cell-item>
 				</u-cell-group>
 			</view>
 		</view>
+		<u-tabbar :list="tabList" :bg-color="color.bgPage" :border-top="false" active-color="#296dff" :inactive-color="color.normalText"></u-tabbar>
 	</view>
 </template>
 
@@ -62,21 +38,80 @@ export default {
 	components: { statusPlaceholder },
 	data() {
 		return {
-			title: 'Hello',
-			isLight: true
+			tabList: [
+				{
+					iconPath: '../../static/tabs/home.png',
+					selectedIconPath: '../../static/tabs/home.png',
+					text: '首页',
+					customIcon: false,
+					pagePath:'/pages/tabs/book'
+				},
+				{
+					iconPath: '../../static/tabs/discord.png',
+					selectedIconPath: '../../static/tabs/discord.png',
+					text: '发现',
+					customIcon: false,
+					pagePath:'/pages/tabs/discord'
+				},
+				{
+					iconPath: '../../static/tabs/user.png',
+					selectedIconPath: '../../static/tabs/user.png',
+					text: '我的',
+					customIcon: false,
+					pagePath:'/pages/tabs/user'
+				}
+			],
 		};
 	},
 	onLoad() {},
-	methods: {
-		change() {
-			this.isLight = !this.isLight;
+	computed:{
+		historyBooks(){
+			return this.$store.getters.getHistoryBooks(6)
+		},
+		isNightMode() {
+			return this.$store.getters.getIsNightMode;
+		},
+		color(){
+			return this.$store.getters.getColor;
 		}
+	},
+	methods: {
+		changeNight() {
+			this.$store.commit('setting/SET_NIGHT')
+		},
+		goRead(data){
+			data=this.$u.queryParams(data)
+			uni.navigateTo({
+				url:'../read/read'+data
+			})
+		},
+		goHistory(){
+			uni.navigateTo({
+				url:'../user/history/history'
+			})
+		},
+		goFeedback(){
+			uni.navigateTo({
+				url:'../user/feedback/feedback'
+			})
+		},
+		goSetting(){
+			uni.navigateTo({
+				url:'../user/setting/setting'
+			})
+		},
+		goDeclaration(){
+			uni.navigateTo({
+				url:'../user/declaration/declaration'
+			})
+		},
 	}
 };
 </script>
 
 <style lang="scss">
 .user {
+	height: 100%;
 	.navbar {
 		padding: 15px;
 		display: flex;
@@ -89,6 +124,10 @@ export default {
 		}
 		.right {
 			float: right;
+			.icon{
+				width: 20px;
+				height: 20px;
+			}
 		}
 	}
 	.avatar {

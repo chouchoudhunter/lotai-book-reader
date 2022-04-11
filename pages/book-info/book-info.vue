@@ -45,7 +45,6 @@ export default {
 	},
 	onLoad: function(option) {
 		this.book = option;
-		console.log(this.isInMyBooks)
 	},
 	methods:{
 		switchToMyBooks(){
@@ -59,9 +58,14 @@ export default {
 			}
 		},
 		goRead(){
-			let data={...this.book}
-			data.readIndex=0
-			data.readPage=1
+			let data={}
+			if(this.isInMyBooks){
+				data=this.isInMyBooks
+			}else{
+				data={...this.book}
+				data.readIndex=0
+				data.readPage=1
+			}
 			data=this.$u.queryParams(data)
 			uni.navigateTo({
 				url:'../read/read'+data
