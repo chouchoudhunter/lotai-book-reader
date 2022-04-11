@@ -1,6 +1,7 @@
 // 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
 {
 	"bsonType": "object",
+	"description":"保存爬取的代理ip",
 	"required": [],
 	"permission": {
 		"read": false,
@@ -11,6 +12,19 @@
 	"properties": {
 		"_id": {
 			"description": "ID，系统自动生成"
+		},
+		"ip":{
+			"bsonType":"string",
+			"title":"IP地址"
+		},
+		"port":{
+			"bsonType":"string",
+			"title":"端口"
+		},
+		"type":{
+			"bsonType":"string",
+			"title":"类型",
+			"enum":["http","https"]
 		}
 	}
 }
