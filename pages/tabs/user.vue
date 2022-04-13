@@ -23,47 +23,29 @@
 						</view>
 					</scroll-view>
 					<u-cell-item title="免责声明" :title-style="{color:color.normalText}" :bg-color="color.bgPage" :border-bottom="false" @click="goDeclaration()"></u-cell-item>
-					<u-cell-item title="意见反馈" :title-style="{color:color.normalText}" :bg-color="color.bgPage" :border-bottom="false" @click="goFeedback()"></u-cell-item>
+<!-- 					<u-cell-item title="意见反馈" :title-style="{color:color.normalText}" :bg-color="color.bgPage" :border-bottom="false" @click="goFeedback()"></u-cell-item> -->
 					<u-cell-item title="软件设置" :title-style="{color:color.normalText}" :bg-color="color.bgPage" value="新版本" :border-bottom="false" @click="goSetting()"></u-cell-item>
 				</u-cell-group>
 			</view>
 		</view>
-		<u-tabbar :list="tabList" :bg-color="color.bgPage" :border-top="false" active-color="#296dff" :inactive-color="color.normalText"></u-tabbar>
+	<common-tabbar></common-tabbar>
 	</view>
 </template>
 
 <script>
 import statusPlaceholder from '@/components/status-placeholder.vue';
+import commonTabbar from '@/components/common-tabbar.vue';
 export default {
-	components: { statusPlaceholder },
+	components: { statusPlaceholder,commonTabbar },
 	data() {
 		return {
-			tabList: [
-				{
-					iconPath: '../../static/tabs/home.png',
-					selectedIconPath: '../../static/tabs/home.png',
-					text: '首页',
-					customIcon: false,
-					pagePath:'/pages/tabs/book'
-				},
-				{
-					iconPath: '../../static/tabs/discord.png',
-					selectedIconPath: '../../static/tabs/discord.png',
-					text: '发现',
-					customIcon: false,
-					pagePath:'/pages/tabs/discord'
-				},
-				{
-					iconPath: '../../static/tabs/user.png',
-					selectedIconPath: '../../static/tabs/user.png',
-					text: '我的',
-					customIcon: false,
-					pagePath:'/pages/tabs/user'
-				}
-			],
 		};
 	},
-	onLoad() {},
+	// onLoad() {
+	// 	uni.switchTab({
+	// 		url:'./book'
+	// 	})
+	// },
 	computed:{
 		historyBooks(){
 			return this.$store.getters.getHistoryBooks(6)

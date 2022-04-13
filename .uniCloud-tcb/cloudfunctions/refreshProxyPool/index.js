@@ -43,7 +43,7 @@ exports.main = async (event, context) => {
 	})
 	const db=uniCloud.database()
 	const collection=db.collection('proxy_pool')
-	await collection.remove()
+	await collection.where({type:'http'}).remove()
 	await collection.add(okproxyList)
 	return okproxyList
 };

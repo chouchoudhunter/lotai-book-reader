@@ -1,6 +1,6 @@
 <template>
 	<view class="read">
-		<left-tool ref="leftTool" :chapterList="chapterList" :currentChapterIndex="currentChapterIndex" :book="this.book" @changeChapter="changeChapter"></left-tool>
+		<left-tool ref="leftTool" :chapterList="chapterList" :currentChapterIndex="currentChapterIndex" :book="this.book" @changeChapter="changeChapter" :readPos="readPos"></left-tool>
 		<view class="navbar" :style="{ transform: !isShowToolbar ? 'translateY(-' + (44 + statusBarHeight) + 'px)' : 'none' }">
 			<u-navbar :background="{backgroundColor:color.bgPage}" :border-bottom="false" :autoBack="true" class="main" :fixed="false">
 				<view slot="right"><image class="icon" :src="'../../static/read/'+(isNightMode?'night':'light')+'.png'" @click="changeNight"></image></view>
@@ -9,7 +9,7 @@
 		<view class="content" :style="{ backgroundColor: readSetting.currentBgColor }">
 			<view class="content-main">
 				<status-placeholder></status-placeholder>
-				<view class="top">{{ content.title }}</view>
+				<view class="top" :style="{color:color.secText}">{{ content.title }}</view>
 				<view
 					class="text"
 					:style="{
@@ -22,13 +22,20 @@
 					}"
 				>
 					<view id="textElement" v-html="content.text"></view>
+					<view class="load-err" v-show="content.success==-1">
+						<view class="err-text">加载失败</view>
+						<view class="err-func">
+							<u-button type="primary" size="mini" :plain="true">换源</u-button>
+							<u-button type="primary" size="mini" :plain="true" @click="loadChapter(-1)">重试</u-button>
+						</view>
+					</view>
 				</view>
-				<view class="bottom">
+				<view class="bottom" :style="{color:color.secText}">
 					<view class="battery">{{ currentTime }}</view>
 					<view class="pages">{{ totalPage ? currentPage + '/' + totalPage + '页' : '' }}</view>
 				</view>
 			</view>
-			<view class="tap">
+			<view class="tap" :style="{display:content.success==1?'flex':'none'}">
 				<view class="tap-left" @click="pageChange(0)"></view>
 				<view class="tap-center" @click="isShowToolbar = !isShowToolbar"></view>
 				<view class="tap-right" @click="pageChange(1)"></view>
@@ -72,6 +79,7 @@ export default {
 			currentChapterIndex: 0, //当前章节序号
 			book: {},
 			isChangeChapter: true,
+			readPos:0
 		};
 	},
 	computed: {
@@ -108,6 +116,12 @@ export default {
 		this.getChapterList();
 	},
 	methods: {
+		//计算阅读进度
+		changeReadPos(){
+			this.readPos=(this.currentChapterIndex/this.chapterList.length).toFixed(3)*100
+			console.log(this.readPos)
+		},
+		//切换夜晚模式
 		changeNight() {
 			this.$store.commit('setting/SET_NIGHT')
 		},
@@ -141,7 +155,6 @@ export default {
 		//打开左边工具栏（目录）
 		openLeftTool() {
 			this.$refs.leftTool.switchTool();
-			this.$refs.leftTool.changeReadPos();
 			this.isShowToolbar = false;
 		},
 		//检测是一个或者下一个相邻的章节 -1表示已经是最后一个章节了，-2表示已经是第一个章节了
@@ -152,7 +165,7 @@ export default {
 						return i;
 					}
 				}
-				this.nextContent.status = -1;
+				this.content.status=-1
 				return -1;
 			} else if (dir == 0) {
 				for (var i = this.currentChapterIndex - 1; i >= 0; i--) {
@@ -160,7 +173,6 @@ export default {
 						return i;
 					}
 				}
-				this.preContent.status = -2;
 				this.content.status = -2;
 				return -2;
 			} else {
@@ -187,13 +199,14 @@ export default {
 					this.preContent = res.data;
 					this.preContent.index = index;
 				} else {
-					this.content = res.data;
+					this.content = {...res.data};
 					this.needAnimation = false;
 					this.currentX = -this.screenWidth * (this.currentPage - 1);
 					setTimeout(() => {
 						this.needAnimation = true;
 						this.isChangeChapter = false;
 					}, 500);
+					this.changeReadPos()
 					this.computePageNum();
 					this.loadChapter(1);
 					this.loadChapter(0);
@@ -220,7 +233,6 @@ export default {
 						this.currentX = 0;
 						this.preContent = this.content;
 						this.content = this.nextContent;
-						console.log(this.content, this.preContent);
 						this.currentChapterIndex = this.content.index;
 						this.computePageNum();
 						this.loadChapter(1);
@@ -259,6 +271,7 @@ export default {
 					this.currentPage--;
 				}
 			}
+			this.changeReadPos()
 		},
 		//时间
 		refreshTime() {
@@ -364,6 +377,21 @@ export default {
 				// height: calc(100% - 60px);
 				columns: calc(750rpx - 24px) 1;
 				column-gap: 24px;
+				.load-err{
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					justify-content: center;
+					height: 100%;
+					font-size: 16px;
+					.err-func{
+						display: flex;
+						flex-direction: row;
+						.u-btn{
+							margin: 0 10px;
+						}
+					}
+				}
 			}
 		}
 	}

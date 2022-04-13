@@ -12,11 +12,12 @@
 			@change="changeSwiper"
 		>
 			<swiper-item class="swiperItem">
-				<view class="leftBar" :style="{backgroundColor:color.bgPage}">
-					<view class="btn" :class="{'btn-active':swiper1Tag==0}" @click="changeSwiper1Tag(0)">全部分类</view>
-					<view class="btn" :class="{'btn-active':swiper1Tag==1}" @click="changeSwiper1Tag(1)">最热榜</view>
-					<view class="btn" :class="{'btn-active':swiper1Tag==2}" @click="changeSwiper1Tag(2)">完结榜</view>
-					<view class="btn" :class="{'btn-active':swiper1Tag==3}" @click="changeSwiper1Tag(3)">新书榜</view>
+				<view class="leftBar" :style="{backgroundColor:color.bgPage,color:color.normalText}">
+					<view class="btn-active" :style="{backgroundColor:color.swiperBg,transform:'translateY('+(swiper1Tag*40)+'px)'}"></view>
+					<view class="btn" @click="changeSwiper1Tag(0)">全部分类</view>
+					<view class="btn" @click="changeSwiper1Tag(1)">最热榜</view>
+					<view class="btn" @click="changeSwiper1Tag(2)">完结榜</view>
+					<view class="btn" @click="changeSwiper1Tag(3)">新书榜</view>
 				</view>
 				<view class="right">
 					<view class="cates" :style="{color:color.normalText}">
@@ -48,48 +49,26 @@
 				</view>
 			</swiper-item>
 			<swiper-item class="swiperItem">
-				<view class="leftBar">
+<!-- 				<view class="leftBar">
 					<view class="btn btn-active">全部分类</view>
 					<view class="btn">最热榜</view>
 					<view class="btn">完结榜</view>
 					<view class="btn">新书榜</view>
 				</view>
-				<view class="right"></view>
+				<view class="right"></view> -->
 			</swiper-item>
 		</swiper>
-		<u-tabbar :list="tabList" :bg-color="color.bgPage" :border-top="false" active-color="#296dff" :inactive-color="color.normalText"></u-tabbar>
+		<common-tabbar></common-tabbar>
 	</view>
 </template>
 
 <script>
 import statusPlaceholder from '@/components/status-placeholder.vue';
+import commonTabbar from '@/components/common-tabbar.vue';
 export default {
-	components: { statusPlaceholder },
+	components: { statusPlaceholder,commonTabbar },
 	data() {
 		return {
-			tabList: [
-				{
-					iconPath: '../../static/tabs/home.png',
-					selectedIconPath: '../../static/tabs/home.png',
-					text: '首页',
-					customIcon: false,
-					pagePath:'/pages/tabs/book'
-				},
-				{
-					iconPath: '../../static/tabs/discord.png',
-					selectedIconPath: '../../static/tabs/discord.png',
-					text: '发现',
-					customIcon: false,
-					pagePath:'/pages/tabs/discord'
-				},
-				{
-					iconPath: '../../static/tabs/user.png',
-					selectedIconPath: '../../static/tabs/user.png',
-					text: '我的',
-					customIcon: false,
-					pagePath:'/pages/tabs/user'
-				}
-			],
 			title: 'Hello',
 			isLight: true,
 			tagList: [
@@ -103,7 +82,7 @@ export default {
 			currentTag: 0,
 			statusBarHeight: 0,
 			swiperHeight:0,
-			swiper1Tag:0
+			swiper1Tag:0,
 		};
 	},
 	computed: {
@@ -114,6 +93,11 @@ export default {
 			return this.$store.getters.getColor;
 		}
 	},
+	// onLoad() {
+	// 	uni.switchTab({
+	// 		url:'./user'
+	// 	})
+	// },
 	mounted() {
 		const systemInfo = getApp().globalData.systemInfo;
 		this.statusBarHeight = systemInfo.statusBarHeight;
@@ -157,9 +141,16 @@ export default {
 					height: 40px;
 					text-align: center;
 					position: relative;
+					z-index: 10;
 				}
 				.btn-active {
-					background-color: #efefef;
+					height: 40px;
+					position: absolute;
+					left: 0;
+					top: 0;
+					z-index: 2;
+					width: 70px;
+					transition: transform 0.2s;
 				}
 				.btn-active:after {
 					content: '';

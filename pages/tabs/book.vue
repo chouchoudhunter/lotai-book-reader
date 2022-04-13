@@ -72,38 +72,16 @@
 		</u-popup>
 		<u-modal v-model="toastDelete" content="确定要删除本书吗？" :show-cancel-button="true" @confirm="deleteBook"></u-modal>
 		<u-back-top :scroll-top="scrollTop" top="300"></u-back-top>
-		<u-tabbar :list="tabList" :bg-color="color.bgPage" :border-top="false" active-color="#296dff" :inactive-color="color.normalText"></u-tabbar>
+		<common-tabbar></common-tabbar>
 	</view>
 </template>
 <script>
 import statusPlaceholder from '@/components/status-placeholder.vue';
+import commonTabbar from '@/components/common-tabbar.vue';
 export default {
-	components: { statusPlaceholder },
+	components: { statusPlaceholder,commonTabbar },
 	data() {
 		return {
-			tabList: [
-				{
-					iconPath: '../../static/tabs/home.png',
-					selectedIconPath: '../../static/tabs/home.png',
-					text: '首页',
-					customIcon: false,
-					pagePath: '/pages/tabs/book'
-				},
-				{
-					iconPath: '../../static/tabs/discord.png',
-					selectedIconPath: '../../static/tabs/discord.png',
-					text: '发现',
-					customIcon: false,
-					pagePath: '/pages/tabs/discord'
-				},
-				{
-					iconPath: '../../static/tabs/user.png',
-					selectedIconPath: '../../static/tabs/user.png',
-					text: '我的',
-					customIcon: false,
-					pagePath: '/pages/tabs/user'
-				}
-			],
 			scrollTop: 0,
 			bookFuncShow: false,
 			bookFunc: {},
@@ -136,12 +114,11 @@ export default {
 	onPageScroll(e) {
 		this.scrollTop = e.scrollTop;
 	},
-	onLoad() {
-		uni.setTabBarStyle({
-			backgroundColor: this.isNightMode ? '#101010' : '#fff',
-			borderStyle: this.isNightMode ? 'black' : 'white'
-		});
-	},
+	// onLoad() {
+	// 	uni.switchTab({
+	// 		url:'./discord'
+	// 	})
+	// },
 	onShow() {
 		this.changeDate();
 	},

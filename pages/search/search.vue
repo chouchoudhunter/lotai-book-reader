@@ -16,6 +16,16 @@
 			</view>
 			<view class="search-detail" v-show="showSearchDetail">
 				<u-empty v-show="searchEmpty" text="没有找到书籍 建议输入完整书名" mode="search"></u-empty>
+				<view class="book-loading" v-show="isSearching">
+					<view class="left"></view>
+					<view class="right">
+						<view class="text text1"></view>
+						<view class="text"></view>
+						<view class="text"></view>
+						<view class="text"></view>
+						<view class="text"></view>
+					</view>
+				</view>
 				<book-item v-for="(book, i) in books" :key="i" @click="goBookInfo(book)" :book="book"></book-item>
 			</view>
 		</view>
@@ -107,6 +117,37 @@ export default {
 	.main {
 		position: relative;
 		padding: 0 10px;
+		@keyframes loading {
+		  0%   {opacity:1}
+		  100% {opacity:0}
+		}
+		.book-loading{
+			display: flex;
+			flex-direction: row;
+			margin-top: 5px;
+			animation: loading 1s linear 0s infinite alternate;
+			.left{
+				width: 30%;
+				height: 150px;
+				background-color: #d5d5d5;
+				border-radius:5px
+			}
+			.right{
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				width: 70%;
+				margin-left: 20px;
+				.text{
+					height: 15px;
+					background-color: #d5d5d5;
+					border-radius:3px
+				}
+				.text1{
+					height: 30px;
+				}
+			}
+		}
 		.search-info {
 			span {
 				font-size: 18px;

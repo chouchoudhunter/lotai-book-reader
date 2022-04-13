@@ -51,7 +51,9 @@ const setting={
 			uni.setStorageSync('readSetting',readSetting)
 		},
 		INIT_SETTING:(state,data)=>{
-			state.readSetting=data.readSetting
+			if(data.readSetting.bgColor){
+				state.readSetting=data.readSetting
+			}
 			state.nightMode=data.nightMode
 		},
 	}

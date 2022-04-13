@@ -62,6 +62,10 @@ export default {
 				readPage: 3,
 				title: ""
 			}
+		},
+		readPos:{
+			type:Number,
+			default:0
 		}
 	},
 	data() {
@@ -70,7 +74,6 @@ export default {
 			funcList: [{ name: '目录' }, { name: '书签' }],
 			currentFunc: 0,
 			toolHeight:0,
-			readPos:0
 		};
 	},
 	mounted() {
@@ -78,9 +81,6 @@ export default {
 		this.toolHeight=systemInfo.windowHeight-systemInfo.statusBarHeight-170
 	},
 	methods: {
-		changeReadPos(){
-			this.readPos=(this.book.readIndex/this.chapterList.length).toFixed(3)*100
-		},
 		changeFunc(index) {
 			this.currentFunc = index;
 		},

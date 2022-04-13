@@ -18,17 +18,16 @@ exports.main = async (event, context) => {
 		url:''
 	}
 	const bookUrl=event.bookUrl
-	// const db=uniCloud.database()
-	// const collection=db.collection('proxy_pool')
-	// let ips=await collection.where({}).get()
-	// ips=ips.data
+	const db=uniCloud.database()
+	const collection=db.collection('proxy_pool')
+	let ips=await collection.where({}).get()
+	ips=ips.data
 	let result=''
-	result=await reqGet(bookUrl)
-	// for(var i=0;i<ips.length;i++){
-	// 	const ip= ips[i].type + "://" + ips[i].ip + ":" + ips[i].port
-	// 	result=await reqGet(bookUrl,'',ip)
-	// 	if(result) break
-	// }
+	for(var i=0;i<ips.length;i++){
+		const ip= ips[i].type + "://" + ips[i].ip + ":" + ips[i].port
+		result=await reqGet(bookUrl,'',ip)
+		if(result) break
+	}
 	let $=cheerio.load(result)
 	$('.conter div').each((index,element)=>{
 		let $el=$(element)
