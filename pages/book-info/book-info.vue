@@ -54,6 +54,7 @@ export default {
 				let data={...this.book}
 				data.readIndex=0
 				data.readPage=1
+				data.readPose=0
 				this.$store.commit('books/ADD_MY_BOOKS',data)
 			}
 		},
@@ -65,6 +66,7 @@ export default {
 				data={...this.book}
 				data.readIndex=0
 				data.readPage=1
+				data.readPose=0
 			}
 			data=this.$u.queryParams(data)
 			uni.navigateTo({

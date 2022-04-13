@@ -14,15 +14,15 @@
 			</view>
 		</view>
 		<view class="preBook" :style="{ 'background-color': color.cardBg }" v-if="myBooks[0]">
-			<image src="../../static/tabs/gou.png" mode="widthFix" class="smallIcon" @click="openTool(0)"></image>
+			<u-icon name="../../static/tabs/gou.png" size="40" class="smallIcon" @click="openTool(0)"></u-icon>
 			<view class="left">
 				<view class="img"><u-image width="100%" height="100%" mode="aspectFill" :src="myBooks[0].img" /></view>
 			</view>
 			<view class="right">
 				<view class="title" :style="{ color: color.normalText }">{{ myBooks[0].title }}</view>
 				<view class="info" :style="{ color: color.secText }">已读至 第五十六章</view>
-				<u-line-progress height="22" :striped-active="true" active-color="#2979ff" :striped="true" :percent="70"></u-line-progress>
-				<view class="func"><u-button size="mini" shape="circle" :ripple="true" type="primary" :custom-style="btnStyle">继续阅读</u-button></view>
+				<u-line-progress :showPercent="false" height="22" :striped-active="true" active-color="#2979ff" :striped="true" :percent="myBooks[0].readPos"></u-line-progress>
+				<view class="func"><u-button @click="goReadPage(myBooks[0])" size="mini" shape="circle" :ripple="true" type="primary" :custom-style="btnStyle">继续阅读</u-button></view>
 			</view>
 		</view>
 		<view class="books">
@@ -279,6 +279,7 @@ export default {
 		display: flex;
 		flex-direction: row;
 		position: relative;
+		width:calc(100% - 20px);
 		.smallIcon {
 			width: 20px;
 			position: absolute;

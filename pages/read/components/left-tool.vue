@@ -1,31 +1,31 @@
 <template>
 	<view class="left-tool">
 		<u-popup v-model="show" width="75%">
-			<view class="main">
+			<view class="main" :style="{ backgroundColor: color.bgPage }">
 				<status-placeholder></status-placeholder>
-				<view class="top">
+				<view class="top" :style="{'box-shadow':isNightMode?'none':'0px 7px 10px -3px rgba(158, 158, 158, 0.1)'}">
 					<view class="top-top">
 						<view class="img"><u-image width="100%" height="100%" mode="aspectFill" :src="book.img" /></view>
-						<view class="info">
-							<view class="title">
-								{{book.title}}
+						<view class="info" :style="{ color: color.secText }">
+							<view class="title" :style="{ color: color.normalText }">
+								{{ book.title }}
 								<u-icon size="30" name="arrow-right"></u-icon>
 							</view>
-							<view class="author">{{book.author}}</view>
-							<view class="status">连载至557章 更新5小时前</view>
-							<view class="status2">当前阅读进度{{readPos}}%</view>
+							<view class="author">{{ book.author }}</view>
+							<!-- <view class="status">{{'更新至-'+(chapterList[chapterList.length-1].title?chapterList[chapterList.length-1].title:'')}}</view> -->
+							<view class="status2">当前阅读进度{{ book.readPos }}%</view>
 						</view>
 					</view>
-					<u-tabs class="func" :list="funcList" :is-scroll="false" :current="currentFunc" @change="changeFunc"></u-tabs>
+					<u-tabs class="func" :inactive-color="color.normalText" :bg-color="color.bgPage" :list="funcList" :is-scroll="false" :current="currentFunc" @change="changeFunc"></u-tabs>
 				</view>
-				<scroll-view class="bottom" :scroll-y="true" :style="{height:toolHeight+'px'}">
+				<scroll-view class="bottom" :scroll-y="true" :style="{ height: toolHeight + 'px',backgroundColor: color.cardBg,color: color.normalText}">
 					<view
 						v-for="(item, index) in chapterList"
 						:key="index"
 						:class="{
 							group: item.type == 'group',
 							chapter: item.type == 'chapter',
-							selected:index==currentChapterIndex
+							selected: index == book.readIndex
 						}"
 					>
 						{{ item.title }}
@@ -48,24 +48,18 @@ export default {
 				return [];
 			}
 		},
-		currentChapterIndex: {
-			type: Number,
-			default: 0
-		},
 		book: {
 			type: Object,
-			default: {
-				author: "",
-				bookUrl: "",
-				desc: "",
-				readIndex: 1,
-				readPage: 3,
-				title: ""
+			default: () => {
+				return {
+					author: '',
+					bookUrl: '',
+					desc: '',
+					readIndex: 1,
+					readPage: 3,
+					title: ''
+				};
 			}
-		},
-		readPos:{
-			type:Number,
-			default:0
 		}
 	},
 	data() {
@@ -73,12 +67,20 @@ export default {
 			show: false,
 			funcList: [{ name: '目录' }, { name: '书签' }],
 			currentFunc: 0,
-			toolHeight:0,
+			toolHeight: 0
 		};
 	},
+	computed:{
+		color() {
+			return this.$store.getters.getColor;
+		},
+		isNightMode() {
+			return this.$store.getters.getIsNightMode;
+		},
+	},
 	mounted() {
-		const systemInfo = getApp().globalData.systemInfo
-		this.toolHeight=systemInfo.windowHeight-systemInfo.statusBarHeight-170
+		const systemInfo = getApp().globalData.systemInfo;
+		this.toolHeight = systemInfo.windowHeight - systemInfo.statusBarHeight - 170;
 	},
 	methods: {
 		changeFunc(index) {
@@ -100,7 +102,6 @@ export default {
 			height: 170px;
 			width: 100%;
 			padding: 15px 15px 0 15px;
-			box-shadow: 0px 7px 10px -3px rgba(158, 158, 158, 0.1);
 			position: relative;
 			z-index: 3;
 			.top-top {
@@ -152,8 +153,8 @@ export default {
 				font-size: 16px;
 				// border-bottom: 1px solid #67bdff;
 			}
-			.selected{
-				color: #007AFF;
+			.selected {
+				color: #007aff;
 			}
 		}
 	}

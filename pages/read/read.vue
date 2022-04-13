@@ -1,6 +1,6 @@
 <template>
 	<view class="read">
-		<left-tool ref="leftTool" :chapterList="chapterList" :currentChapterIndex="currentChapterIndex" :book="this.book" @changeChapter="changeChapter" :readPos="readPos"></left-tool>
+		<left-tool ref="leftTool" :chapterList="chapterList" :book="this.book" @changeChapter="changeChapter"></left-tool>
 		<view class="navbar" :style="{ transform: !isShowToolbar ? 'translateY(-' + (44 + statusBarHeight) + 'px)' : 'none' }">
 			<u-navbar :background="{backgroundColor:color.bgPage}" :border-bottom="false" :autoBack="true" class="main" :fixed="false">
 				<view slot="right"><image class="icon" :src="'../../static/read/'+(isNightMode?'night':'light')+'.png'" @click="changeNight"></image></view>
@@ -32,7 +32,7 @@
 				</view>
 				<view class="bottom" :style="{color:color.secText}">
 					<view class="battery">{{ currentTime }}</view>
-					<view class="pages">{{ totalPage ? currentPage + '/' + totalPage + '页' : '' }}</view>
+					<view class="pages">{{ totalPage ? book.readPage + '/' + totalPage + '页' : '' }}</view>
 				</view>
 			</view>
 			<view class="tap" :style="{display:content.success==1?'flex':'none'}">
@@ -57,7 +57,8 @@ import { request } from '@/untils/http.js';
 const tempContent = {
 	title: '',
 	text: '',
-	status: 1
+	status: 1,
+	success:1
 };
 export default {
 	components: { statusPlaceholder, bottomToolbar, leftTool },
@@ -66,7 +67,6 @@ export default {
 			isShowToolbar: false, //是否显示工具栏
 			screenWidth: 0, //屏幕宽度
 			currentX: 0, //左右翻页位移
-			currentPage: 1, //当前页码
 			totalPage: '', //总页数
 			currentTime: '', //当前时间
 			timer: undefined, //时间循环
@@ -76,10 +76,8 @@ export default {
 			preContent: { ...tempContent },
 			nextContent: { ...tempContent },
 			chapterList: [],
-			currentChapterIndex: 0, //当前章节序号
 			book: {},
 			isChangeChapter: true,
-			readPos:0
 		};
 	},
 	computed: {
@@ -98,15 +96,18 @@ export default {
 	},
 	onLoad: function(option) {
 		this.book = option;
-		this.currentChapterIndex = Number(this.book.readIndex);
-		this.currentPage = Number(this.book.readPage);
+		this.book.readIndex = Number(this.book.readIndex);
+		this.book.readPage = Number(this.book.readPage);
+		// this.book.readIndex = Number(this.book.readIndex);
+		// this.book.readPage = Number(this.book.readPage);
 	},
 	onUnload() {
 		clearInterval(this.timer);
 		if (this.isInMyBooks) {
 			this.setBookInfo();
+		}else{
+			this.setHistoryBook()
 		}
-		this.setHistoryBook()
 	},
 	mounted() {
 		const systemInfo = getApp().globalData.systemInfo;
@@ -118,8 +119,7 @@ export default {
 	methods: {
 		//计算阅读进度
 		changeReadPos(){
-			this.readPos=(this.currentChapterIndex/this.chapterList.length).toFixed(3)*100
-			console.log(this.readPos)
+			this.book.readPos=(this.book.readIndex/this.chapterList.length).toFixed(3)*100
 		},
 		//切换夜晚模式
 		changeNight() {
@@ -132,15 +132,13 @@ export default {
 		//更新到历史记录
 		setHistoryBook(){
 			let data = { ...this.book };
-			data.readIndex = this.currentChapterIndex;
-			data.readPage = this.currentPage;
 			this.$store.commit('books/ADD_HISTORY_BOOKS', data);
 		},
 		//更新我的书架
 		setBookInfo() {
 			let data = { ...this.book };
-			data.readIndex = this.currentChapterIndex;
-			data.readPage = this.currentPage;
+			data.readIndex = this.book.readIndex;
+			data.readPage = this.book.readPage;
 			this.$store.commit('books/CHANGE_MY_BOOKS', data);
 		},
 		//获得章节目录
@@ -160,7 +158,7 @@ export default {
 		//检测是一个或者下一个相邻的章节 -1表示已经是最后一个章节了，-2表示已经是第一个章节了
 		getNextOrPreCgaperIndex(dir = 1) {
 			if (dir == 1) {
-				for (var i = this.currentChapterIndex + 1; i < this.chapterList.length; i++) {
+				for (var i = this.book.readIndex + 1; i < this.chapterList.length; i++) {
 					if (this.chapterList[i].type == 'chapter') {
 						return i;
 					}
@@ -168,7 +166,7 @@ export default {
 				this.content.status=-1
 				return -1;
 			} else if (dir == 0) {
-				for (var i = this.currentChapterIndex - 1; i >= 0; i--) {
+				for (var i = this.book.readIndex - 1; i >= 0; i--) {
 					if (this.chapterList[i].type == 'chapter') {
 						return i;
 					}
@@ -176,9 +174,9 @@ export default {
 				this.content.status = -2;
 				return -2;
 			} else {
-				for (var i = this.currentChapterIndex; i < this.chapterList.length; i++) {
+				for (var i = this.book.readIndex; i < this.chapterList.length; i++) {
 					if (this.chapterList[i].type == 'chapter') {
-						this.currentChapterIndex = i;
+						this.book.readIndex = i;
 						return i;
 					}
 				}
@@ -201,7 +199,7 @@ export default {
 				} else {
 					this.content = {...res.data};
 					this.needAnimation = false;
-					this.currentX = -this.screenWidth * (this.currentPage - 1);
+					this.currentX = -this.screenWidth * (this.book.readPage - 1);
 					setTimeout(() => {
 						this.needAnimation = true;
 						this.isChangeChapter = false;
@@ -224,16 +222,16 @@ export default {
 				return;
 			}
 			if (dir == 1) {
-				if (this.currentPage + 1 > this.totalPage) {
+				if (this.book.readPage + 1 > this.totalPage) {
 					this.isChangeChapter = true;
 					this.currentX -= this.screenWidth; //改变页面位置
-					this.currentPage = 1; //修改页面下标
+					this.book.readPage = 1; //修改页面下标
 					setTimeout(() => {
 						this.needAnimation = false;
 						this.currentX = 0;
 						this.preContent = this.content;
 						this.content = this.nextContent;
-						this.currentChapterIndex = this.content.index;
+						this.book.readIndex = this.content.index;
 						this.computePageNum();
 						this.loadChapter(1);
 						setTimeout(() => {
@@ -243,10 +241,10 @@ export default {
 					}, 500);
 				} else {
 					this.currentX -= this.screenWidth;
-					this.currentPage++;
+					this.book.readPage++;
 				}
 			} else if (dir == 0) {
-				if (this.currentPage == 1) {
+				if (this.book.readPage == 1) {
 					if (this.content.status == -2) {
 						return;
 					}
@@ -256,11 +254,11 @@ export default {
 						this.needAnimation = false;
 						this.nextContent = this.content;
 						this.content = this.preContent;
-						this.currentChapterIndex = this.content.index;
+						this.book.readIndex = this.content.index;
 						this.loadChapter(0);
 						await this.computePageNum();
 						this.currentX = -this.screenWidth * (this.totalPage - 1);
-						this.currentPage = this.totalPage;
+						this.book.readPage = this.totalPage;
 						setTimeout(() => {
 							this.needAnimation = true;
 							this.isChangeChapter = false;
@@ -268,7 +266,7 @@ export default {
 					}, 500);
 				} else {
 					this.currentX += this.screenWidth;
-					this.currentPage--;
+					this.book.readPage--;
 				}
 			}
 			this.changeReadPos()

@@ -33,9 +33,9 @@
 			</view>
 		</view>
 		<view class="bar" :style="{ backgroundColor: color.bgPage }">
-			<image src="../../../static/read/list.png" mode="widthFix" class="image" @click="openTool(0)"></image>
-			<image src="../../../static/read/color.png" mode="widthFix" class="image sun" @click="openTool(1)"></image>
-			<image src="../../../static/read/font-size.png" mode="widthFix" class="image" @click="openTool(2)"></image>
+			<u-icon :src="'../../../static/read/list'+(isNightMode?'-night':'')+'.png'" @click="openTool(0)"></u-icon>
+			<u-icon :src="'../../../static/read/color'+(isNightMode?'-night':'')+'.png'" @click="openTool(1)"></u-icon>
+			<u-icon :src="'../../../static/read/font-size'+(isNightMode?'-night':'')+'.png'" @click="openTool(2)"></u-icon>
 		</view>
 	</view>
 </template>
@@ -215,12 +215,6 @@ export default {
 		z-index: 10;
 		position: relative;
 		background-color: white;
-		.image {
-			width: 40rpx;
-		}
-		.image .sun {
-			width: 50rpx;
-		}
 	}
 }
 </style>
