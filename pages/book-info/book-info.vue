@@ -1,11 +1,11 @@
 <template>
-	<view class="book-info">
-		<view class="navbar"><u-navbar :autoBack="true" :border-bottom="false" :fixed="false"></u-navbar></view>
+	<view class="book-info" :style="{ backgroundColor:color.bgPage }">
+		<view class="navbar"><u-navbar :background="{backgroundColor:color.bgPage}" :autoBack="true" :border-bottom="false" :fixed="false"></u-navbar></view>
 		<view class="main">
 			<view class="info">
 				<view class="img"><u-image width="100%" height="100%" mode="aspectFill" :src="book.img"></u-image></view>
-				<view class="detail">
-					<view class="title">{{ book.title }}</view>
+				<view class="detail" :style="{color:color.secText}">
+					<view class="title" :style="{color:color.normalText}">{{ book.title }}</view>
 					<view class="author">{{ book.author }}</view>
 					<view class="star"><u-rate :count="5" current="4" active-color="#f5e100" :disabled="true"></u-rate></view>
 					<view class="tags">
@@ -19,10 +19,10 @@
 					
 				</view>
 			</view>
-			<u-gap height="1" bg-color="#e5e5e5"></u-gap>
-			<view class="desc">{{ book.desc }}</view>
+			<u-gap height="1" :bg-color="color.cardBg"></u-gap>
+			<view class="desc" :style="{color:color.secText}">{{ book.desc }}</view>
 			<u-cell-group>
-				<u-cell-item icon="list-dot" title="查看目录"></u-cell-item>
+				<u-cell-item icon="list-dot" title="查看目录" :title-style="{color:color.normalText}" :bg-color="color.bgPage"></u-cell-item>
 			</u-cell-group>
 		</view>
 	</view>
@@ -41,7 +41,10 @@ export default {
 	computed:{
 		isInMyBooks(){
 			return this.$store.getters.getBookIsInMyBooks(this.book)
-		}
+		},
+		color() {
+			return this.$store.getters.getColor;
+		},
 	},
 	onLoad: function(option) {
 		this.book = option;
@@ -54,7 +57,7 @@ export default {
 				let data={...this.book}
 				data.readIndex=0
 				data.readPage=1
-				data.readPose=0
+				data.readPos=0
 				this.$store.commit('books/ADD_MY_BOOKS',data)
 			}
 		},
@@ -66,7 +69,7 @@ export default {
 				data={...this.book}
 				data.readIndex=0
 				data.readPage=1
-				data.readPose=0
+				data.readPos=0
 			}
 			data=this.$u.queryParams(data)
 			uni.navigateTo({
@@ -79,6 +82,7 @@ export default {
 
 <style lang="scss">
 .book-info {
+	height: 100%;
 	.main {
 		.info {
 			padding: 10px 0 20px 0;

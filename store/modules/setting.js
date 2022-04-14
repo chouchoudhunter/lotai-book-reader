@@ -7,7 +7,7 @@ const setting={
 			currentBgColor: 'rgb(248, 248, 248)',
 			fontSize:20,
 			lineHeight:30,
-			lightNum:20
+			lightNum:2
 		},
 		systemSetting:{},
 		color:{

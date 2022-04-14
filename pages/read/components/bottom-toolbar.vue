@@ -8,7 +8,7 @@
 					<view class="color" :class="{'color-active':readSetting.currentBgColor==readSetting.bgColor[2]}" :style="{ backgroundColor: readSetting.bgColor[2] }" @click="changeBgColor(2)"></view>
 				</view>
 				<view class="lightSet">
-					<u-slider v-model="readSetting.lightNum" height="30" min="0" max="100" active-color="#e3e3e3" inactive-color="#f3f3f3" block-width="30" block-color="#fff"></u-slider>
+					<u-slider v-model="lightNum" @moving="changeLight" @end="changeLightEnd" height="30" min="0" max="100" step="1" active-color="#e3e3e3" inactive-color="#f3f3f3" block-width="30" block-color="#fff"></u-slider>
 				</view>
 			</view>
 			<view class="font" v-show="currentOpenTool == 2">
@@ -33,9 +33,9 @@
 			</view>
 		</view>
 		<view class="bar" :style="{ backgroundColor: color.bgPage }">
-			<u-icon :src="'../../../static/read/list'+(isNightMode?'-night':'')+'.png'" @click="openTool(0)"></u-icon>
-			<u-icon :src="'../../../static/read/color'+(isNightMode?'-night':'')+'.png'" @click="openTool(1)"></u-icon>
-			<u-icon :src="'../../../static/read/font-size'+(isNightMode?'-night':'')+'.png'" @click="openTool(2)"></u-icon>
+			<u-icon :name="'/static/read/list'+(isNightMode?'-night':'')+'.png'" size="40" @click="openTool(0)"></u-icon>
+			<u-icon :name="'/static/read/color'+(isNightMode?'-night':'')+'.png'" size="45" @click="openTool(1)"></u-icon>
+			<u-icon :name="'/static/read/font-size'+(isNightMode?'-night':'')+'.png'" size="40" @click="openTool(2)"></u-icon>
 		</view>
 	</view>
 </template>
@@ -68,7 +68,8 @@ export default {
 	data() {
 		return {
 			showTool: false,
-			currentOpenTool: -1
+			currentOpenTool: 1,
+			lightNum:20
 		};
 	},
 	watch: {
@@ -78,7 +79,26 @@ export default {
 			}
 		}
 	},
+	mounted() {
+		// uni.getScreenBrightness({
+		// 	success: (res) => {
+		// 		this.lightNum=res.value*100
+		// 		console.log(res.value)
+		// 	}
+		// })
+	},
 	methods: {
+		changeLight(){
+			uni.setScreenBrightness({
+				value:0,
+				success: ()=>{
+					console.log((this.lightNum/100).toFixed(1))
+				}
+			});
+		},
+		changeLightEnd(){
+			this.$store.commit('setting/SET_READ_SETTING',this.readSetting) 
+		},
 		//保存阅读设置
 		saveReadSetting(){
 			this.$store.commit('setting/SET_READ_SETTING',this.readSetting)
@@ -156,6 +176,7 @@ export default {
 		transition: transform 0.3s;
 		padding: 15px;
 		.light {
+			position: relative;
 			display: flex;
 			flex-direction: column;
 			justify-content: space-between;
@@ -170,15 +191,17 @@ export default {
 				height: 20px;
 				border-radius: 20px;
 				transition: border-color 0.5s;
+				overflow: hidden;
 			}
 			.color-active{
 				border: 3px solid #007AFF;
 			}
 			.lightSet{
-				width: 70%;
+				// width: 70%;
 			}
 		}
 		.font {
+			position: relative;
 			.row {
 				display: flex;
 				flex-direction: row;
@@ -202,6 +225,7 @@ export default {
 					background-color: #f4f4f4;
 					padding: 3px 20px;
 					border-radius: 25px;
+					height: 26px;
 				}
 			}
 		}

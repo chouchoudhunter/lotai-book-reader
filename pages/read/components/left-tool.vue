@@ -12,7 +12,7 @@
 								<u-icon size="30" name="arrow-right"></u-icon>
 							</view>
 							<view class="author">{{ book.author }}</view>
-							<!-- <view class="status">{{'更新至-'+(chapterList[chapterList.length-1].title?chapterList[chapterList.length-1].title:'')}}</view> -->
+							<view class="status">{{'更新至-'+(chapterList[chapterList.length-1]?chapterList[chapterList.length-1].title:'')}}</view>
 							<view class="status2">当前阅读进度{{ book.readPos }}%</view>
 						</view>
 					</view>
@@ -22,6 +22,7 @@
 					<view
 						v-for="(item, index) in chapterList"
 						:key="index"
+						@tap="changeChapter(index,item)"
 						:class="{
 							group: item.type == 'group',
 							chapter: item.type == 'chapter',
@@ -88,7 +89,12 @@ export default {
 		},
 		switchTool() {
 			this.show = !this.show;
-		}
+		},
+		changeChapter(index,item){
+			if(item.type=="chapter"){
+				this.$emit('changeChapter',index)
+			}
+		},
 	}
 };
 </script>
@@ -107,7 +113,6 @@ export default {
 			.top-top {
 				display: flex;
 				flex-direction: row;
-				justify-content: space-between;
 				.img {
 					width: 75px;
 					height: 100px;
@@ -116,7 +121,7 @@ export default {
 				}
 				.info {
 					height: 100px;
-					margin-left: 5px;
+					margin-left: 10px;
 					color: #959595;
 					display: flex;
 					flex-direction: column;

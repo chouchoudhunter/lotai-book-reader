@@ -35,7 +35,7 @@
 					<view class="pages">{{ totalPage ? book.readPage + '/' + totalPage + '页' : '' }}</view>
 				</view>
 			</view>
-			<view class="tap" :style="{display:content.success==1?'flex':'none'}">
+			<view class="tap" :style="{display:content.success==1?'flex':'flex'}">
 				<view class="tap-left" @click="pageChange(0)"></view>
 				<view class="tap-center" @click="isShowToolbar = !isShowToolbar"></view>
 				<view class="tap-right" @click="pageChange(1)"></view>
@@ -119,7 +119,8 @@ export default {
 	methods: {
 		//计算阅读进度
 		changeReadPos(){
-			this.book.readPos=(this.book.readIndex/this.chapterList.length).toFixed(3)*100
+			this.book.readPos=(this.book.readIndex/this.chapterList.length*100).toFixed(1)
+			console.log(this.book.readPos)
 		},
 		//切换夜晚模式
 		changeNight() {
@@ -127,7 +128,8 @@ export default {
 		},
 		//跳转章节
 		changeChapter(chapterIndex) {
-			//
+			this.book.readIndex=chapterIndex
+			this.loadChapter(-1)
 		},
 		//更新到历史记录
 		setHistoryBook(){
@@ -137,8 +139,6 @@ export default {
 		//更新我的书架
 		setBookInfo() {
 			let data = { ...this.book };
-			data.readIndex = this.book.readIndex;
-			data.readPage = this.book.readPage;
 			this.$store.commit('books/CHANGE_MY_BOOKS', data);
 		},
 		//获得章节目录

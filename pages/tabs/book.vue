@@ -21,7 +21,7 @@
 			<view class="right">
 				<view class="title" :style="{ color: color.normalText }">{{ myBooks[0].title }}</view>
 				<view class="info" :style="{ color: color.secText }">已读至 第五十六章</view>
-				<u-line-progress :showPercent="false" height="22" :striped-active="true" active-color="#2979ff" :striped="true" :percent="myBooks[0].readPos"></u-line-progress>
+				<u-line-progress :showPercent="false" height="22" :striped-active="true" active-color="#2979ff" :striped="true" :percent="Number(myBooks[0].readPos)"></u-line-progress>
 				<view class="func"><u-button @click="goReadPage(myBooks[0])" size="mini" shape="circle" :ripple="true" type="primary" :custom-style="btnStyle">继续阅读</u-button></view>
 			</view>
 		</view>
