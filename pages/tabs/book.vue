@@ -36,7 +36,8 @@
 		</view>
 		<view class="books">
 			<view class="book-item" v-for="(book, index) in myBooks" :key="index" @click="goReadPage(book)" @longtap="openBookFunc(book)">
-				<view>
+				<view class="book-item-main">
+					<u-icon v-if="book.top" name="/static/home/top-on.png" class="topIcon" color="#000000" size="31"></u-icon>
 					<view class="img" :style="{ 'box-shadow': isNightMode ? 'none' : '' }"><u-image width="100%" height="100%" mode="aspectFill" :src="book.img" /></view>
 					<view class="name" :style="{ color: color.normalText }">{{ book.title }}</view>
 				</view>
@@ -50,18 +51,18 @@
 			</view>
 		</view>
 		<u-popup v-model="bookFuncShow" mode="bottom">
-			<view class="book-func">
+			<view class="book-func" :style="{ backgroundColor: color.bgPage,color: color.normalText }">
 				<view class="book-info">
 					<view class="img"><u-image width="100%" height="100%" mode="aspectFill" :src="bookFunc.img" /></view>
 					<view class="info">
 						<view class="title">{{ bookFunc.title }}</view>
-						<view class="author">{{ bookFunc.author }}</view>
-						<view class="desc">更新到第885章</view>
+						<view class="author" :style="{ color: color.secText }">{{ bookFunc.author }}</view>
+						<view class="desc" :style="{ color: color.secText }">更新到第885章</view>
 					</view>
 				</view>
 				<view class="book-btn">
-					<view class="item">
-						<u-icon name="../../static/home/top.png" color="#000000" size="50"></u-icon>
+					<view class="item" @click="setTop">
+						<u-icon :name="topIcon" color="#000000" size="31"></u-icon>
 						置顶本书
 					</view>
 					<view class="item">
@@ -69,17 +70,17 @@
 						清除缓存
 					</view>
 					<view class="item">
-						<u-icon name="../../static/home/download.png" color="#000000" size="40"></u-icon>
+						<u-icon name="../../static/home/download.png" color="#000000" size="42"></u-icon>
 						下载本书
 					</view>
 					<view class="item" @click="openDeleteToast">
-						<u-icon name="../../static/home/trash.png" color="#000000" size="40"></u-icon>
+						<u-icon name="../../static/home/trash.png" color="#000000" size="38"></u-icon>
 						删除本书
 					</view>
 				</view>
 			</view>
 		</u-popup>
-		<custom-modal v-model="toastDelete" @confirm="openDeleteToast" content="确定要删除本书吗？"></custom-modal>
+		<custom-modal v-model="toastDelete" @confirm="deleteBook" content="确定要删除本书吗？"></custom-modal>
 		<u-back-top :scroll-top="scrollTop" top="300"></u-back-top>
 		<common-tabbar></common-tabbar>
 	</view>
@@ -120,6 +121,13 @@ export default {
 		},
 		myBooks() {
 			return this.$store.getters.getMyBooks;
+		},
+		topIcon(){
+			if(this.bookFunc.top){
+				return '/static/home/top-on.png'
+			}else{
+				return '/static/home/top.png'
+			}
 		}
 	},
 	onPageScroll(e) {
@@ -132,6 +140,17 @@ export default {
 		this.changeDate();
 	},
 	methods: {
+		//设置书本置顶
+		setTop(){
+			if(this.bookFunc.top){
+				this.bookFunc.top=false
+				this.$store.commit('books/SET_BOOK_NO_TOP',this.bookFunc)
+			}else{
+				this.bookFunc.top=true
+				this.$store.commit('books/SET_BOOK_TOP',this.bookFunc)
+			}
+			this.bookFunc={...this.bookFunc}
+		},
 		checkAppUpdate() {
 			//#ifdef APP-PLUS
 			let nowVersion = plus.runtime.version;
@@ -345,6 +364,17 @@ export default {
 			display: flex;
 			flex-direction: row;
 			justify-content: center;
+			.book-item-main{
+				position: relative;
+				.topIcon{
+					position: absolute;
+					left: 5px;
+					top:5px;
+					z-index: 10;
+					background-color: black;
+					border-radius: 5px;
+				}
+			}
 			.book-item-block {
 				width: 90px;
 				height: 120px;

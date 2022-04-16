@@ -6,7 +6,7 @@ const getters = {
 			return item.title==book.title && item.author==book.author
 		})
 	},
-	getMyBooks:state=>state.books.myBooks.reverse(),
+	getMyBooks:state=>state.books.myBooks,
 	getHistoryBooks:state=>(num=0)=>{
 		let temp=[...state.books.historyBooks]
 		if(num){

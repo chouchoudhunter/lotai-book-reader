@@ -155,7 +155,7 @@ export default {
 		//更新我的书架
 		setBookInfo() {
 			let data = { ...this.book };
-			data.readChapter=this.chapterList[this.book.readIndex].title
+			data.readChapter=this.content.title
 			this.$store.commit('books/CHANGE_MY_BOOKS', data);
 		},
 		//获得章节目录
