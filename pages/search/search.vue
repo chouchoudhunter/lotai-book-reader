@@ -88,7 +88,6 @@ export default {
 				}
 				for (let index in res.data) {
 					await request('getBookInfo', { bookUrl: res.data[index] }).then(res => {
-						console.log(res);
 						this.isSearching=false
 						this.books.push(res.data)
 					});
@@ -102,6 +101,7 @@ export default {
 <style lang="scss">
 .search {
 	height: 100%;
+	overflow-y: scroll;
 	.navbar {
 		padding: 15px 20px;
 		width: 100%;

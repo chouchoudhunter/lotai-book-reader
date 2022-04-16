@@ -3,7 +3,7 @@
 		<view class="u-cell-title" v-if="title" :style="[titleStyle]">
 			{{title}}
 		</view>
-		<view class="u-cell-item-box" :class="{'u-border-bottom u-border-top': border}">
+		<view class="u-cell-item-box" :class="{'u-border-bottom u-border-top': border}" :style="{backgroundColor:bgColor}">
 			<slot />
 		</view>
 	</view>
@@ -39,6 +39,10 @@
 				default () {
 					return {};
 				}
+			},
+			bgColor:{
+				type: String,
+				default: '#fff'
 			}
 		},
 		data() {
@@ -64,7 +68,7 @@
 	}
 
 	.u-cell-item-box {
-		background-color: #FFFFFF;
+		// background-color: #FFFFFF;
 		flex-direction: row;
 	}
 </style>

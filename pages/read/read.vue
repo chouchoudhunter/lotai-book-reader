@@ -10,6 +10,9 @@
 			<view class="content-main">
 				<status-placeholder></status-placeholder>
 				<view class="top" :style="{color:color.secText}">{{ content.title }}</view>
+				<view class="text-loading" v-show="isLoading">
+					<loading-anime></loading-anime>
+				</view>
 				<view
 					class="text"
 					:style="{
@@ -45,6 +48,7 @@
 			:isShow="isShowToolbar"
 			v-model="readSetting"
 			@openLeftTool="openLeftTool"
+			@changeReadSetting="changeReadSetting"
 		></bottom-toolbar>
 	</view>
 </template>
@@ -53,6 +57,7 @@
 import statusPlaceholder from '@/components/status-placeholder.vue';
 import bottomToolbar from './components/bottom-toolbar.vue';
 import leftTool from './components/left-tool.vue';
+import loadingAnime from '@/components/loading-anime.vue';
 import { request } from '@/untils/http.js';
 const tempContent = {
 	title: '',
@@ -61,7 +66,7 @@ const tempContent = {
 	success:1
 };
 export default {
-	components: { statusPlaceholder, bottomToolbar, leftTool },
+	components: { statusPlaceholder, bottomToolbar, leftTool,loadingAnime },
 	data() {
 		return {
 			isShowToolbar: false, //是否显示工具栏
@@ -78,6 +83,7 @@ export default {
 			chapterList: [],
 			book: {},
 			isChangeChapter: true,
+			isLoading:false
 		};
 	},
 	computed: {
@@ -98,8 +104,6 @@ export default {
 		this.book = option;
 		this.book.readIndex = Number(this.book.readIndex);
 		this.book.readPage = Number(this.book.readPage);
-		// this.book.readIndex = Number(this.book.readIndex);
-		// this.book.readPage = Number(this.book.readPage);
 	},
 	onUnload() {
 		clearInterval(this.timer);
@@ -117,18 +121,30 @@ export default {
 		this.getChapterList();
 	},
 	methods: {
+		changeReadSetting(){
+			console.log(1)
+			this.computePageNum()
+		},
 		//计算阅读进度
 		changeReadPos(){
 			this.book.readPos=(this.book.readIndex/this.chapterList.length*100).toFixed(1)
-			console.log(this.book.readPos)
 		},
 		//切换夜晚模式
 		changeNight() {
 			this.$store.commit('setting/SET_NIGHT')
+			if(this.isNightMode){
+				this.readSetting.currentBgColor=this.readSetting.bgColor[2]
+				this.$store.commit('setting/SET_READ_SETTING',this.readSetting)
+			}else{
+				this.readSetting.currentBgColor=this.readSetting.bgColor[0]
+				this.$store.commit('setting/SET_READ_SETTING',this.readSetting)
+			}
 		},
 		//跳转章节
 		changeChapter(chapterIndex) {
 			this.book.readIndex=chapterIndex
+			this.book.readPage=1
+			this.content=tempContent
 			this.loadChapter(-1)
 		},
 		//更新到历史记录
@@ -139,6 +155,7 @@ export default {
 		//更新我的书架
 		setBookInfo() {
 			let data = { ...this.book };
+			data.readChapter=this.chapterList[this.book.readIndex].title
 			this.$store.commit('books/CHANGE_MY_BOOKS', data);
 		},
 		//获得章节目录
@@ -174,6 +191,7 @@ export default {
 				this.content.status = -2;
 				return -2;
 			} else {
+				this.isLoading=true
 				for (var i = this.book.readIndex; i < this.chapterList.length; i++) {
 					if (this.chapterList[i].type == 'chapter') {
 						this.book.readIndex = i;
@@ -197,6 +215,7 @@ export default {
 					this.preContent = res.data;
 					this.preContent.index = index;
 				} else {
+					this.isLoading=false
 					this.content = {...res.data};
 					this.needAnimation = false;
 					this.currentX = -this.screenWidth * (this.book.readPage - 1);
@@ -329,7 +348,6 @@ export default {
 		width: 100%;
 		position: relative;
 		overflow: hidden;
-		transition: background-color .5s;
 		.tap {
 			position: absolute;
 			top: 0;
@@ -375,6 +393,13 @@ export default {
 				// height: calc(100% - 60px);
 				columns: calc(750rpx - 24px) 1;
 				column-gap: 24px;
+				.text-loading{
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					justify-content: center;
+					height: 100%;
+				}
 				.load-err{
 					display: flex;
 					flex-direction: column;

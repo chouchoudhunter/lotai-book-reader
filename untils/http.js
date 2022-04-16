@@ -10,12 +10,12 @@ export function request(name='',data={}) {
 			if(res.status==1){
 				resolve(res)
 			}else{
-				vm.$u.toast('错误:'+res.msg);
+				vm.$u.toast('错误:'+res.msg, 3000);
 				resolve(res)
 			}
 			
 		}).catch(err=>{
-			vm.$u.toast('err:'+JSON.stringify(err));
+			vm.$u.toast('err:'+JSON.stringify(err),3000);
 		})
 	})
 

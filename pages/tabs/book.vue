@@ -20,9 +20,18 @@
 			</view>
 			<view class="right">
 				<view class="title" :style="{ color: color.normalText }">{{ myBooks[0].title }}</view>
-				<view class="info" :style="{ color: color.secText }">已读至 第五十六章</view>
-				<u-line-progress :showPercent="false" height="22" :striped-active="true" active-color="#2979ff" :striped="true" :percent="Number(myBooks[0].readPos)"></u-line-progress>
-				<view class="func"><u-button @click="goReadPage(myBooks[0])" size="mini" shape="circle" :ripple="true" type="primary" :custom-style="btnStyle">继续阅读</u-button></view>
+				<view class="info" :style="{ color: color.secText }">已读至 {{myBooks[0].readChapter?myBooks[0].readChapter:''}}</view>
+				<u-line-progress
+					:showPercent="false"
+					height="22"
+					:striped-active="true"
+					active-color="#2979ff"
+					:striped="true"
+					:percent="Number(myBooks[0].readPos)"
+				></u-line-progress>
+				<view class="func">
+					<u-button @click="goReadPage(myBooks[0])" size="mini" shape="circle" :ripple="true" type="primary" :custom-style="btnStyle">继续阅读</u-button>
+				</view>
 			</view>
 		</view>
 		<view class="books">
@@ -34,7 +43,7 @@
 			</view>
 			<view class="book-item" @click="goDiscordTab()" v-show="!myBooks.length">
 				<view>
-					<view class="book-item-block" :style="{ 'background-color': color.cardBg,'box-shadow': isNightMode ? 'none' : '' }">
+					<view class="book-item-block" :style="{ 'background-color': color.cardBg, 'box-shadow': isNightMode ? 'none' : '' }">
 						<u-icon name="plus" size="80" :color="color.secText"></u-icon>
 					</view>
 				</view>
@@ -70,7 +79,7 @@
 				</view>
 			</view>
 		</u-popup>
-		<u-modal v-model="toastDelete" content="确定要删除本书吗？" :show-cancel-button="true" @confirm="deleteBook"></u-modal>
+		<custom-modal v-model="toastDelete" @confirm="openDeleteToast" content="确定要删除本书吗？"></custom-modal>
 		<u-back-top :scroll-top="scrollTop" top="300"></u-back-top>
 		<common-tabbar></common-tabbar>
 	</view>
@@ -78,8 +87,10 @@
 <script>
 import statusPlaceholder from '@/components/status-placeholder.vue';
 import commonTabbar from '@/components/common-tabbar.vue';
+import customModal from '@/components/custom-modal.vue';
+import { request } from '@/untils/http.js';
 export default {
-	components: { statusPlaceholder,commonTabbar },
+	components: { statusPlaceholder, commonTabbar, customModal },
 	data() {
 		return {
 			scrollTop: 0,
@@ -114,19 +125,31 @@ export default {
 	onPageScroll(e) {
 		this.scrollTop = e.scrollTop;
 	},
-	// onLoad() {
-	// 	uni.switchTab({
-	// 		url:'./discord'
-	// 	})
-	// },
+	onLoad() {
+		this.checkAppUpdate();
+	},
 	onShow() {
 		this.changeDate();
 	},
 	methods: {
-		goDiscordTab(){
+		checkAppUpdate() {
+			//#ifdef APP-PLUS
+			let nowVersion = plus.runtime.version;
+			request('checkAppUpdate', { version: nowVersion }).then(res => {
+				if (res.data.type == 2) {
+					res.data.nowVersion = nowVersion;
+					const data = this.$u.queryParams(res.data);
+					uni.navigateTo({
+						url: '../updateApp/updateApp' + data
+					});
+				}
+			});
+			//#endif
+		},
+		goDiscordTab() {
 			uni.switchTab({
-				url:'./discord'
-			})
+				url: './discord'
+			});
 		},
 		openDeleteToast() {
 			this.toastDelete = true;
@@ -279,7 +302,7 @@ export default {
 		display: flex;
 		flex-direction: row;
 		position: relative;
-		width:calc(100% - 20px);
+		width: calc(100% - 20px);
 		.smallIcon {
 			width: 20px;
 			position: absolute;
@@ -322,7 +345,7 @@ export default {
 			display: flex;
 			flex-direction: row;
 			justify-content: center;
-			.book-item-block{
+			.book-item-block {
 				width: 90px;
 				height: 120px;
 				border-radius: 4px;

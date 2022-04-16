@@ -22,7 +22,7 @@
 			<u-gap height="1" :bg-color="color.cardBg"></u-gap>
 			<view class="desc" :style="{color:color.secText}">{{ book.desc }}</view>
 			<u-cell-group>
-				<u-cell-item icon="list-dot" title="查看目录" :title-style="{color:color.normalText}" :bg-color="color.bgPage"></u-cell-item>
+				<u-cell-item icon="list-dot" title="查看目录"  :hover-class="isNightMode?'cell-hover-class-night':'cell-hover-class'" :title-style="{color:color.normalText}" :bg-color="color.bgPage"></u-cell-item>
 			</u-cell-group>
 		</view>
 	</view>
@@ -44,6 +44,9 @@ export default {
 		},
 		color() {
 			return this.$store.getters.getColor;
+		},
+		isNightMode() {
+			return this.$store.getters.getIsNightMode;
 		},
 	},
 	onLoad: function(option) {

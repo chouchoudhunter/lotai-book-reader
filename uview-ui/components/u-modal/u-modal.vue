@@ -2,7 +2,7 @@
 	<view>
 		<u-popup :zoom="zoom" mode="center" :popup="false" :z-index="uZIndex" v-model="value" :length="width"
 		 :mask-close-able="maskCloseAble" :border-radius="borderRadius" @close="popupClose" :negative-top="negativeTop">
-			<view class="u-model">
+			<view class="u-model" :style="{backgroundColor:bgColor}">
 				<view v-if="showTitle" class="u-model__title u-line-1" :style="[titleStyle]">{{ title }}</view>
 				<view class="u-model__content">
 					<view :style="[contentStyle]" v-if="$slots.default  || $slots.$default">
@@ -64,6 +64,11 @@
 	export default {
 		name: 'u-modal',
 		props: {
+			// 是否显示Modal
+			bgColor: {
+				type: String,
+				default: '#fff'
+			},
 			// 是否显示Modal
 			value: {
 				type: Boolean,

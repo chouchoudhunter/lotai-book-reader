@@ -1,0 +1,38 @@
+// 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
+{
+	"bsonType": "object",
+	"description":"app版本信息",
+	"required": [],
+	"permission": {
+		"read": false,
+		"create": false,
+		"update": false,
+		"delete": false
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"version":{
+			"bsonType":"string",
+			"title":"版本号"
+		},
+		"desc":{
+			"bsonType":"string",
+			"title":"版本说明"
+		},
+		"url":{
+			"bsonType":"string",
+			"title":"下载地址"
+		},
+		"type":{
+			"bsonType":"number",
+			"title":"类型",
+			"enum":[
+				{"value":1,"text":"无需更新"},
+				{"value":2,"text":"强制更新"},
+				{"value":3,"text":"非强制更新"}
+			]
+		}
+	}
+}

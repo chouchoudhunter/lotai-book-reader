@@ -1,26 +1,29 @@
 <template>
-	<view class="discord" :style="{backgroundColor:color.bgPage}">
+	<view class="discord" :style="{ backgroundColor: color.bgPage }">
 		<status-placeholder></status-placeholder>
 		<view class="top" @click="goSearch()"><u-search :disabled="true" :show-action="false" :bg-color="color.cardBg"></u-search></view>
-		<view class="tab"><u-tabs ref="tabs" :inactive-color="color.normalText" :bg-color="color.bgPage" :list="tagList" :is-scroll="false" :current="currentTag" @change="changeTag"></u-tabs></view>
+		<view class="tab">
+			<u-tabs ref="tabs" :inactive-color="color.normalText" :bg-color="color.bgPage" :list="tagList" :is-scroll="false" :current="currentTag" @change="changeTag"></u-tabs>
+		</view>
 		<swiper
 			class="swiper"
 			:current="currentTag"
 			:indicator-dots="false"
 			:duration="500"
-			:style="{ height: swiperHeight+'px',backgroundColor:color.swiperBg}"
+			:style="{ height: swiperHeight + 'px', backgroundColor: color.swiperBg }"
 			@change="changeSwiper"
 		>
 			<swiper-item class="swiperItem">
-				<view class="leftBar" :style="{backgroundColor:color.bgPage,color:color.normalText}">
-					<view class="btn-active" :style="{backgroundColor:color.swiperBg,transform:'translateY('+(swiper1Tag*40)+'px)'}"></view>
+				<view class="leftBar" :style="{ backgroundColor: color.bgPage, color: color.normalText }">
+					<view class="btn-active" :style="{ backgroundColor: color.swiperBg, transform: 'translateY(' + swiper1Tag * 40 + 'px)' }"></view>
 					<view class="btn" @click="changeSwiper1Tag(0)">全部分类</view>
 					<view class="btn" @click="changeSwiper1Tag(1)">最热榜</view>
 					<view class="btn" @click="changeSwiper1Tag(2)">完结榜</view>
 					<view class="btn" @click="changeSwiper1Tag(3)">新书榜</view>
 				</view>
 				<view class="right">
-					<view class="cates" :style="{color:color.normalText}">
+					<view>暂无</view>
+					<!-- 					<view class="cates" :style="{color:color.normalText}">
 						<view class="cate">
 							<view>
 								<view class="img"><u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" /></view>	
@@ -45,11 +48,11 @@
 							<view class="name">科幻</view>
 							</view>
 						</view>
-					</view>
+					</view> -->
 				</view>
 			</swiper-item>
 			<swiper-item class="swiperItem">
-<!-- 				<view class="leftBar">
+				<!-- 				<view class="leftBar">
 					<view class="btn btn-active">全部分类</view>
 					<view class="btn">最热榜</view>
 					<view class="btn">完结榜</view>
@@ -66,7 +69,7 @@
 import statusPlaceholder from '@/components/status-placeholder.vue';
 import commonTabbar from '@/components/common-tabbar.vue';
 export default {
-	components: { statusPlaceholder,commonTabbar },
+	components: { statusPlaceholder, commonTabbar },
 	data() {
 		return {
 			title: 'Hello',
@@ -81,31 +84,46 @@ export default {
 			],
 			currentTag: 0,
 			statusBarHeight: 0,
-			swiperHeight:0,
-			swiper1Tag:0,
+			swiperHeight: 0,
+			swiper1Tag: 0
 		};
 	},
 	computed: {
 		isNightMode() {
 			return this.$store.getters.getIsNightMode;
 		},
-		color(){
+		color() {
 			return this.$store.getters.getColor;
 		}
 	},
-	// onLoad() {
-	// 	uni.switchTab({
-	// 		url:'./user'
-	// 	})
-	// },
+	onLoad() {
+		// #ifdef APP-PLUS
+		this.subnvue_open();
+		// #endif
+	},
+	onReady() {
+		// #ifdef APP-PLUS
+		this.subnvue_close();
+		// #endif
+	},
 	mounted() {
 		const systemInfo = getApp().globalData.systemInfo;
 		this.statusBarHeight = systemInfo.statusBarHeight;
-		this.swiperHeight=systemInfo.windowHeight-systemInfo.statusBarHeight-151
+		this.swiperHeight = systemInfo.windowHeight - systemInfo.statusBarHeight - 151;
 	},
 	methods: {
-		changeSwiper1Tag(index){
-			this.swiper1Tag=index
+		//打开配置的原生子窗体
+		subnvue_open() {
+			const subNVue = uni.getSubNVueById('mask'); //通过id获取nvue子窗体
+			subNVue.show('none', 10);
+		},
+		//关闭配置的原生子窗体
+		subnvue_close() {
+			const subNVue = uni.getSubNVueById('mask'); //通过id获取nvue子窗体
+			subNVue.hide('none', 10);
+		},
+		changeSwiper1Tag(index) {
+			this.swiper1Tag = index;
 		},
 		changeTag(index) {
 			this.currentTag = index;
@@ -114,7 +132,6 @@ export default {
 			this.currentTag = e.detail.current;
 		},
 		goSearch() {
-			console.log(111);
 			uni.navigateTo({
 				url: '../search/search'
 			});
@@ -184,7 +201,7 @@ export default {
 							border-radius: 5px;
 							overflow: hidden;
 						}
-						.name{
+						.name {
 							text-align: center;
 							margin-top: 5px;
 						}

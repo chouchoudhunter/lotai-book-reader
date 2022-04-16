@@ -5,14 +5,18 @@
 			<view class="left" :style="{color:color.normalText}">我的</view>
 			<view class="right"><image class="icon" :src="'../../static/read/'+(isNightMode?'night':'light')+'.png'" @click="changeNight"></image></view>
 		</view>
-		<view class="avatar">
-			<u-image width="200rpx" height="200rpx" shape="circle" mode="aspectFit" src="https://img0.baidu.com/it/u=1967997459,1022958762&fm=26&fmt=auto"></u-image>
+		<view class="lotai">
+			<image width="200px" :style="{opacity:isNightMode?'1':'0'}" style="transition: opacity 0.5s;" mode="widthFix" src="/static/user/boy2.png"></image>
+			<image width="200px" :style="{opacity:isNightMode?'0':'1'}" style="transition: opacity 0.5s;" mode="widthFix" src="/static/user/boy1.png"></image>
+<!-- 			<view class="dialogue">
+				求求了，点个广告吧！
+			</view> -->
 		</view>
 		<u-gap height="16" :bg-color="color.cardBg"></u-gap>
 		<view class="main">
 			<view class="history">
-				<u-cell-group :border="false">
-					<u-cell-item title="浏览历史" :title-style="{color:color.normalText}" :bg-color="color.bgPage" :border-bottom="false" value="更多" @click="goHistory()"></u-cell-item>
+				<u-cell-group :border="false" :bg-color="color.bgPage">
+					<u-cell-item title="浏览历史" :hover-class="isNightMode?'cell-hover-class-night':'cell-hover-class'" :title-style="{color:color.normalText}" :border-bottom="false" value="更多" @click="goHistory()"></u-cell-item>
 					<scroll-view :scroll-x="true">
 						<view class="books" :style="{backgroundColor:color.bgPage}">
 							<view class="book" v-for="(item,index) in historyBooks" :key="index" @click="goRead(item)">
@@ -22,9 +26,8 @@
 							</view>
 						</view>
 					</scroll-view>
-					<u-cell-item title="免责声明" :title-style="{color:color.normalText}" :bg-color="color.bgPage" :border-bottom="false" @click="goDeclaration()"></u-cell-item>
-<!-- 					<u-cell-item title="意见反馈" :title-style="{color:color.normalText}" :bg-color="color.bgPage" :border-bottom="false" @click="goFeedback()"></u-cell-item> -->
-					<u-cell-item title="软件设置" :title-style="{color:color.normalText}" :bg-color="color.bgPage" value="新版本" :border-bottom="false" @click="goSetting()"></u-cell-item>
+					<u-cell-item title="关于软件" :hover-class="isNightMode?'cell-hover-class-night':'cell-hover-class'" :title-style="{color:color.normalText}" :border-bottom="false" @click="goDeclaration()"></u-cell-item>
+					<u-cell-item title="软件设置" :hover-class="isNightMode?'cell-hover-class-night':'cell-hover-class'" :title-style="{color:color.normalText}" :border-bottom="false" @click="goSetting()"></u-cell-item>
 				</u-cell-group>
 			</view>
 		</view>
@@ -41,11 +44,16 @@ export default {
 		return {
 		};
 	},
-	// onLoad() {
-	// 	uni.switchTab({
-	// 		url:'./book'
-	// 	})
-	// },
+	onLoad() {
+		// #ifdef APP-PLUS
+			this.subnvue_open();
+		// #endif
+	},
+	onReady() {
+		// #ifdef APP-PLUS
+		this.subnvue_close()
+		// #endif
+	},
 	computed:{
 		historyBooks(){
 			return this.$store.getters.getHistoryBooks(6)
@@ -58,6 +66,16 @@ export default {
 		}
 	},
 	methods: {
+		//打开配置的原生子窗体
+		subnvue_open() {
+			const subNVue = uni.getSubNVueById('mask2'); //通过id获取nvue子窗体
+			subNVue.show('none', 10);
+		},
+		//关闭配置的原生子窗体
+		subnvue_close() {
+			const subNVue = uni.getSubNVueById('mask2'); //通过id获取nvue子窗体
+			subNVue.hide('none', 10);
+		},
 		changeNight() {
 			this.$store.commit('setting/SET_NIGHT')
 		},
@@ -94,6 +112,18 @@ export default {
 <style lang="scss">
 .user {
 	height: 100%;
+	.lotai{
+		display: flex;
+		flex-direction: row;
+		height: 130px;
+		overflow: hidden;
+		position: relative;
+		.dialogue{
+			position: absolute;
+			left:0;
+			top: 0;
+		}
+	}
 	.navbar {
 		padding: 15px;
 		display: flex;
@@ -111,13 +141,6 @@ export default {
 				height: 20px;
 			}
 		}
-	}
-	.avatar {
-		display: flex;
-		flex-direction: row;
-		width: 100%;
-		padding: 20px 0;
-		justify-content: center;
 	}
 	.main {
 		.history {

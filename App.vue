@@ -44,8 +44,16 @@ export default {
 
 <style lang="scss">
 /*每个页面公共css */
+// #ifndef APP-PLUS-NVUE
 @import 'uview-ui/index.scss';
+*{
+	transition: background-color 0.5s;
+	// #ifdef APP-PLUS
+	font-family: '黑体','微软雅黑';
+	// #endif
+}
 page {
 	height: 100%;
 }
+// #endif
 </style>

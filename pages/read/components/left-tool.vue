@@ -3,7 +3,7 @@
 		<u-popup v-model="show" width="75%">
 			<view class="main" :style="{ backgroundColor: color.bgPage }">
 				<status-placeholder></status-placeholder>
-				<view class="top" :style="{'box-shadow':isNightMode?'none':'0px 7px 10px -3px rgba(158, 158, 158, 0.1)'}">
+				<view class="top" :style="{ 'box-shadow': isNightMode ? 'none' : '0px 7px 10px -3px rgba(158, 158, 158, 0.1)' }">
 					<view class="top-top">
 						<view class="img"><u-image width="100%" height="100%" mode="aspectFill" :src="book.img" /></view>
 						<view class="info" :style="{ color: color.secText }">
@@ -12,17 +12,32 @@
 								<u-icon size="30" name="arrow-right"></u-icon>
 							</view>
 							<view class="author">{{ book.author }}</view>
-							<view class="status">{{'更新至-'+(chapterList[chapterList.length-1]?chapterList[chapterList.length-1].title:'')}}</view>
+							<view class="status">{{ '更新至-' + (chapterList[chapterList.length - 1] ? chapterList[chapterList.length - 1].title : '') }}</view>
 							<view class="status2">当前阅读进度{{ book.readPos }}%</view>
 						</view>
 					</view>
-					<u-tabs class="func" :inactive-color="color.normalText" :bg-color="color.bgPage" :list="funcList" :is-scroll="false" :current="currentFunc" @change="changeFunc"></u-tabs>
+					<u-tabs
+						class="func"
+						:inactive-color="color.normalText"
+						:bg-color="color.bgPage"
+						:list="funcList"
+						:is-scroll="false"
+						:current="currentFunc"
+						@change="changeFunc"
+					></u-tabs>
 				</view>
-				<scroll-view class="bottom" :scroll-y="true" :style="{ height: toolHeight + 'px',backgroundColor: color.cardBg,color: color.normalText}">
+				<scroll-view
+					class="bottom"
+					:show-scrollbar="true"
+					:scroll-y="true"
+					:scroll-into-view="scrollView"
+					:style="{ height: toolHeight + 'px', backgroundColor: color.cardBg, color: color.normalText }"
+				>
 					<view
 						v-for="(item, index) in chapterList"
 						:key="index"
-						@tap="changeChapter(index,item)"
+						:id="'chapter' + index"
+						@tap="changeChapter(index, item)"
 						:class="{
 							group: item.type == 'group',
 							chapter: item.type == 'chapter',
@@ -68,16 +83,17 @@ export default {
 			show: false,
 			funcList: [{ name: '目录' }, { name: '书签' }],
 			currentFunc: 0,
-			toolHeight: 0
+			toolHeight: 0,
+			scrollView: '',
 		};
 	},
-	computed:{
+	computed: {
 		color() {
 			return this.$store.getters.getColor;
 		},
 		isNightMode() {
 			return this.$store.getters.getIsNightMode;
-		},
+		}
 	},
 	mounted() {
 		const systemInfo = getApp().globalData.systemInfo;
@@ -88,13 +104,14 @@ export default {
 			this.currentFunc = index;
 		},
 		switchTool() {
+			this.scrollView = 'chapter' + this.book.readIndex;
 			this.show = !this.show;
 		},
-		changeChapter(index,item){
-			if(item.type=="chapter"){
-				this.$emit('changeChapter',index)
+		changeChapter(index, item) {
+			if (item.type == 'chapter') {
+				this.$emit('changeChapter', index);
 			}
-		},
+		}
 	}
 };
 </script>
@@ -145,6 +162,7 @@ export default {
 			width: 100%;
 			position: relative;
 			z-index: 2;
+			touch-action: none;
 			.group,
 			.chapter {
 				width: 100%;
@@ -160,6 +178,18 @@ export default {
 			}
 			.selected {
 				color: #007aff;
+			}
+			::-webkit-scrollbar {
+				width: 10px !important;
+				display: block !important;
+			}
+			::-webkit-scrollbar-thumb {
+				display: block !important;
+				width: 10px !important;
+				height: 25px !important;
+				border-radius: 10px;
+				background-color: #bfbfbf !important;
+				z-index: 20;
 			}
 		}
 	}

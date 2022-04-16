@@ -7,10 +7,26 @@
 			"path": "pages/tabs/book"
 		},
 		{
-			"path": "pages/tabs/discord"
+			"path": "pages/tabs/discord",
+			"style":{
+				"app-plus":{
+					"subNVues":[{
+						"id":"mask",
+						"path":"pages/mask/mask"
+					}]
+				}
+			}
 		},
 		{
-			"path": "pages/tabs/user"
+			"path": "pages/tabs/user",
+			"style":{
+				"app-plus":{
+					"subNVues":[{
+						"id":"mask2",
+						"path":"pages/mask/mask"
+					}]
+				}
+			}
 		},
 		{
 			"path":"pages/read/read"
@@ -56,6 +72,15 @@
         }
         ,{
             "path" : "pages/user/feedback/feedback",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/updateApp/updateApp",
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "",

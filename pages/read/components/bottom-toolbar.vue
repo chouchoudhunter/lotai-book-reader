@@ -5,7 +5,9 @@
 				<view class="row">
 					<view class="color" :class="{'color-active':readSetting.currentBgColor==readSetting.bgColor[0]}" :style="{ backgroundColor: readSetting.bgColor[0] }" @click="changeBgColor(0)"></view>
 					<view class="color" :class="{'color-active':readSetting.currentBgColor==readSetting.bgColor[1]}" :style="{ backgroundColor: readSetting.bgColor[1] }" @click="changeBgColor(1)"></view>
-					<view class="color" :class="{'color-active':readSetting.currentBgColor==readSetting.bgColor[2]}" :style="{ backgroundColor: readSetting.bgColor[2] }" @click="changeBgColor(2)"></view>
+					<view class="color" :class="{'color-active':readSetting.currentBgColor==readSetting.bgColor[2]}" :style="{ backgroundColor: readSetting.bgColor[2] }" @click="changeBgColor(2)">
+						<image class="moon" src="../../../static/read/night.png"></image>
+					</view>
 				</view>
 				<view class="lightSet">
 					<u-slider v-model="lightNum" @moving="changeLight" @end="changeLightEnd" height="30" min="0" max="100" step="1" active-color="#e3e3e3" inactive-color="#f3f3f3" block-width="30" block-color="#fff"></u-slider>
@@ -97,10 +99,11 @@ export default {
 			});
 		},
 		changeLightEnd(){
-			this.$store.commit('setting/SET_READ_SETTING',this.readSetting) 
+			this.saveReadSetting()
 		},
 		//保存阅读设置
 		saveReadSetting(){
+			this.$emit('changeReadSetting')
 			this.$store.commit('setting/SET_READ_SETTING',this.readSetting)
 		},
 		//修改背景颜色
@@ -180,7 +183,7 @@ export default {
 			display: flex;
 			flex-direction: column;
 			justify-content: space-between;
-			height: 100%;
+			height: 100%; 
 			.row {
 				display: flex;
 				flex-direction: row;
@@ -188,10 +191,18 @@ export default {
 			}
 			.color {
 				width: 26%;
-				height: 20px;
+				height: 25px;
 				border-radius: 20px;
 				transition: border-color 0.5s;
 				overflow: hidden;
+				display: flex;
+				flex-direction: row;
+				justify-content: center;
+				align-items: center;
+				.moon{
+					width: 15px;
+					height: 15px;
+				}
 			}
 			.color-active{
 				border: 3px solid #007AFF;
