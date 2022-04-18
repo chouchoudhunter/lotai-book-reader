@@ -37,7 +37,7 @@
 		<view class="books">
 			<view class="book-item" v-for="(book, index) in myBooks" :key="index" @click="goReadPage(book)" @longtap="openBookFunc(book)">
 				<view class="book-item-main">
-					<u-icon v-if="book.top" name="/static/home/top-on.png" class="topIcon" color="#000000" size="31"></u-icon>
+					<u-icon v-if="book.top" name="/static/home/top-book.png" class="topIcon" color="#000000" size="40"></u-icon>
 					<view class="img" :style="{ 'box-shadow': isNightMode ? 'none' : '' }"><u-image width="100%" height="100%" mode="aspectFill" :src="book.img" /></view>
 					<view class="name" :style="{ color: color.normalText }">{{ book.title }}</view>
 				</view>
@@ -368,11 +368,9 @@ export default {
 				position: relative;
 				.topIcon{
 					position: absolute;
-					left: 5px;
-					top:5px;
+					right: -2px;
+					top:-2px;
 					z-index: 10;
-					background-color: black;
-					border-radius: 5px;
 				}
 			}
 			.book-item-block {

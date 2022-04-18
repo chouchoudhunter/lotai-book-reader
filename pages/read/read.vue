@@ -21,7 +21,7 @@
 						transform: 'translateX(' + currentX + 'px)',
 						fontSize: readSetting.fontSize + 'px',
 						lineHeight:readSetting.lineHeight+'px',
-						color:readSetting.currentBgColor==readSetting.bgColor[2]?'#cacaca':'#000000'
+						color:readSetting.currentBgColor==readSetting.bgColor[2]?'#b3b3b3':'#000000'
 					}"
 				>
 					<view id="textElement" v-html="content.text"></view>
@@ -218,7 +218,12 @@ export default {
 					this.isLoading=false
 					this.content = {...res.data};
 					this.needAnimation = false;
-					this.currentX = -this.screenWidth * (this.book.readPage - 1);
+					// #ifdef APP-PLUS
+					this.currentX = -(this.screenWidth+1) * (this.book.readPage - 1)
+					// #endif
+					// #ifdef H5
+					this.currentX = -this.screenWidth * (this.book.readPage - 1)
+					// #endif
 					setTimeout(() => {
 						this.needAnimation = true;
 						this.isChangeChapter = false;
@@ -247,7 +252,7 @@ export default {
 					this.book.readPage = 1; //修改页面下标
 					setTimeout(() => {
 						this.needAnimation = false;
-						this.currentX = 0;
+						this.currentX = 0
 						this.preContent = this.content;
 						this.content = this.nextContent;
 						this.book.readIndex = this.content.index;
@@ -259,7 +264,12 @@ export default {
 						}, 100);
 					}, 500);
 				} else {
+					// #ifdef APP-PLUS
+					this.currentX -= this.screenWidth+1;
+					// #endif
+					// #ifdef H5
 					this.currentX -= this.screenWidth;
+					// #endif
 					this.book.readPage++;
 				}
 			} else if (dir == 0) {
@@ -276,7 +286,7 @@ export default {
 						this.book.readIndex = this.content.index;
 						this.loadChapter(0);
 						await this.computePageNum();
-						this.currentX = -this.screenWidth * (this.totalPage - 1);
+						this.currentX = -this.screenWidth * (this.totalPage - 1)
 						this.book.readPage = this.totalPage;
 						setTimeout(() => {
 							this.needAnimation = true;
@@ -309,11 +319,11 @@ export default {
 					query
 						.select('#textElement')
 						.boundingClientRect(data => {
-							this.totalPage = Math.ceil(data.width / this.screenWidth);
+							this.totalPage = Math.round(data.width / this.screenWidth);
 							resolve();
 						})
 						.exec();
-				}, 100);
+				}, 200);
 			});
 		},
 		//改变阅读字体大小
