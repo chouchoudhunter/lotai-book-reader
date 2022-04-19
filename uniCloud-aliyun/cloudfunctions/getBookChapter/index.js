@@ -23,6 +23,7 @@ exports.main = async (event, context) => {
 		result=await reqGet(bookUrl,'')
 	}catch(err){
 		chapter.success=-1
+		console.log(JSON.stringify(err))
 		return toJson(chapter,err.status,'获取章节失败')
 	}
 	let $=cheerio.load(result)

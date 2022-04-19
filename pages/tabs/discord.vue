@@ -16,49 +16,24 @@
 			<swiper-item class="swiperItem">
 				<view class="leftBar" :style="{ backgroundColor: color.bgPage, color: color.normalText }">
 					<view class="btn-active" :style="{ backgroundColor: color.swiperBg, transform: 'translateY(' + swiper1Tag * 40 + 'px)' }"></view>
-					<view class="btn" @click="changeSwiper1Tag(0)">全部分类</view>
-					<view class="btn" @click="changeSwiper1Tag(1)">最热榜</view>
-					<view class="btn" @click="changeSwiper1Tag(2)">完结榜</view>
-					<view class="btn" @click="changeSwiper1Tag(3)">新书榜</view>
+					<view class="btn" v-for="(item, index) in features" :key="index" @click="changeSwiper1Tag(index)">{{ item.title }}</view>
 				</view>
 				<view class="right">
-					<view>暂无</view>
-					<!-- 					<view class="cates" :style="{color:color.normalText}">
-						<view class="cate">
-							<view>
-								<view class="img"><u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" /></view>	
-							<view class="name">玄幻</view>
-							</view>
-						</view>
-						<view class="cate">
-							<view>
-								<view class="img"><u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" /></view>	
-							<view class="name">武侠</view>
-							</view>
-						</view>
-						<view class="cate">
-							<view>
-								<view class="img"><u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" /></view>	
-							<view class="name">悬疑</view>
-							</view>
-						</view>
-						<view class="cate">
-							<view>
-								<view class="img"><u-image width="100%" height="100%" mode="aspectFill" src="https://bookcover.yuewen.com/qdbimg/349573/1021617576/180" /></view>	
-							<view class="name">科幻</view>
-							</view>
-						</view>
-					</view> -->
+					<scroll-view @scrolltolower="featureMore" :scroll-y="true" class="main" v-for="(item, index) in features" :key="index" v-show="swiper1Tag == index">
+						<book-item v-for="(book, i) in featureBooks[index]" :key="i" @click="goBookInfo(book)" :book="book"></book-item>
+						<u-loadmore :status="status" margin-bottom="20" />
+					</scroll-view>
 				</view>
 			</swiper-item>
 			<swiper-item class="swiperItem">
-				<!-- 				<view class="leftBar">
-					<view class="btn btn-active">全部分类</view>
-					<view class="btn">最热榜</view>
-					<view class="btn">完结榜</view>
-					<view class="btn">新书榜</view>
+				<view class="leftBar" :style="{ backgroundColor: color.bgPage, color: color.normalText }">
+					<view class="btn-active" :style="{ backgroundColor: color.swiperBg, transform: 'translateY(' + swiper2Tag * 40 + 'px)' }"></view>
+					<view class="btn" @click="changeSwiper2Tag(0)">全部分类</view>
+					<view class="btn" @click="changeSwiper2Tag(1)">最热榜</view>
+					<view class="btn" @click="changeSwiper2Tag(2)">完结榜</view>
+					<view class="btn" @click="changeSwiper2Tag(3)">新书榜</view>
 				</view>
-				<view class="right"></view> -->
+				<view class="right"><!-- <view>暂无</view> --></view>
 			</swiper-item>
 		</swiper>
 		<common-tabbar></common-tabbar>
@@ -68,24 +43,32 @@
 <script>
 import statusPlaceholder from '@/components/status-placeholder.vue';
 import commonTabbar from '@/components/common-tabbar.vue';
+import bookItem from '@/components/book-item.vue';
+import source from '@/source/index.js'; 
 export default {
-	components: { statusPlaceholder, commonTabbar },
+	components: { statusPlaceholder, commonTabbar, bookItem },
 	data() {
 		return {
 			title: 'Hello',
 			isLight: true,
 			tagList: [
 				{
-					name: '排行'
+					name: '精选'
 				},
 				{
-					name: '精选'
+					name: '排行'
 				}
 			],
 			currentTag: 0,
 			statusBarHeight: 0,
 			swiperHeight: 0,
-			swiper1Tag: 0
+			swiper1Tag: 0,
+			swiper2Tag: 0,
+			featureBooks: [],//精选分类下的书
+			features: [],//精选的分类
+			featurePages: [],//精选的每个分类的页数
+			status:'loadmore',
+			eachPageNum:5
 		};
 	},
 	computed: {
@@ -99,6 +82,7 @@ export default {
 	onLoad() {
 		// #ifdef APP-PLUS
 		this.subnvue_open();
+		this.getFeature();
 		// #endif
 	},
 	onReady() {
@@ -109,9 +93,55 @@ export default {
 	mounted() {
 		const systemInfo = getApp().globalData.systemInfo;
 		this.statusBarHeight = systemInfo.statusBarHeight;
-		this.swiperHeight = systemInfo.windowHeight - systemInfo.statusBarHeight - 151;
+		this.swiperHeight = systemInfo.windowHeight - systemInfo.statusBarHeight - 152;
 	},
 	methods: {
+		goBookInfo(data) {
+			data = this.$u.queryParams(data);
+			uni.navigateTo({
+				url: '../book-info/book-info' + data
+			});
+		},
+		//加载更多
+		featureMore(){
+			this.getFeatureTagBooks()
+		},
+		//获得精选内容
+		getFeature() {
+			source['xbiquwx'].getFeature().then(data => {
+				this.features = data;
+				this.getFeatureTagBooks()
+			});
+		},
+		//获得精选下对应分类的内容
+		async getFeatureTagBooks() {
+			const needFeatures=this.features[this.swiper1Tag].books
+			if(!this.featurePages[this.swiper1Tag]){//判断是否是第一页
+				this.featurePages[this.swiper1Tag]=1
+				this.featureBooks[this.swiper1Tag]=[]
+			}else{
+				if(this.featurePages[this.swiper1Tag]<Math.ceil(needFeatures.length/this.eachPageNum)){
+					this.featurePages[this.swiper1Tag]++
+				}else{
+					this.status="nomore"
+					return
+				}
+			}
+			const startIndex=(this.featurePages[this.swiper1Tag]-1)*this.eachPageNum
+			const endIndex=this.featurePages[this.swiper1Tag]*this.eachPageNum
+			this.status="loading"
+			var i = startIndex
+			for (; i < endIndex && i<needFeatures.length; i++) {
+				await source['xbiquwx'].getBookInfo(needFeatures[i]).then(res => {
+					this.status="loadmore"
+					this.featureBooks[this.swiper1Tag].push(res)
+					this.featureBooks={...this.featureBooks}
+				});
+			}
+			if(i==needFeatures.length){
+				this.status="nomore"
+			}
+		},
 		//打开配置的原生子窗体
 		subnvue_open() {
 			const subNVue = uni.getSubNVueById('mask'); //通过id获取nvue子窗体
@@ -124,6 +154,10 @@ export default {
 		},
 		changeSwiper1Tag(index) {
 			this.swiper1Tag = index;
+			this.getFeatureTagBooks()
+		},
+		changeSwiper2Tag(index) {
+			this.swiper2Tag = index;
 		},
 		changeTag(index) {
 			this.currentTag = index;
@@ -184,28 +218,9 @@ export default {
 				width: calc(100% - 70px);
 				height: 100%;
 				padding: 10px;
-				.cates {
-					display: flex;
-					flex-direction: row;
-					justify-content: space-between;
-					flex-wrap: wrap;
-					.cate {
-						width: 33%;
-						display: flex;
-						flex-direction: row;
-						justify-content: center;
-						margin-bottom: 10px;
-						.img {
-							width: 75px;
-							height: 100px;
-							border-radius: 5px;
-							overflow: hidden;
-						}
-						.name {
-							text-align: center;
-							margin-top: 5px;
-						}
-					}
+				padding-bottom: 0;
+				.main {
+					height: 100%;
 				}
 			}
 		}

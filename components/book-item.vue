@@ -6,10 +6,9 @@
 			<view class="info">
 				<view class="title" :style="{ color: color.normalText }">{{ book.title }}</view>
 				<view class="author" :style="{ color: color.secText }">{{ book.author }}</view>
-				<view class="desc" :style="{ color: color.secText }">{{ book.desc }}</view>
+				<view class="desc" :style="{ color: color.secText }" v-html="book.desc"></view>
 				<view :class="isNightMode?'tags-night':'tags'">
-					<view class="tag">科幻</view>
-					<view class="tag">末世</view>
+					<view class="tag" v-for="(item,index) in book.tags" :key="index">{{item}}</view>
 				</view>
 				<view class="star"><u-rate :count="5" current="4" active-color="#f5e100" :disabled="true"></u-rate></view>
 			</view>
@@ -56,14 +55,14 @@ export default {
 		margin-bottom: 15px;
 		margin-top: 5px;
 		.img {
-			width: 30%;
+			width: 110px;
 			height: 150px;
 			border-radius: 5px;
 			overflow: hidden;
 			z-index: 8;
 		}
 		.info {
-			width: 70%;
+			width: calc(100% - 110px);
 			padding-left: 15px;
 			display: flex;
 			flex-direction: column;

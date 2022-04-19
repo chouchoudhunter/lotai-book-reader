@@ -20,7 +20,7 @@
 			</view>
 			<view class="right">
 				<view class="title" :style="{ color: color.normalText }">{{ myBooks[0].title }}</view>
-				<view class="info" :style="{ color: color.secText }">已读至 {{myBooks[0].readChapter?myBooks[0].readChapter:''}}</view>
+				<view class="info" :style="{ color: color.secText }">已读至 {{ myBooks[0].readChapter ? myBooks[0].readChapter : '' }}</view>
 				<u-line-progress
 					:showPercent="false"
 					height="22"
@@ -51,7 +51,7 @@
 			</view>
 		</view>
 		<u-popup v-model="bookFuncShow" mode="bottom">
-			<view class="book-func" :style="{ backgroundColor: color.bgPage,color: color.normalText }">
+			<view class="book-func" :style="{ backgroundColor: color.bgPage, color: color.normalText }">
 				<view class="book-info">
 					<view class="img"><u-image width="100%" height="100%" mode="aspectFill" :src="bookFunc.img" /></view>
 					<view class="info">
@@ -122,11 +122,11 @@ export default {
 		myBooks() {
 			return this.$store.getters.getMyBooks;
 		},
-		topIcon(){
-			if(this.bookFunc.top){
-				return '/static/home/top-on.png'
-			}else{
-				return '/static/home/top.png'
+		topIcon() {
+			if (this.bookFunc.top) {
+				return '/static/home/top-on.png';
+			} else {
+				return '/static/home/top.png';
 			}
 		}
 	},
@@ -141,15 +141,15 @@ export default {
 	},
 	methods: {
 		//设置书本置顶
-		setTop(){
-			if(this.bookFunc.top){
-				this.bookFunc.top=false
-				this.$store.commit('books/SET_BOOK_NO_TOP',this.bookFunc)
-			}else{
-				this.bookFunc.top=true
-				this.$store.commit('books/SET_BOOK_TOP',this.bookFunc)
+		setTop() {
+			if (this.bookFunc.top) {
+				this.bookFunc.top = false;
+				this.$store.commit('books/SET_BOOK_NO_TOP', this.bookFunc);
+			} else {
+				this.bookFunc.top = true;
+				this.$store.commit('books/SET_BOOK_TOP', this.bookFunc);
 			}
-			this.bookFunc={...this.bookFunc}
+			this.bookFunc = { ...this.bookFunc };
 		},
 		checkAppUpdate() {
 			//#ifdef APP-PLUS
@@ -212,9 +212,15 @@ export default {
 			}, 200);
 		},
 		goReadPage(book) {
-			let data = this.$u.queryParams(book);
+			// let data = this.$u.queryParams(book);
+			// uni.navigateTo({
+			// 	url: '../read/read' + data
+			// });
 			uni.navigateTo({
-				url: '../read/read' + data
+				url: '../read/read',
+				success: (e) => {
+					e.eventChannel.emit('read-info',book)
+				}
 			});
 		}
 	}
@@ -364,12 +370,12 @@ export default {
 			display: flex;
 			flex-direction: row;
 			justify-content: center;
-			.book-item-main{
+			.book-item-main {
 				position: relative;
-				.topIcon{
+				.topIcon {
 					position: absolute;
 					right: -2px;
-					top:-2px;
+					top: -2px;
 					z-index: 10;
 				}
 			}

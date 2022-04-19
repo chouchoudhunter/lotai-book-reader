@@ -23,12 +23,12 @@ const books = {
 			let insertIndex = state.myBooks.findIndex(item => {
 				return !item.top
 			})
-			if(insertIndex==-1){
+			if (insertIndex == -1) {
 				state.myBooks.push(book)
-			}else{
+			} else {
 				state.myBooks.splice(insertIndex, 0, book)
 			}
-			
+
 			uni.setStorageSync('myBooks', state.myBooks)
 		},
 		ADD_HISTORY_BOOKS: (state, book) => {
@@ -65,13 +65,55 @@ const books = {
 			const index = state.myBooks.findIndex(item => {
 				return !item.top
 			})
+			//#ifdef APP-PLUS
+			uni.downloadFile({
+				url: book.img,
+				success: (res) => {
+					if (res.statusCode === 200) {
+						uni.saveFile({
+							tempFilePath: res.tempFilePath,
+							success: function(res) {
+								book.img = res.savedFilePath;
+								book.isLocalImg = true;
+								state.myBooks.splice(index, 0, book)
+								uni.setStorageSync('myBooks', state.myBooks)
+							}
+						});
+					}
+				},
+				fail:err=>{
+					state.myBooks.splice(index, 0, book)
+					uni.setStorageSync('myBooks', state.myBooks)
+				}
+			})
+			//#endif
+			//#ifdef H5
 			state.myBooks.splice(index, 0, book)
 			uni.setStorageSync('myBooks', state.myBooks)
+			//#endif
 		},
 		DELETE_MY_BOOKS: (state, book) => {
-			state.myBooks = state.myBooks.filter(item => {
-				return item.title != book.title && item.author != book.author
+			const index = state.myBooks.findIndex(item => {
+				return item.title == book.title && item.author == book.author
 			})
+			//#ifdef APP-PLUS
+			console.log(state.myBooks[index])
+			if (state.myBooks[index].isLocalImg) {
+				uni.removeSavedFile({
+					filePath: state.myBooks[index].img,
+					success: function(res) {
+						uni.getSavedFileList({
+						  success: function (res) {
+						    console.log(res.fileList);
+						  }
+						});
+					}
+				});
+			}
+			state.myBooks.splice(index, 1)
+			uni.setStorageSync('myBooks', state.myBooks)
+			//#endif
+			state.myBooks.splice(index, 1)
 			uni.setStorageSync('myBooks', state.myBooks)
 		},
 		CHANGE_MY_BOOKS: (state, book) => {
@@ -96,12 +138,12 @@ const books = {
 					}
 				}
 				state.myBooks.splice(bookIndex, 1)
-				if(insertIndex==-1){
+				if (insertIndex == -1) {
 					state.myBooks.push(book)
-				}else{
+				} else {
 					state.myBooks.splice(insertIndex, 0, book)
 				}
-				
+
 			}
 
 			uni.setStorageSync('myBooks', state.myBooks)

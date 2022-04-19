@@ -18,7 +18,8 @@ exports.main = async (event, context) => {
 		title:'',
 		author:'',
 		desc:'',
-		bookUrl:''
+		bookUrl:'',
+		tags:[]
 	}
 	info.bookUrl=event.bookUrl
 	let $=cheerio.load(result)

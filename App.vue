@@ -7,15 +7,6 @@ export default {
 		this.globalData.systemInfo = uni.getSystemInfoSync();
 		this.initBooks();
 		this.initSetting();
-		// const pages = ['./pages/tabs/discord', './pages/tabs/user', './pages/tabs/book'];
-		// uni.switchTab({
-		// 	url:pages[0]
-		// })
-		// setTimeout(()=>{
-		// 	uni.switchTab({
-		// 		url:pages[2]
-		// 	})
-		// },10)
 	},
 	methods: {
 		initBooks() {

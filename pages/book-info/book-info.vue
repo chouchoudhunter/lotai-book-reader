@@ -9,18 +9,17 @@
 					<view class="author">{{ book.author }}</view>
 					<view class="star"><u-rate :count="5" current="4" active-color="#f5e100" :disabled="true"></u-rate></view>
 					<view class="tags">
-						<view class="tag">科幻</view>
-						<view class="tag">末世</view>
+						<view class="tag" v-for="(item,index) in book.tags" :key="index">{{item}}</view>
 					</view>
 					<view class="func">
-						<u-button :ripple="true" class="btn-left" @click="switchToMyBooks">{{isInMyBooks?'移出书架':'加入书架'}}</u-button>
+						<u-button :ripple="true" class="btn-left" @click="switchToMyBooks" :loading="isAddMyBook">{{isInMyBooks?'移出书架':'加入书架'}}</u-button>
 						<u-button type="primary" :ripple="true" :custom-style="btnStyle" @click="goRead()">开始阅读</u-button>
 					</view>
 					
 				</view>
 			</view>
 			<u-gap height="1" :bg-color="color.cardBg"></u-gap>
-			<view class="desc" :style="{color:color.secText}">{{ book.desc }}</view>
+			<view class="desc" :style="{color:color.secText}" v-html="book.desc"></view>
 			<u-cell-group>
 				<u-cell-item icon="list-dot" title="查看目录"  :hover-class="isNightMode?'cell-hover-class-night':'cell-hover-class'" :title-style="{color:color.normalText}" :bg-color="color.bgPage"></u-cell-item>
 			</u-cell-group>
@@ -35,7 +34,8 @@ export default {
 			book: {},
 			btnStyle:{
 				backgroundColor:'#2970ff'
-			}
+			},
+			isAddMyBook:false
 		};
 	},
 	computed:{
@@ -49,11 +49,18 @@ export default {
 			return this.$store.getters.getIsNightMode;
 		},
 	},
+	watch:{
+		isInMyBooks(){
+			this.isAddMyBook=false
+		}
+	},
 	onLoad: function(option) {
 		this.book = option;
+		this.book.tags=this.book.tags.split(',')
 	},
 	methods:{
 		switchToMyBooks(){
+			this.isAddMyBook=true
 			if(this.isInMyBooks){
 				this.$store.commit('books/DELETE_MY_BOOKS',this.book)
 			}else{
@@ -74,9 +81,11 @@ export default {
 				data.readPage=1
 				data.readPos=0
 			}
-			data=this.$u.queryParams(data)
 			uni.navigateTo({
-				url:'../read/read'+data
+				url: '../read/read',
+				success: (e) => {
+					e.eventChannel.emit('read-info',data)
+				}
 			})
 		}
 	}
