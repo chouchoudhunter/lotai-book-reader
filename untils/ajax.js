@@ -1,4 +1,5 @@
-// ajax.js
+import Vue from "vue"
+let vm=new Vue()
 
 // 引入 uni-ajax 模块
 import ajax from '@/uni_modules/u-ajax/js_sdk'
@@ -29,6 +30,7 @@ instance.interceptors.response.use(
   },
   error => {
     // 对响应错误做些什么
+	vm.$u.toast('错误:'+JSON.stringify(error), 3000);
     return Promise.reject(error)
   }
 )

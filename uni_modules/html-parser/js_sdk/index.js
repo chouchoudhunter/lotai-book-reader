@@ -113,7 +113,22 @@ HTMLParser.decode = decodeHTML;
 var proto = HTMLParser.prototype;
 
 proto.getElementsByTagName = function(tagName) {
-	return this._tagElements[tagName && tagName.toUpperCase()] || [];
+	const tagArray=tagName.split(',')
+	if(tagArray.length>1){
+		var result=[]
+		elems = this._elements;
+		elems.forEach(e=>{
+			for(var i=0;i<tagArray.length;i++){
+				if(e.tagName==tagArray[i]||e.tagName==tagArray[i].toUpperCase()){
+					result.push(e)
+					break
+				}
+			}
+		})
+		return result
+	}else{
+		return this._tagElements[tagName && tagName.toUpperCase()] || [];
+	}
 };
 
 proto.getElementsByClassName = function(className, tagName) {

@@ -1,3 +1,4 @@
+import source from '@/source/index.js'
 const setting={
 	namespaced: true,
 	state:{
@@ -9,7 +10,10 @@ const setting={
 			lineHeight:30,
 			lightNum:2
 		},
-		systemSetting:{},
+		systemSetting:{
+			defaultSource:'xbiquwx',
+			sources:[]
+		},
 		color:{
 			light:{
 				//页面背景色
@@ -50,11 +54,32 @@ const setting={
 			state.readSetting=readSetting
 			uni.setStorageSync('readSetting',readSetting)
 		},
+		SET_SYSTEM_SETTING:(state,systemSetting)=>{
+			state.systemSetting={...systemSetting}
+			uni.setStorageSync('systemSetting',systemSetting)
+		},
 		INIT_SETTING:(state,data)=>{
-			if(data.readSetting.bgColor){
+			//初始化软件设置
+			if(!!data.readSetting){
 				state.readSetting=data.readSetting
 			}
 			state.nightMode=data.nightMode
+			//初始化系统设置
+			if(!!data.systemSetting){
+				let temp={...state.systemSetting}
+				temp.defaultSource=data.systemSetting.defaultSource
+				temp.sources=[]
+				state.systemSetting=temp
+			}
+			for(let key in source){
+				if(source[key].isOpen){
+					let temp={
+						key:key,
+						desc:key+'：'+source[key].desc
+					}
+					state.systemSetting.sources.push(temp)
+				}
+			}
 		},
 	}
 }

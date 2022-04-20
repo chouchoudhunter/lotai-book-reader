@@ -23,8 +23,10 @@ export default {
 		initSetting() {
 			const readSetting = uni.getStorageSync('readSetting');
 			const nightMode = uni.getStorageSync('nightMode');
+			const systemSetting = uni.getStorageSync('systemSetting');
 			const data = {
-				readSetting: readSetting ? readSetting : {},
+				readSetting: readSetting ? readSetting : undefined,
+				systemSetting: systemSetting ? systemSetting : undefined,
 				nightMode: nightMode ? nightMode : false
 			};
 			this.$store.commit('setting/INIT_SETTING', data);

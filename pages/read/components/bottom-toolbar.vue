@@ -81,20 +81,12 @@ export default {
 			}
 		}
 	},
-	mounted() {
-		// uni.getScreenBrightness({
-		// 	success: (res) => {
-		// 		this.lightNum=res.value*100
-		// 		console.log(res.value)
-		// 	}
-		// })
-	},
 	methods: {
 		changeLight(){
 			uni.setScreenBrightness({
-				value:0,
+				value:(this.lightNum/100),
 				success: ()=>{
-					console.log((this.lightNum/100).toFixed(1))
+					console.log(this.lightNum/100)
 				}
 			});
 		},

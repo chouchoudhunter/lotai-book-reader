@@ -198,7 +198,7 @@ export default {
 				this.date.headline = '下午好，读者';
 			} else if (nowHour >= 18 && nowHour < 22) {
 				this.date.headline = '晚上好，读者';
-			} else if (nowHour >= 22) {
+			} else if (nowHour >= 22 ||nowHour<6) {
 				this.date.headline = '夜深了，早点睡';
 			}
 			uni.request({

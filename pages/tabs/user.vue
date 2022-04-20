@@ -82,7 +82,7 @@ export default {
 		goRead(data){
 			data=this.$u.queryParams(data)
 			uni.navigateTo({
-				url:'../read/read'+data
+				url:'/pages/book-info/book-info'+data
 			})
 		},
 		goHistory(){

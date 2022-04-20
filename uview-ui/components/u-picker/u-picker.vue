@@ -8,7 +8,10 @@
 					:hover-stay-time="150" 
 					@tap="getResult('cancel')"
 				>{{cancelText}}</view>
-				<view class="u-picker__title">{{ title }}</view>
+				<view class="u-picker__title">
+					<view>{{ title }}</view>
+					<view class="secTitle">{{ secTitle }}</view>
+				</view>
 				<view
 					class="u-btn-picker u-btn-picker--primary"
 					:style="{ color: moving ? cancelColor : confirmColor }"
@@ -236,6 +239,11 @@ export default {
 		},
 		// 顶部标题
 		title: {
+			type: String,
+			default: ''
+		},
+		// 顶部副标题
+		secTitle: {
 			type: String,
 			default: ''
 		},
@@ -632,6 +640,15 @@ export default {
 
 .u-picker__title {
 	color: $u-content-color;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	.secTitle{
+		background-color: #e7e7e7;
+		padding:2px 5px;
+		border-radius: 3px;
+		margin-left: 5px;
+	}
 }
 
 .u-picker-body {

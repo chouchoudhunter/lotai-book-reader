@@ -1,7 +1,12 @@
 <template>
 	<view class="search" :style="{ backgroundColor: color.bgPage }">
 		<u-navbar height="60px" :border-bottom="false" :background="{ backgroundColor: color.bgPage }">
-			<view class="navbar"><u-search :bg-color="color.cardBg" :show-action="false" v-model="keyword" @search="search" @clear="clearKeyword"></u-search></view>
+			<view class="navbar">
+				<u-search :bg-color="color.cardBg" :show-action="false" v-model="keyword" @search="search" @clear="clearKeyword"></u-search>
+				<view class="right">
+					<u-icon :name="'/static/tabs/source'+(isNightMode?'-night':'')+'.png'" size="45" @click="showSwitchSource"></u-icon>
+				</view>
+				</view>
 		</u-navbar>
 		<status-placeholder></status-placeholder>
 		<view style="height: 60px;"></view>
@@ -21,6 +26,7 @@
 				<u-loadmore :status="status" margin-bottom="20" />
 			</scroll-view>
 		</view>
+		<switch-source v-model="isShowSourceSwitch" @confirm="clearKeyword"></switch-source>
 	</view>
 </template>
 
@@ -30,8 +36,9 @@ import bookItem from '@/components/book-item.vue';
 import loadingAnime from '@/components/loading-anime.vue';
 import { request } from '@/untils/http.js';
 import source from '@/source/index.js';
+import switchSource from '@/components/switch-source.vue';
 export default {
-	components: { statusPlaceholder, bookItem, loadingAnime },
+	components: { statusPlaceholder, bookItem, loadingAnime,switchSource },
 	data() {
 		return {
 			keyword: '',
@@ -44,7 +51,8 @@ export default {
 			eachPageNum: 6,
 			status: 'loadmore',
 			swiperHeight: 0,
-			searchRes: []
+			searchRes: [],
+			isShowSourceSwitch:false
 		};
 	},
 	computed: {
@@ -56,6 +64,9 @@ export default {
 		},
 		color() {
 			return this.$store.getters.getColor;
+		},
+		systemSetting() {
+			return this.$store.getters.getSystemSetting;
 		}
 	},
 	onLoad() {
@@ -64,6 +75,9 @@ export default {
 		this.swiperHeight = systemInfo.windowHeight - systemInfo.statusBarHeight - 63;
 	},
 	methods: {
+		showSwitchSource(){
+			this.isShowSourceSwitch=!this.isShowSourceSwitch
+		},
 		loadMore(){
 			this.getBookInfo()
 		},
@@ -77,6 +91,7 @@ export default {
 			});
 		},
 		search(key, isHistory = false) {
+			this.searchPage=0
 			if (isHistory) {
 				this.keyword = key;
 				this.showSearchDetail = true;
@@ -110,7 +125,7 @@ export default {
 			let index = startIndex;
 			this.status="loading"
 			for (; index < endIndex && index < this.searchRes.length; index++) {
-				await source['xbiquwx'].getBookInfo(this.searchRes[index]).then(res => {
+				await source[this.systemSetting.defaultSource].getBookInfo(this.searchRes[index]).then(res => {
 					this.status="loadmore"
 					this.isSearching = false;
 					this.books.push(res);
@@ -125,7 +140,7 @@ export default {
 			this.isSearching = true;
 			this.searchEmpty = false;
 			//#ifdef APP-PLUS
-			source['xbiquwx'].getSearch(this.keyword).then(async res => {
+			source[this.systemSetting.defaultSource].getSearch(this.keyword).then(async res => {
 				this.searchRes = res;
 				this.getBookInfo();
 			});
@@ -148,6 +163,15 @@ export default {
 	.navbar {
 		padding: 15px 20px;
 		width: 100%;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		.right{
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			margin-left: 15px;
+		}
 	}
 	.main {
 		position: relative;

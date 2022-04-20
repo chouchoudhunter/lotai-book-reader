@@ -8,7 +8,7 @@
 			</u-navbar>
 		</view>
 		<view class="main">
-			<book-item v-for="(book, i) in historyBooks" :key="i" @click="goBookInfo(book)" :book="book"></book-item>
+			<book-item v-for="(book, i) in historyBooks" :key="i" :book="book"></book-item>
 		</view>
 		<u-modal v-model="toastClear" content="确定要清空历史记录吗？" :show-cancel-button="true" @confirm="clearHistory"></u-modal>
 	</view>
@@ -35,12 +35,6 @@ export default {
 		},
 	},
 	methods: {
-		goBookInfo(data){
-			data=this.$u.queryParams(data)
-			uni.navigateTo({
-				url:'../../book-info/book-info'+data,
-			})
-		},
 		confirmClear(){
 			this.toastClear=true
 		},
@@ -54,6 +48,7 @@ export default {
 <style lang="scss">
 .history{
 	height: 100%;
+	overflow-y: scroll;
 	.navbar{
 		.right{
 			padding-right: 15px;

@@ -20,5 +20,6 @@ const getters = {
 		return temp.reverse()
 	},
 	getReadSetting:state =>state.setting.readSetting,
+	getSystemSetting:state =>state.setting.systemSetting,
 }
 export default getters

@@ -1,7 +1,12 @@
 <template>
 	<view class="discord" :style="{ backgroundColor: color.bgPage }">
 		<status-placeholder></status-placeholder>
-		<view class="top" @click="goSearch()"><u-search :disabled="true" :show-action="false" :bg-color="color.cardBg"></u-search></view>
+		<view class="top">
+			<u-search :disabled="true" :show-action="false" :bg-color="color.cardBg" @click="goSearch()"></u-search>
+			<view class="right">
+				<u-icon :name="'/static/tabs/source'+(isNightMode?'-night':'')+'.png'" size="40" @click="showSwitchSource"></u-icon>
+			</view>
+		</view>
 		<view class="tab">
 			<u-tabs ref="tabs" :inactive-color="color.normalText" :bg-color="color.bgPage" :list="tagList" :is-scroll="false" :current="currentTag" @change="changeTag"></u-tabs>
 		</view>
@@ -20,7 +25,7 @@
 				</view>
 				<view class="right">
 					<scroll-view @scrolltolower="featureMore" :scroll-y="true" class="main" v-for="(item, index) in features" :key="index" v-show="swiper1Tag == index">
-						<book-item v-for="(book, i) in featureBooks[index]" :key="i" @click="goBookInfo(book)" :book="book"></book-item>
+						<book-item :showStatus="false" v-for="(book, i) in featureBooks[index]" :key="i" :book="book"></book-item>
 						<u-loadmore :status="status" margin-bottom="20" />
 					</scroll-view>
 				</view>
@@ -36,6 +41,7 @@
 				<view class="right"><!-- <view>暂无</view> --></view>
 			</swiper-item>
 		</swiper>
+		<switch-source v-model="isShowSourceSwitch"></switch-source>
 		<common-tabbar></common-tabbar>
 	</view>
 </template>
@@ -45,8 +51,9 @@ import statusPlaceholder from '@/components/status-placeholder.vue';
 import commonTabbar from '@/components/common-tabbar.vue';
 import bookItem from '@/components/book-item.vue';
 import source from '@/source/index.js'; 
+import switchSource from '@/components/switch-source.vue';
 export default {
-	components: { statusPlaceholder, commonTabbar, bookItem },
+	components: { statusPlaceholder, commonTabbar, bookItem,switchSource },
 	data() {
 		return {
 			title: 'Hello',
@@ -68,7 +75,8 @@ export default {
 			features: [],//精选的分类
 			featurePages: [],//精选的每个分类的页数
 			status:'loadmore',
-			eachPageNum:5
+			eachPageNum:5,
+			isShowSourceSwitch:false
 		};
 	},
 	computed: {
@@ -77,6 +85,16 @@ export default {
 		},
 		color() {
 			return this.$store.getters.getColor;
+		},
+		systemSetting() {
+			return this.$store.getters.getSystemSetting;
+		}
+	},
+	watch:{
+		systemSetting(newVal,oldVal){
+			if(newVal.defaultSource!=oldVal.defaultSource){
+				this.refreshSource()
+			}
 		}
 	},
 	onLoad() {
@@ -96,11 +114,15 @@ export default {
 		this.swiperHeight = systemInfo.windowHeight - systemInfo.statusBarHeight - 152;
 	},
 	methods: {
-		goBookInfo(data) {
-			data = this.$u.queryParams(data);
-			uni.navigateTo({
-				url: '../book-info/book-info' + data
-			});
+		refreshSource(){
+			this.featureBooks=[]
+			this.featurePages=[]
+			this.swiper1Tag=0
+			this.swiper2Tag=0
+			this.getFeature()
+		},
+		showSwitchSource(){
+			this.isShowSourceSwitch=!this.isShowSourceSwitch
 		},
 		//加载更多
 		featureMore(){
@@ -108,8 +130,10 @@ export default {
 		},
 		//获得精选内容
 		getFeature() {
-			source['xbiquwx'].getFeature().then(data => {
+			this.status="loading"
+			source[this.systemSetting.defaultSource].getFeature().then(data => {
 				this.features = data;
+				this.status="loadmore"
 				this.getFeatureTagBooks()
 			});
 		},
@@ -132,7 +156,7 @@ export default {
 			this.status="loading"
 			var i = startIndex
 			for (; i < endIndex && i<needFeatures.length; i++) {
-				await source['xbiquwx'].getBookInfo(needFeatures[i]).then(res => {
+				await source[this.systemSetting.defaultSource].getBookInfo(needFeatures[i]).then(res => {
 					this.status="loadmore"
 					this.featureBooks[this.swiper1Tag].push(res)
 					this.featureBooks={...this.featureBooks}
@@ -179,6 +203,14 @@ export default {
 	height: 100%;
 	.top {
 		padding: 15px 20px;
+		display: flex;
+		flex-direction: row;
+		.right{
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			margin-left: 15px;
+		}
 	}
 	.swiper {
 		.swiperItem {

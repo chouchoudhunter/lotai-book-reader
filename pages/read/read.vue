@@ -3,7 +3,10 @@
 		<left-tool ref="leftTool" :chapterList="chapterList" :book="this.book" @changeChapter="changeChapter"></left-tool>
 		<view class="navbar" :style="{ transform: !isShowToolbar ? 'translateY(-' + (44 + statusBarHeight) + 'px)' : 'none' }">
 			<u-navbar :background="{ backgroundColor: color.bgPage }" :border-bottom="false" :autoBack="true" class="main" :fixed="false">
-				<view slot="right"><image class="icon" :src="'../../static/read/' + (isNightMode ? 'night' : 'light') + '.png'" @click="changeNight"></image></view>
+				<view slot="right" class="right">
+					<u-icon class="item" :name="'/static/tabs/source'+(isNightMode?'-night':'')+'.png'" size="40" @click="showSwitchSource"></u-icon>
+					<u-icon class="item" :name="'../../static/read/' + (isNightMode ? 'night' : 'light') + '.png'" size="38" @click="changeNight"></u-icon>
+					</view>
 			</u-navbar>
 		</view>
 		<view class="content" :style="{ backgroundColor: readSetting.currentBgColor }">
@@ -43,6 +46,7 @@
 			</view>
 		</view>
 		<bottom-toolbar :isShow="isShowToolbar" v-model="readSetting" @openLeftTool="openLeftTool" @changeReadSetting="changeReadSetting"></bottom-toolbar>
+		<switch-source v-model="isShowSourceSwitch" :bookSource="book" @confirm="refreshSource"></switch-source>
 	</view>
 </template>
 
@@ -51,6 +55,7 @@ import statusPlaceholder from '@/components/status-placeholder.vue';
 import bottomToolbar from './components/bottom-toolbar.vue';
 import leftTool from './components/left-tool.vue';
 import loadingAnime from '@/components/loading-anime.vue';
+import switchSource from '@/components/switch-source.vue';
 import { request } from '@/untils/http.js';
 import source from '@/source/index.js';
 const tempContent = {
@@ -60,7 +65,7 @@ const tempContent = {
 	success: 1
 };
 export default {
-	components: { statusPlaceholder, bottomToolbar, leftTool, loadingAnime },
+	components: { statusPlaceholder, bottomToolbar, leftTool, loadingAnime,switchSource },
 	data() {
 		return {
 			isShowToolbar: false, //是否显示工具栏
@@ -77,7 +82,8 @@ export default {
 			chapterList: [],
 			book: {},
 			isChangeChapter: true,
-			isLoading: false
+			isLoading: false,
+			isShowSourceSwitch:false
 		};
 	},
 	computed: {
@@ -117,8 +123,15 @@ export default {
 		}
 	},
 	methods: {
+		refreshSource(){
+			this.$u.toast('书本换源装修中...', 3000);
+			// this.content={...tempContent}
+			// this.getChapterList();
+		},
+		showSwitchSource(){
+			this.isShowSourceSwitch=!this.isShowSourceSwitch
+		},
 		changeReadSetting() {
-			console.log(1);
 			this.computePageNum();
 		},
 		//计算阅读进度
@@ -157,7 +170,7 @@ export default {
 		//获得章节目录
 		getChapterList() {
 			//#ifdef APP-PLUS
-			source['xbiquwx'].getChapterList(this.book.bookUrl).then(res => {
+			source[this.book.source].getChapterList(this.book.bookUrl).then(res => {
 				this.chapterList = res;
 				if (!this.content.text) {
 					this.loadChapter(-1);
@@ -214,7 +227,7 @@ export default {
 				return;
 			}
 			//#ifdef APP-PLUS
-			source['xbiquwx'].getChapter(this.book.bookUrl, this.chapterList[index]).then(res => {
+			source[this.book.source].getChapter(this.book.bookUrl, this.chapterList[index]).then(res => {
 				if (dir == 1) {
 					this.nextContent = res;
 					this.nextContent.index = index;
@@ -389,14 +402,18 @@ export default {
 		position: absolute;
 		top: 0;
 		left: 0;
-		transition: transform 0.5s;
+		transition: transform 0.3s;
 		height: auto;
 		z-index: 2;
 		width: 100%;
-		.icon {
-			width: 20px;
-			height: 20px;
+		.right{
 			margin-right: 15px;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			.item{
+				margin-left: 15px;
+			}
 		}
 	}
 

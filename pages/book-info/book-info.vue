@@ -47,6 +47,9 @@ export default {
 		},
 		isNightMode() {
 			return this.$store.getters.getIsNightMode;
+		},		
+		systemSetting() {
+			return this.$store.getters.getSystemSetting;
 		},
 	},
 	watch:{
@@ -56,19 +59,25 @@ export default {
 	},
 	onLoad: function(option) {
 		this.book = option;
-		this.book.tags=this.book.tags.split(',')
+		if(this.book.tags){
+			this.book.tags=this.book.tags.split(',')
+		}
 	},
 	methods:{
+		initBookInfo(){
+			let data={...this.book}
+			data.readIndex=0//新书初始化阅读章节
+			data.readPage=1//初始化阅读页数
+			data.readPos=0//初始化阅读位置
+			data.source=this.systemSetting.defaultSource//初始化阅读源
+			return data
+		},
 		switchToMyBooks(){
 			this.isAddMyBook=true
 			if(this.isInMyBooks){
 				this.$store.commit('books/DELETE_MY_BOOKS',this.book)
 			}else{
-				let data={...this.book}
-				data.readIndex=0
-				data.readPage=1
-				data.readPos=0
-				this.$store.commit('books/ADD_MY_BOOKS',data)
+				this.$store.commit('books/ADD_MY_BOOKS',this.initBookInfo())
 			}
 		},
 		goRead(){
@@ -76,10 +85,7 @@ export default {
 			if(this.isInMyBooks){
 				data=this.isInMyBooks
 			}else{
-				data={...this.book}
-				data.readIndex=0
-				data.readPage=1
-				data.readPos=0
+				data=this.initBookInfo()
 			}
 			uni.navigateTo({
 				url: '../read/read',

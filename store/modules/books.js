@@ -62,9 +62,12 @@ const books = {
 			uni.setStorageSync('historyBooks', state.historyBooks)
 		},
 		ADD_MY_BOOKS: (state, book) => {
-			const index = state.myBooks.findIndex(item => {
+			let index = state.myBooks.findIndex(item => {
 				return !item.top
 			})
+			if(index==-1){
+				index=0
+			}
 			//#ifdef APP-PLUS
 			uni.downloadFile({
 				url: book.img,
@@ -75,6 +78,10 @@ const books = {
 							success: function(res) {
 								book.img = res.savedFilePath;
 								book.isLocalImg = true;
+								state.myBooks.splice(index, 0, book)
+								uni.setStorageSync('myBooks', state.myBooks)
+							},
+							fail:function(err){
 								state.myBooks.splice(index, 0, book)
 								uni.setStorageSync('myBooks', state.myBooks)
 							}
@@ -102,11 +109,7 @@ const books = {
 				uni.removeSavedFile({
 					filePath: state.myBooks[index].img,
 					success: function(res) {
-						uni.getSavedFileList({
-						  success: function (res) {
-						    console.log(res.fileList);
-						  }
-						});
+						//
 					}
 				});
 			}
@@ -124,13 +127,13 @@ const books = {
 				state.myBooks.splice(index, 1)
 				state.myBooks.unshift(book)
 			} else {
-				let bookIndex = -1
-				let insertIndex = -1
+				let bookIndex = -1//本书位置
+				let insertIndex = -1//新插入的位置
 				for (let i = 0; i < state.myBooks.length; i++) {
 					if (state.myBooks[i].title == book.title && state.myBooks[i].author == book.author) {
 						bookIndex = i
 					}
-					if (!state.myBooks[i].top) {
+					if (!state.myBooks[i].top && insertIndex==-1) {
 						insertIndex = i
 					}
 					if (bookIndex != -1 && insertIndex != -1) {

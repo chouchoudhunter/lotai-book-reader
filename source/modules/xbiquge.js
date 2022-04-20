@@ -1,4 +1,4 @@
-const host="https://www.xbiquwx.la/"
+const host="https://www.xbiquge.la/"
 import request from '@/untils/ajax.js'
 import HTMLParser from "@/uni_modules/html-parser/js_sdk/index.js"
 import urlencode from "urlencode"
@@ -23,7 +23,7 @@ const source={
 				tj=new HTMLParser(tj).getElementsByClassName('item')
 				tj.forEach(item=>{
 					item=new HTMLParser(item.innerHTML).getElementsByTagName('a')[0].attributes.href
-					item=item.split('/')[3]+'/'
+					item=item.split('.la/')[1]
 					dataTemp.books.push(item)
 				})
 				data.push(dataTemp)
@@ -38,9 +38,7 @@ const source={
 						dataTemp.books=[]
 						const bookTemps=novelTempHtml.getElementsByTagName('a')
 						bookTemps.forEach((bookTemp,index)=>{
-							if(index!=0){
-								dataTemp.books.push(bookTemp.attributes.href.split('/')[3]+'/')
-							}
+							dataTemp.books.push(bookTemp.attributes.href.split('.la/')[1])
 						})
 						data.push(dataTemp)
 					})
@@ -67,8 +65,8 @@ const source={
 						url:''
 					}
 					item=new HTMLParser(item.innerHTML).getElementsByTagName('a')
-					temp.title=item[0].attributes.title
-					temp.url=item[0].attributes.href
+					temp.title=item[0].innerHTML
+					temp.url=item[0].attributes.href.split('/')[3]
 					temp.type='chapter'
 					chapters.push(temp)
 				})
@@ -82,12 +80,19 @@ const source={
 	},
 	getSearch:(keyword='猫腻')=>{
 		return new Promise((reslove,reject)=>{
-			request.get(host+'modules/article/search.php?searchkey='+urlencode(keyword)).then(res=>{
-				let list=new HTMLParser(res.data).getElementsByTagName('tr')
+			request.post({
+				url:host+'modules/article/waps.php',
+				params:{searchkey:keyword},
+				header:{
+					'Content-Type': 'application/x-www-form-urlencoded',
+				}
+			}).then(res=>{
+				let list=new HTMLParser(res.data).getElementsByClassName('grid')[0].innerHTML
+				list=new HTMLParser(res.data).getElementsByTagName('tr')
 				let books=[]
 				for(let i=1;i<list.length;i++){
 					let item=new HTMLParser(list[i].innerHTML).getElementsByTagName('a')[0]
-					books.push(item.attributes.href)
+					books.push(item.attributes.href.split('.la/')[1])
 				}
 				reslove(books)
 			}).catch(err=>{
@@ -110,13 +115,12 @@ const source={
 				const imgHtml=new HTMLParser(res.data).getElementById('fmimg').innerHTML
 				info.img=new HTMLParser(imgHtml).getElementsByTagName('img')[0].attributes.src
 				const descHtml=new HTMLParser(res.data).getElementById('intro').innerHTML
-				info.desc=new HTMLParser(descHtml).getElementsByTagName('p')[0].innerHTML.trim()
+				info.desc=new HTMLParser(descHtml).getElementsByTagName('p')[1].innerHTML.trim()
 				const content=new HTMLParser(res.data).getElementById('info').innerHTML
 				let infoHtml=new HTMLParser(content)
 				info.title=infoHtml.getElementsByTagName('h1')[0].innerHTML
 				infoHtml=infoHtml.getElementsByTagName('p')
-				info.author=infoHtml[0].innerHTML.split(':')[1]
-				info.tags.push(infoHtml[1].innerHTML.substr(-4,2))
+				info.author=infoHtml[0].innerHTML.split('：')[1]
 				info.bookUrl=url
 				reslove(info)
 			}).catch(err=>{
