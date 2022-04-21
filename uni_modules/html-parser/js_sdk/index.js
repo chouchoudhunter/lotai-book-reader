@@ -1,19 +1,19 @@
 var rdecodeEntity = /&quot;|&lt;|&gt;|&amp;|&nbsp;|&apos;|&#(\d+);|&#(\d+)/g;
 var rhtmlSpace = /\u00a0/g;
 var decodeEntities = {
-        '&quot;':'"',
-        '&apos;': '\'',
-        '&lt;':'<',
-        '&gt;':'>',
-        '&amp;':'&',
-        '&nbsp;':' '
-   };
+	'&quot;': '"',
+	'&apos;': '\'',
+	'&lt;': '<',
+	'&gt;': '>',
+	'&amp;': '&',
+	'&nbsp;': ' '
+};
 
 function fdecodeEntity(matched, charCode, lastCharCode) {
-    if (!charCode && !lastCharCode) {
-        return decodeEntities[matched] || matched;
-    }
-    return String.fromCharCode(charCode || lastCharCode);
+	if (!charCode && !lastCharCode) {
+		return decodeEntities[matched] || matched;
+	}
+	return String.fromCharCode(charCode || lastCharCode);
 }
 
 function lastIndexOfTagName(elements, tagName) {
@@ -26,7 +26,7 @@ function lastIndexOfTagName(elements, tagName) {
 }
 
 function decodeHTML(html) {
-    return html ? html.replace(rdecodeEntity, fdecodeEntity).replace(rhtmlSpace, ' ') : '';
+	return html ? html.replace(rdecodeEntity, fdecodeEntity).replace(rhtmlSpace, ' ') : '';
 }
 
 function HTMLParser(html) {
@@ -37,39 +37,39 @@ function HTMLParser(html) {
 	var rawElements = [];
 	var tagElements = this._tagElements = {};
 	var idElements = this._idElements = {};
-	
+
 	html = html || '';
-	html.replace(/(<([\w-]+)[^>]*(\/)?>)|(<\/([\w-]+)[^>]*>)/g, 
-			function(all, startTag, startTagName, selfClosing, 
-					endTag, endTagName, index) {
-		if (startTagName) {
-			(selfClosing ? elements : rawElements).push({
-				tagName: startTagName.toUpperCase(),
-				startIndex: index,
-				selfClosing: !!selfClosing,
-				tagContent: startTag
-			});
-			return;
-		} 
-		
-		var startTagIndex = lastIndexOfTagName(rawElements, endTagName.toUpperCase());
-		if (startTagIndex == -1) {
-			return;
-		}
-		
-		setElement(rawElements[startTagIndex], index, endTag.length);
-		for (var i = rawElements.length - 1; i > startTagIndex; i--) {
-			setElement(rawElements[i], index);
-		}
-		
-		rawElements = rawElements.slice(0, startTagIndex);
-	});
-	
+	html.replace(/(<([\w-]+)[^>]*(\/)?>)|(<\/([\w-]+)[^>]*>)/g,
+		function(all, startTag, startTagName, selfClosing,
+			endTag, endTagName, index) {
+			if (startTagName) {
+				(selfClosing ? elements : rawElements).push({
+					tagName: startTagName.toUpperCase(),
+					startIndex: index,
+					selfClosing: !!selfClosing,
+					tagContent: startTag
+				});
+				return;
+			}
+
+			var startTagIndex = lastIndexOfTagName(rawElements, endTagName.toUpperCase());
+			if (startTagIndex == -1) {
+				return;
+			}
+
+			setElement(rawElements[startTagIndex], index, endTag.length);
+			for (var i = rawElements.length - 1; i > startTagIndex; i--) {
+				setElement(rawElements[i], index);
+			}
+
+			rawElements = rawElements.slice(0, startTagIndex);
+		});
+
 	var htmlLength = html.length;
 	for (var i = 0, len = rawElements.length; i < len; i++) {
 		setElement(rawElements[i], htmlLength);
 	}
-	
+
 	function setElement(elem, endIndex, endTagLength) {
 		elem.endIndex = endIndex + (endTagLength || 0);
 		elem.outerHTML = html.substring(elem.startIndex, elem.endIndex);
@@ -77,7 +77,7 @@ function HTMLParser(html) {
 		setAttributes(elem);
 		elements.push(elem);
 	}
-	
+
 	function setAttributes(elem) {
 		var attributes = elem.attributes = {};
 		if (/<[\w-]+([^>]+)\/?>/.test(elem.tagContent)) {
@@ -86,18 +86,18 @@ function HTMLParser(html) {
 			});
 		}
 	}
-	
+
 	elements.forEach(function(elem) {
 		var attrs = elem.attributes;
 		if (attrs.id) {
 			elem.id = attrs.id;
 			idElements[attrs.id] = elem;
 		}
-		
+
 		if (attrs['class']) {
 			elem.className = attrs['class'].split(/\s+/g);
-		} 
-		
+		}
+
 		var elems = tagElements[elem.tagName];
 		if (elems) {
 			elems.push(elem);
@@ -105,7 +105,7 @@ function HTMLParser(html) {
 			tagElements[elem.tagName] = [elem];
 		}
 	});
-	
+
 }
 
 HTMLParser.decode = decodeHTML;
@@ -113,20 +113,20 @@ HTMLParser.decode = decodeHTML;
 var proto = HTMLParser.prototype;
 
 proto.getElementsByTagName = function(tagName) {
-	const tagArray=tagName.split(',')
-	if(tagArray.length>1){
-		var result=[]
+	const tagArray = tagName.split(',')
+	if (tagArray.length > 1) {
+		var result = []
 		elems = this._elements;
-		elems.forEach(e=>{
-			for(var i=0;i<tagArray.length;i++){
-				if(e.tagName==tagArray[i]||e.tagName==tagArray[i].toUpperCase()){
+		elems.forEach(e => {
+			for (var i = 0; i < tagArray.length; i++) {
+				if (e.tagName == tagArray[i] || e.tagName == tagArray[i].toUpperCase()) {
 					result.push(e)
 					break
 				}
 			}
 		})
 		return result
-	}else{
+	} else {
 		return this._tagElements[tagName && tagName.toUpperCase()] || [];
 	}
 };
@@ -138,15 +138,27 @@ proto.getElementsByClassName = function(className, tagName) {
 	if (!tagName && !elems) {
 		elems = this._elements;
 	}
-	
+
 	if (elems && className) {
-		elems.forEach(function(elem) {
-			if (elem.className && elem.className.indexOf(className) != -1) {
-				result.push(elem);
-			}
-		});
+		const classArray = className.split(',')
+		if (classArray.length > 1) {
+			elems.forEach(function(elem) {
+				for (var i = 0; i < classArray.length; i++) {
+					if (elem.className && elem.className.indexOf(classArray[i]) != -1) {
+						result.push(elem);
+					}
+				}
+			});
+		} else {
+			elems.forEach(function(elem) {
+				if (elem.className && elem.className.indexOf(className) != -1) {
+					result.push(elem);
+				}
+			});
+		}
+
 	}
-	
+
 	return result;
 };
 

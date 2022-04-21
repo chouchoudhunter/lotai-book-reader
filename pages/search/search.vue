@@ -125,11 +125,20 @@ export default {
 			let index = startIndex;
 			this.status="loading"
 			for (; index < endIndex && index < this.searchRes.length; index++) {
+				//#ifdef APP-PLUS
 				await source[this.systemSetting.defaultSource].getBookInfo(this.searchRes[index]).then(res => {
 					this.status="loadmore"
 					this.isSearching = false;
 					this.books.push(res);
 				});
+				//#endif
+				//#ifdef H5
+				await request('getBookInfo',{bookUrl:this.searchRes[index]}).then(res => {
+					this.status="loadmore"
+					this.isSearching = false;
+					this.books.push(res.data);
+				});
+				//#endif
 			}
 			if(i==this.searchRes.length){
 				this.status="nomore"

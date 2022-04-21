@@ -2,7 +2,7 @@
     "name" : "LoTai书架",
     "appid" : "__UNI__B41A11E",
     "description" : "阅读无广告 免费看小说",
-    "versionName" : "2.0.0",
+    "versionName" : "2.1.6",
     "versionCode" : "100",
     "transformPx" : false,
     /* 5+App特有相关 */
@@ -23,7 +23,8 @@
                 "source/index.js" : {},
                 "source/modules/1biquge.js" : {},
                 "source/modules/xbiquge.js" : {},
-                "source/modules/xbiquwx.js" : {}
+                "source/modules/xbiquwx.js" : {},
+                "source/modules/51shucheng.js" : {}
             }
         },
         /* 模块配置 */

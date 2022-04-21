@@ -134,11 +134,11 @@ const source={
 			request.get(host+bookUrl+chapter.url).then(res=>{
 				let chapterTemp={
 					title:chapter.title,
-					text:'',
+					text:`<h3>${chapter.title}</h3><br>`,
 					status:1,
 					success:1
 				}
-				chapterTemp.text=new HTMLParser(res.data).getElementById('content').innerHTML
+				chapterTemp.text+=new HTMLParser(res.data).getElementById('content').innerHTML
 				reslove(chapterTemp)
 			}).catch(err=>{
 				console.log(err)

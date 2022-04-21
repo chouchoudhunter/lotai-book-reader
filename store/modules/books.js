@@ -116,8 +116,10 @@ const books = {
 			state.myBooks.splice(index, 1)
 			uni.setStorageSync('myBooks', state.myBooks)
 			//#endif
+			//#ifdef H5
 			state.myBooks.splice(index, 1)
 			uni.setStorageSync('myBooks', state.myBooks)
+			//#endif
 		},
 		CHANGE_MY_BOOKS: (state, book) => {
 			if (book.top) {

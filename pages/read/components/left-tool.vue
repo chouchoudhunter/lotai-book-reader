@@ -1,6 +1,6 @@
 <template>
 	<view class="left-tool">
-		<u-popup v-model="show" width="75%">
+		<u-popup v-model="valueT" width="75%">
 			<view class="main" :style="{ backgroundColor: color.bgPage }">
 				<status-placeholder></status-placeholder>
 				<view class="top" :style="{ 'box-shadow': isNightMode ? 'none' : '0px 7px 10px -3px rgba(158, 158, 158, 0.1)' }">
@@ -58,6 +58,10 @@ import { request } from '@/untils/http.js';
 export default {
 	components: { statusPlaceholder },
 	props: {
+		value:{
+			type:Boolean,
+			default:false
+		},
 		chapterList: {
 			type: Array,
 			default: () => {
@@ -80,7 +84,6 @@ export default {
 	},
 	data() {
 		return {
-			show: false,
 			funcList: [{ name: '目录' }, { name: '书签' }],
 			currentFunc: 0,
 			toolHeight: 0,
@@ -93,6 +96,15 @@ export default {
 		},
 		isNightMode() {
 			return this.$store.getters.getIsNightMode;
+		},
+		valueT:{
+			get(){
+				return this.value
+			},
+			set(newVal){
+				this.initTool()
+				this.$emit('input',newVal)
+			}
 		}
 	},
 	mounted() {
@@ -103,9 +115,8 @@ export default {
 		changeFunc(index) {
 			this.currentFunc = index;
 		},
-		switchTool() {
+		initTool() {
 			this.scrollView = 'chapter' + this.book.readIndex;
-			this.show = !this.show;
 		},
 		changeChapter(index, item) {
 			if (item.type == 'chapter') {

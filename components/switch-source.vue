@@ -45,7 +45,7 @@ export default {
 		this.initSource(this.bookSource)
 	},
 	methods:{
-		initSource(val){
+		initSource(val=null){
 			if(val){
 				this.sourceTitle=val.source
 				this.title='此书当前源：'
@@ -72,6 +72,7 @@ export default {
 				temp.defaultSource=source
 				this.$store.commit('setting/SET_SYSTEM_SETTING',temp)
 				this.$emit('confirm')
+				this.initSource()
 			}
 			
 		}

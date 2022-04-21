@@ -1,6 +1,6 @@
 <template>
 	<view class="read">
-		<left-tool ref="leftTool" :chapterList="chapterList" :book="this.book" @changeChapter="changeChapter"></left-tool>
+		<left-tool v-model="showLeftTool" :chapterList="chapterList" :book="this.book" @changeChapter="changeChapter"></left-tool>
 		<view class="navbar" :style="{ transform: !isShowToolbar ? 'translateY(-' + (44 + statusBarHeight) + 'px)' : 'none' }">
 			<u-navbar :background="{ backgroundColor: color.bgPage }" :border-bottom="false" :autoBack="true" class="main" :fixed="false">
 				<view slot="right" class="right">
@@ -83,7 +83,8 @@ export default {
 			book: {},
 			isChangeChapter: true,
 			isLoading: false,
-			isShowSourceSwitch:false
+			isShowSourceSwitch:false,
+			showLeftTool:false
 		};
 	},
 	computed: {
@@ -113,6 +114,18 @@ export default {
 			this.refreshTime();
 			this.getChapterList();
 		});
+	},
+	onBackPress(event){
+		if(event.from=="backbutton"){
+			if(this.showLeftTool){
+				this.showLeftTool=false
+				return true
+			}
+			if(this.isShowToolbar){
+				this.isShowToolbar=false
+				return true
+			}
+		}
 	},
 	onUnload() {
 		clearInterval(this.timer);
@@ -188,7 +201,7 @@ export default {
 		},
 		//打开左边工具栏（目录）
 		openLeftTool() {
-			this.$refs.leftTool.switchTool();
+			this.showLeftTool=!this.showLeftTool
 			this.isShowToolbar = false;
 		},
 		//检测是一个或者下一个相邻的章节 -1表示已经是最后一个章节了，-2表示已经是第一个章节了
