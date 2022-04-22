@@ -1,6 +1,6 @@
 <template>
 	<view class="custom-modal">
-		<u-modal :title-style="{color:color.secText}" :bgColor="color.cardBg" :cancel-style="{color:color.secText}" :content-style="{color:color.normalText}" v-model="valueT" :title="title" :content="content" :show-cancel-button="true" @confirm="confirm" :async-close="asyncClose">
+		<u-modal :title-style="{color:color.secText}" :bgColor="color.cardBg" :cancel-style="{color:color.secText}" :content-style="{color:color.normalText}" v-model="valueT" :title="title" :content="content" :showConfirmButton="showConfirmButton" :showCancelButton="showCancelButton" @confirm="confirm" :async-close="asyncClose">
 			<slot></slot>
 		</u-modal>
 	</view>
@@ -17,6 +17,14 @@
 			asyncClose:{
 				type:Boolean,
 				default:false
+			},
+			showConfirmButton:{
+				type:Boolean,
+				default:true
+			},
+			showCancelButton:{
+				type:Boolean,
+				default:true
 			},
 			content:{
 				type:String,

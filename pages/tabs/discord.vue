@@ -140,8 +140,7 @@ export default {
 		getFeature() {
 			this.status="loading"
 			source[this.systemSetting.defaultSource].getFeature().then(data => {
-				this.features = data;
-				// this.$store.commit('books/SET_FEATURES',data)
+				this.$store.commit('books/SET_FEATURES',data)
 				this.status="loadmore"
 				this.getFeatureTagBooks()
 			});

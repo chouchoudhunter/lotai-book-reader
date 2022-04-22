@@ -57,11 +57,12 @@
 				是否确定删除未使用图片
 			</view>
 		</custom-modal>
+		<custom-modal v-model="updateToast" :showCancelButton="false" content="已经是最新版本"></custom-modal>
 	</view>
 </template>
 
 <script>
-import request from '@/untils/ajax.js';
+import { request } from '@/untils/http.js';
 import switchSource from '@/components/switch-source.vue';
 import customModal from '@/components/custom-modal.vue';
 export default {
@@ -72,6 +73,7 @@ export default {
 			version: '',
 			isShowSourceSwitch:false,
 			toastImgDelete:false,
+			updateToast:false,
 			imgNum:{
 				use:0,
 				all:0
@@ -136,6 +138,8 @@ export default {
 					uni.navigateTo({
 						url: '../updateApp/updateApp' + data
 					});
+				}else{
+					this.updateToast=true
 				}
 			});
 			//#endif

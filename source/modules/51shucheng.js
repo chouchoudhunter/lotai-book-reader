@@ -43,7 +43,6 @@ const source={
 					})
 					data.push(dataTemp)
 				})
-				console.log(data)
 				reslove(data)
 			}).catch(err=>{
 				console.log(err)
