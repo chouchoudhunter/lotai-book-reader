@@ -152,8 +152,11 @@ export default {
 		showSwitchSource() {
 			this.isShowSourceSwitch = !this.isShowSourceSwitch;
 		},
-		changeReadSetting() {
-			this.computePageNum();
+		async changeReadSetting() {
+			await this.computePageNum(400);
+			if(this.book.readPage>this.totalPage){
+				this.pageChange(0,true)
+			}
 		},
 		//计算阅读进度
 		changeReadPos() {
@@ -220,6 +223,7 @@ export default {
 			//#ifdef APP-PLUS
 			const subNVue = uni.getSubNVueById('leftTool'); //通过id获取nvue子窗体
 			subNVue.show('slide-in-left', 300);
+			uni.$emit('leftToolTopen');
 			this.isShowToolbar = false;
 			//#endif
 		},
@@ -313,9 +317,9 @@ export default {
 			//#endif
 		},
 		//左右翻页
-		async pageChange(dir = 1) {
+		async pageChange(dir = 1,isChangeFont=false) {
 			//如果底部工具栏打开就关闭工具栏
-			if (this.isShowToolbar) {
+			if (this.isShowToolbar&&!isChangeFont) {
 				this.isShowToolbar = false;
 				return;
 			}
@@ -409,7 +413,7 @@ export default {
 			}, 6000);
 		},
 		//计算当前章节总页数
-		computePageNum() {
+		computePageNum(timeout=200) {
 			return new Promise((resolve, reject) => {
 				setTimeout(() => {
 					const query = uni.createSelectorQuery().in(this);
@@ -420,12 +424,8 @@ export default {
 							resolve();
 						})
 						.exec();
-				}, 200);
+				}, timeout);
 			});
-		},
-		//改变阅读字体大小
-		changeFontSzie(size = 14) {
-			this.computePageNum();
 		}
 	}
 };

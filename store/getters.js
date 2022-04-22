@@ -21,5 +21,6 @@ const getters = {
 	},
 	getReadSetting:state =>state.setting.readSetting,
 	getSystemSetting:state =>state.setting.systemSetting,
+	getFeatures:state=>!!state.books.features?state.books.features:[]
 }
 export default getters

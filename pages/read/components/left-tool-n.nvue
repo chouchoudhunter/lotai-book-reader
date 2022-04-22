@@ -31,6 +31,7 @@
 			<cell style="height: 10px;"></cell>
 			<cell v-for="(item, index) in chapterList" :key="index">
 				<view
+					:ref="index == book.readIndex?'chapterT':'chapter'+index"
 					:id="'chapter' + index"
 					@tap="changeChapter(index, item)"
 					:class="{
@@ -50,6 +51,7 @@
 <script>
 import statusPlaceholder from '@/components/status-placeholder.vue';
 import { request } from '@/untils/http.js';
+const dom = uni.requireNativePlugin('dom')
 export default {
 	components: { statusPlaceholder},
 	data() {
@@ -77,11 +79,23 @@ export default {
 			this.chapterList = data.chapterList;
 			this.book = data.book;
 		});
+		uni.$on('leftToolTopen', data => {
+			const chapterT=this.$refs.chapterT
+			setTimeout(()=>{
+				dom.scrollToElement(chapterT[0],{
+				animated:false
+				})
+			},150)
+		});
 	},
 	destroyed() {
 		uni.$off('lt-chapter-list');
+		uni.$off('leftToolTopen');
 	},
 	methods: {
+		goToNowChapter(){
+			uni.screen
+		},
 		changeFunc(index) {
 			this.currentFunc = index;
 		},

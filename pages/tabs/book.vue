@@ -90,6 +90,7 @@ import statusPlaceholder from '@/components/status-placeholder.vue';
 import commonTabbar from '@/components/common-tabbar.vue';
 import customModal from '@/components/custom-modal.vue';
 import { request } from '@/untils/http.js';
+import source from '@/source/index.js'; 
 export default {
 	components: { statusPlaceholder, commonTabbar, customModal },
 	data() {
@@ -128,6 +129,9 @@ export default {
 			} else {
 				return '/static/home/top.png';
 			}
+		},
+		systemSetting() {
+			return this.$store.getters.getSystemSetting;
 		}
 	},
 	onPageScroll(e) {
@@ -135,11 +139,18 @@ export default {
 	},
 	onLoad() {
 		this.checkAppUpdate();
+		this.getFeature()
 	},
 	onShow() {
 		this.changeDate();
 	},
 	methods: {
+		//获得精选内容
+		getFeature() {
+			source[this.systemSetting.defaultSource].getFeature().then(data => {
+				this.$store.commit('books/SET_FEATURES',data)
+			});
+		},
 		//设置书本置顶
 		setTop() {
 			if (this.bookFunc.top) {

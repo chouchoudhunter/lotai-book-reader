@@ -72,7 +72,7 @@ export default {
 			swiper1Tag: 0,
 			swiper2Tag: 0,
 			featureBooks: [],//精选分类下的书
-			features: [],//精选的分类
+			// features: [],//精选的分类
 			featurePages: [],//精选的每个分类的页数
 			status:'loadmore',
 			eachPageNum:5,
@@ -88,30 +88,38 @@ export default {
 		},
 		systemSetting() {
 			return this.$store.getters.getSystemSetting;
-		}
+		},
+		features() {
+			return this.$store.getters.getFeatures;
+		},
 	},
 	watch:{
 		systemSetting(newVal,oldVal){
 			if(newVal.defaultSource!=oldVal.defaultSource){
 				this.refreshSource()
 			}
+		},
+		features(newVal){
+			if(newVal[0]){
+				this.getFeatureTagBooks()
+			}
 		}
 	},
 	onLoad() {
 		// #ifdef APP-PLUS
 		this.subnvue_open();
-		this.getFeature();
+		if(this.features[0]){
+			this.getFeatureTagBooks()
+		}
 		// #endif
+		const systemInfo = getApp().globalData.systemInfo;
+		this.statusBarHeight = systemInfo.statusBarHeight;
+		this.swiperHeight = systemInfo.windowHeight - systemInfo.statusBarHeight - 152;
 	},
 	onReady() {
 		// #ifdef APP-PLUS
 		this.subnvue_close();
 		// #endif
-	},
-	mounted() {
-		const systemInfo = getApp().globalData.systemInfo;
-		this.statusBarHeight = systemInfo.statusBarHeight;
-		this.swiperHeight = systemInfo.windowHeight - systemInfo.statusBarHeight - 152;
 	},
 	methods: {
 		refreshSource(){
@@ -133,6 +141,7 @@ export default {
 			this.status="loading"
 			source[this.systemSetting.defaultSource].getFeature().then(data => {
 				this.features = data;
+				// this.$store.commit('books/SET_FEATURES',data)
 				this.status="loadmore"
 				this.getFeatureTagBooks()
 			});

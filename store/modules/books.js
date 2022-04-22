@@ -3,7 +3,8 @@ const books = {
 	state: {
 		myBooks: [],
 		historyBooks: [],
-		historySearch: []
+		historySearch: [],
+		features:[]
 	},
 	mutations: {
 		SET_BOOK_TOP: (state, book) => {
@@ -14,6 +15,10 @@ const books = {
 			book.top = true
 			state.myBooks.unshift(book)
 			uni.setStorageSync('myBooks', state.myBooks)
+		},
+		SET_FEATURES: (state, features) => {
+			state.features={...features}
+			// uni.setStorageSync('myBooks', state.myBooks)
 		},
 		SET_BOOK_NO_TOP: (state, book) => {
 			const bookIndex = state.myBooks.findIndex(item => {
