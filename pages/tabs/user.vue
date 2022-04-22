@@ -44,11 +44,6 @@ export default {
 		return {
 		};
 	},
-	onLoad() {
-		// #ifdef APP-PLUS
-			this.subnvue_open();
-		// #endif
-	},
 	onReady() {
 		// #ifdef APP-PLUS
 		this.subnvue_close()
@@ -66,11 +61,6 @@ export default {
 		}
 	},
 	methods: {
-		//打开配置的原生子窗体
-		subnvue_open() {
-			const subNVue = uni.getSubNVueById('mask2'); //通过id获取nvue子窗体
-			subNVue.show('none', 10);
-		},
 		//关闭配置的原生子窗体
 		subnvue_close() {
 			const subNVue = uni.getSubNVueById('mask2'); //通过id获取nvue子窗体

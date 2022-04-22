@@ -8,7 +8,8 @@ const setting={
 			currentBgColor: 'rgb(248, 248, 248)',
 			fontSize:20,
 			lineHeight:30,
-			lightNum:2
+			lightNum:2,
+			isFollowSystemLight:true
 		},
 		systemSetting:{
 			defaultSource:'xbiquwx',
@@ -51,7 +52,7 @@ const setting={
 			uni.setStorageSync('nightMode',state.nightMode)
 		},
 		SET_READ_SETTING:(state,readSetting)=>{
-			state.readSetting=readSetting
+			state.readSetting={...readSetting}
 			uni.setStorageSync('readSetting',readSetting)
 		},
 		SET_SYSTEM_SETTING:(state,systemSetting)=>{

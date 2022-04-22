@@ -1,19 +1,22 @@
 <template>
 	<view class="read">
+		<!-- #ifdef H5 -->
 		<left-tool v-model="showLeftTool" :chapterList="chapterList" :book="this.book" @changeChapter="changeChapter"></left-tool>
+		<!-- #endif -->
+
 		<view class="navbar" :style="{ transform: !isShowToolbar ? 'translateY(-' + (44 + statusBarHeight) + 'px)' : 'none' }">
 			<u-navbar :background="{ backgroundColor: color.bgPage }" :border-bottom="false" :autoBack="true" class="main" :fixed="false">
 				<view slot="right" class="right">
-					<u-icon class="item" :name="'/static/tabs/source'+(isNightMode?'-night':'')+'.png'" size="40" @click="showSwitchSource"></u-icon>
+					<u-icon class="item" :name="'/static/tabs/source' + (isNightMode ? '-night' : '') + '.png'" size="40" @click="showSwitchSource"></u-icon>
 					<u-icon class="item" :name="'../../static/read/' + (isNightMode ? 'night' : 'light') + '.png'" size="38" @click="changeNight"></u-icon>
-					</view>
+				</view>
 			</u-navbar>
 		</view>
 		<view class="content" :style="{ backgroundColor: readSetting.currentBgColor }">
 			<view class="content-main">
 				<status-placeholder></status-placeholder>
 				<view class="top" :style="{ color: color.secText }">{{ content.title }}</view>
-				<view class="text-loading" v-show="isLoading"><loading-anime></loading-anime></view>
+				<view class="text-loading" v-show="isLoading"><loading-anime :isRead="true"></loading-anime></view>
 				<view class="load-err" v-show="content.success == -1">
 					<view class="err-text">加载失败</view>
 					<view class="err-func">
@@ -65,7 +68,7 @@ const tempContent = {
 	success: 1
 };
 export default {
-	components: { statusPlaceholder, bottomToolbar, leftTool, loadingAnime,switchSource },
+	components: { statusPlaceholder, bottomToolbar, loadingAnime, switchSource, leftTool },
 	data() {
 		return {
 			isShowToolbar: false, //是否显示工具栏
@@ -75,7 +78,7 @@ export default {
 			currentTime: '', //当前时间
 			timer: undefined, //时间循环
 			needAnimation: true, //是否显示翻页动画
-			statusBarHeight: 0, //状态栏高度
+			statusBarHeight: 28, //状态栏高度
 			content: { ...tempContent },
 			preContent: { ...tempContent },
 			nextContent: { ...tempContent },
@@ -83,8 +86,8 @@ export default {
 			book: {},
 			isChangeChapter: true,
 			isLoading: false,
-			isShowSourceSwitch:false,
-			showLeftTool:false
+			isShowSourceSwitch: false,
+			showLeftTool: false
 		};
 	},
 	computed: {
@@ -102,32 +105,37 @@ export default {
 		}
 	},
 	onLoad() {
+		const systemInfo = getApp().globalData.systemInfo;
+		this.screenWidth = systemInfo.windowWidth;
+		this.statusBarHeight = systemInfo.statusBarHeight;
+		this.refreshTime();
+		//
 		const eventChannel = this.getOpenerEventChannel();
 		eventChannel.once('read-info', data => {
 			this.book = { ...data };
 			this.book.readIndex = Number(this.book.readIndex);
 			this.book.readPage = Number(this.book.readPage);
-			//
-			const systemInfo = getApp().globalData.systemInfo;
-			this.screenWidth = systemInfo.windowWidth;
-			this.statusBarHeight = systemInfo.statusBarHeight;
-			this.refreshTime();
 			this.getChapterList();
 		});
+		//绑定左侧边栏nvue章节改变事件
+		uni.$on('changeChapter', res => {
+			this.changeChapter(res);
+		});
 	},
-	onBackPress(event){
-		if(event.from=="backbutton"){
-			if(this.showLeftTool){
-				this.showLeftTool=false
-				return true
+	onBackPress(event) {
+		if (event.from == 'backbutton') {
+			if (this.showLeftTool) {
+				this.showLeftTool = false;
+				return true;
 			}
-			if(this.isShowToolbar){
-				this.isShowToolbar=false
-				return true
+			if (this.isShowToolbar) {
+				this.isShowToolbar = false;
+				return true;
 			}
 		}
 	},
 	onUnload() {
+		uni.$off('changeChapter');
 		clearInterval(this.timer);
 		if (this.isInMyBooks) {
 			this.setBookInfo();
@@ -136,13 +144,13 @@ export default {
 		}
 	},
 	methods: {
-		refreshSource(){
+		refreshSource() {
 			this.$u.toast('书本换源装修中...', 3000);
 			// this.content={...tempContent}
 			// this.getChapterList();
 		},
-		showSwitchSource(){
-			this.isShowSourceSwitch=!this.isShowSourceSwitch
+		showSwitchSource() {
+			this.isShowSourceSwitch = !this.isShowSourceSwitch;
 		},
 		changeReadSetting() {
 			this.computePageNum();
@@ -182,9 +190,12 @@ export default {
 		},
 		//获得章节目录
 		getChapterList() {
+			this.isLoading=true
 			//#ifdef APP-PLUS
 			source[this.book.source].getChapterList(this.book.bookUrl).then(res => {
 				this.chapterList = res;
+				this.isLoading=false
+				uni.$emit('lt-chapter-list', { chapterList: res, book: this.book });
 				if (!this.content.text) {
 					this.loadChapter(-1);
 				}
@@ -192,6 +203,7 @@ export default {
 			//#endif
 			//#ifdef H5
 			request('getChapterList', { bookUrl: this.book.bookUrl }).then(res => {
+				this.isLoading=false
 				this.chapterList = res.data;
 				if (!this.content.text) {
 					this.loadChapter(-1);
@@ -201,8 +213,20 @@ export default {
 		},
 		//打开左边工具栏（目录）
 		openLeftTool() {
-			this.showLeftTool=!this.showLeftTool
+			//#ifdef H5
+			this.showLeftTool = !this.showLeftTool;
 			this.isShowToolbar = false;
+			//#endif
+			//#ifdef APP-PLUS
+			const subNVue = uni.getSubNVueById('leftTool'); //通过id获取nvue子窗体
+			subNVue.show('slide-in-left', 300);
+			this.isShowToolbar = false;
+			//#endif
+		},
+		//关闭左边工具栏（目录）
+		closeLeftTool() {
+			const subNVue = uni.getSubNVueById('leftTool'); //通过id获取nvue子窗体
+			subNVue.hide('slide-in-left', 300);
 		},
 		//检测是一个或者下一个相邻的章节 -1表示已经是最后一个章节了，-2表示已经是第一个章节了
 		getNextOrPreCgaperIndex(dir = 1) {
@@ -419,12 +443,12 @@ export default {
 		height: auto;
 		z-index: 2;
 		width: 100%;
-		.right{
+		.right {
 			margin-right: 15px;
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			.item{
+			.item {
 				margin-left: 15px;
 			}
 		}

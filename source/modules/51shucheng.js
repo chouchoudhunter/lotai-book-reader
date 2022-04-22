@@ -35,8 +35,6 @@ const source={
 					const novelsHtml=new HTMLParser(novels.innerHTML)
 					dataTemp={...dataTemp}
 					dataTemp.books=[]
-					// dataTemp.title=novelsHtml.getElementsByClassName('box-title')[0].innerHTML
-					// dataTemp.title=dataTemp.title.replace(/(<\/?a.*?>)/gi,'').trim()
 					dataTemp.title=title[i]
 					const list=novelsHtml.getElementsByTagName('li')
 					list.forEach(item=>{
@@ -159,7 +157,7 @@ const source={
 					status:1,
 					success:1
 				}
-				chapterTemp.text+=new HTMLParser(res.data).getElementById('neirong').innerHTML
+				chapterTemp.text+=new HTMLParser(res.data).getElementById('neirong').innerHTML.trim()
 				reslove(chapterTemp)
 			}).catch(err=>{
 				console.log(err)

@@ -1,0 +1,178 @@
+<template>
+	<view class="left-tool" :style="{ backgroundColor: color.bgPage }">
+		<status-placeholder></status-placeholder>
+		<view
+			class="top"
+			:style="{
+				'box-shadow': isNightMode ? 'none' : '0px 7px 10px -3px rgba(158, 158, 158, 0.1)'
+			}"
+		>
+		<view class="top-top">
+			<view class="img"><image class="img" mode="aspectFill" :src="book.img" /></view>
+			<view class="info">
+				<view>
+					<text class="title" :style="{ color: color.normalText }">{{ book.title }}</text>
+					<!-- <u-icon size="30" name="arrow-right"></u-icon> -->
+				</view>
+				<view><text class="info-text" :style="{ color: color.secText }">{{ book.author }}</text></view>
+				<view><text class="info-text" :style="{ color: color.secText }">{{ '更新至 ' + (chapterList[chapterList.length - 1] ? chapterList[chapterList.length - 1].title : '') }}</text></view>
+				<view><text class="info-text" :style="{ color: color.secText }">当前阅读进度{{ book.readPos }}%</text></view>
+			</view>
+		</view>
+		<view class="tabs">
+			<view class="tabs-main">
+				<view><text class="tab-text" :style="{color:'#007aff'}">目录</text></view>
+				<view><text class="tab-text" :style="{color:color.normalText}">笔记</text></view>
+			</view>
+			<view class="dot"></view>
+		</view>
+		</view>
+		<list class="bottom" :style="{ height: toolHeight + 'px', backgroundColor: color.cardBg }">
+			<cell style="height: 10px;"></cell>
+			<cell v-for="(item, index) in chapterList" :key="index">
+				<view
+					:id="'chapter' + index"
+					@tap="changeChapter(index, item)"
+					:class="{
+						group: item.type == 'group',
+						chapter: item.type == 'chapter',
+						selected: index == book.readIndex
+					}"
+				>
+					<text
+					class="text-style"
+					:style="`color:${index == book.readIndex?'#007aff':color.normalText }`">{{ item.title }}</text>
+				</view>
+			</cell>
+		</list>
+	</view>
+</template>
+<script>
+import statusPlaceholder from '@/components/status-placeholder.vue';
+import { request } from '@/untils/http.js';
+export default {
+	components: { statusPlaceholder},
+	data() {
+		return {
+			funcList: [{ name: '目录' }, { name: '书签' }],
+			currentFunc: 0,
+			toolHeight: 0,
+			scrollView: '',
+			chapterList: [],
+			book: {}
+		};
+	},
+	computed: {
+		color() {
+			return this.$store.getters.getColor;
+		},
+		isNightMode() {
+			return this.$store.getters.getIsNightMode;
+		}
+	},
+	mounted() {
+		const systemInfo = getApp().globalData.systemInfo;
+		this.toolHeight = systemInfo.windowHeight - systemInfo.statusBarHeight - 170;
+		uni.$on('lt-chapter-list', data => {
+			this.chapterList = data.chapterList;
+			this.book = data.book;
+		});
+	},
+	destroyed() {
+		uni.$off('lt-chapter-list');
+	},
+	methods: {
+		changeFunc(index) {
+			this.currentFunc = index;
+		},
+		initTool() {
+			this.scrollView = 'chapter' + this.book.readIndex;
+		},
+		changeChapter(index, item) {
+			if (item.type == 'chapter') {
+				uni.$emit('changeChapter', index);
+			}
+		}
+	}
+};
+</script>
+
+<style lang="scss">
+.left-tool {
+	overflow: hidden;
+	.top {
+		height: 170px;
+		width: 563rpx;
+		padding: 15px 15px 0 15px;
+		position: relative;
+		z-index: 3;
+		.tabs{
+			width: 563rpx;
+			position: absolute;
+			bottom: 10px;
+			left: 0;
+			.tabs-main{
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: space-around;
+				.tab-text{
+					font-size: 14px;
+				}
+			}
+			.dot{
+				width: 35rpx;
+				height:5rpx;
+				background-color: #007aff;
+				border-radius: 3rpx;
+				transform: translateX(123rpx);
+				margin-top: 5px;
+			}
+		}
+		.top-top {
+			display: flex;
+			flex-direction: row;
+			.img {
+				width: 75px;
+				height: 100px;
+				border-radius: 7px;
+				overflow: hidden;
+			}
+			.info {
+				height: 100px;
+				margin-left: 10px;
+				color: #959595;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				.info-text{
+					font-size: 12px;
+				}
+				.title {
+					font-size: 18px;
+					color: #000000;
+				}
+			}
+		}
+	}
+	.bottom {
+		background-color: #f9f9f9;
+		width: 563rpx;
+		position: relative;
+		z-index: 2;
+		.group,
+		.chapter {
+			width: 563rpx;
+			padding:10px;
+			overflow: hidden;
+			.text-style {
+				font-size: 14px;
+			}
+		}
+		.group {
+			font-size: 16px;
+			// border-bottom: 1px solid #67bdff;
+		}
+	}
+}
+</style>

@@ -1,16 +1,46 @@
 <template>
-	<view class="bottom-toolbar" :style="{ transform: !isShow ? 'translateY(50px)' : 'none'}">
-		<view class="tool" :style="{ transform: showTool ? 'none' : 'translateY(90px)',backgroundColor: color.bgPage,'border-bottom': '1px solid '+color.cardBg}">
+	<view class="bottom-toolbar" :style="{ transform: !isShow ? 'translateY(50px)' : 'none' }">
+		<view class="tool" :style="{ transform: showTool ? 'none' : 'translateY(90px)', backgroundColor: color.bgPage, 'border-bottom': '1px solid ' + color.cardBg }">
 			<view class="light" v-show="currentOpenTool == 1">
 				<view class="row">
-					<view class="color" :class="{'color-active':readSetting.currentBgColor==readSetting.bgColor[0]}" :style="{ backgroundColor: readSetting.bgColor[0] }" @click="changeBgColor(0)"></view>
-					<view class="color" :class="{'color-active':readSetting.currentBgColor==readSetting.bgColor[1]}" :style="{ backgroundColor: readSetting.bgColor[1] }" @click="changeBgColor(1)"></view>
-					<view class="color" :class="{'color-active':readSetting.currentBgColor==readSetting.bgColor[2]}" :style="{ backgroundColor: readSetting.bgColor[2] }" @click="changeBgColor(2)">
+					<view
+						class="color"
+						:class="{ 'color-active': readSetting.currentBgColor == readSetting.bgColor[0] }"
+						:style="{ backgroundColor: readSetting.bgColor[0] }"
+						@click="changeBgColor(0)"
+					></view>
+					<view
+						class="color"
+						:class="{ 'color-active': readSetting.currentBgColor == readSetting.bgColor[1] }"
+						:style="{ backgroundColor: readSetting.bgColor[1] }"
+						@click="changeBgColor(1)"
+					></view>
+					<view
+						class="color"
+						:class="{ 'color-active': readSetting.currentBgColor == readSetting.bgColor[2] }"
+						:style="{ backgroundColor: readSetting.bgColor[2] }"
+						@click="changeBgColor(2)"
+					>
 						<image class="moon" src="../../../static/read/night.png"></image>
 					</view>
 				</view>
 				<view class="lightSet">
-					<u-slider v-model="lightNum" @moving="changeLight" @end="changeLightEnd" height="30" min="0" max="100" step="1" active-color="#e3e3e3" inactive-color="#f3f3f3" block-width="30" block-color="#fff"></u-slider>
+					<u-slider
+						class="slider-light"
+						v-model="lightNum"
+						@moving="changeLight"
+						@end="changeLightEnd"
+						height="30"
+						min="0"
+						max="100"
+						step="1"
+						active-color="#e3e3e3"
+						inactive-color="#f3f3f3"
+						block-width="30"
+						block-color="#fff"
+						:disabled="readSetting.isFollowSystemLight"
+					></u-slider>
+					<u-checkbox shape="circle" @change="followSystemLight" v-model="readSetting.isFollowSystemLight" name="isSystemLight">跟随系统亮度</u-checkbox>
 				</view>
 			</view>
 			<view class="font" v-show="currentOpenTool == 2">
@@ -23,7 +53,7 @@
 					<view style="width: 20px;"></view>
 					<view class="step">
 						<view class="left" @click="changeLineHeight(0)"><image src="../../../static/read/lint-height-sub.png" mode="widthFix" class="image"></image></view>
-						<view class="mid">{{readSetting.lineHeight}}</view>
+						<view class="mid">{{ readSetting.lineHeight }}</view>
 						<view class="right" @click="changeLineHeight(1)"><image src="../../../static/read/lint-height-add.png" mode="widthFix" class="image"></image></view>
 					</view>
 				</view>
@@ -35,9 +65,9 @@
 			</view>
 		</view>
 		<view class="bar" :style="{ backgroundColor: color.bgPage }">
-			<u-icon :name="'/static/read/list'+(isNightMode?'-night':'')+'.png'" size="40" @click="openTool(0)"></u-icon>
-			<u-icon :name="'/static/read/color'+(isNightMode?'-night':'')+'.png'" size="45" @click="openTool(1)"></u-icon>
-			<u-icon :name="'/static/read/font-size'+(isNightMode?'-night':'')+'.png'" size="40" @click="openTool(2)"></u-icon>
+			<u-icon class="icon" :name="'/static/read/list' + (isNightMode ? '-night' : '') + '.png'" size="40" @click="openTool(0)"></u-icon>
+			<u-icon class="icon" :name="'/static/read/color' + (isNightMode ? '-night' : '') + '.png'" size="45" @click="openTool(1)"></u-icon>
+			<u-icon class="icon" :name="'/static/read/font-size' + (isNightMode ? '-night' : '') + '.png'" size="40" @click="openTool(2)"></u-icon>
 		</view>
 	</view>
 </template>
@@ -59,20 +89,21 @@ export default {
 			default: () => {}
 		}
 	},
+	data() {
+		return {
+			showTool: false,
+			currentOpenTool: 1,
+			lightNum: 20,
+			systemLight: true,
+		};
+	},
 	computed: {
 		isNightMode() {
 			return this.$store.getters.getIsNightMode;
 		},
 		color() {
 			return this.$store.getters.getColor;
-		},
-	},
-	data() {
-		return {
-			showTool: false,
-			currentOpenTool: 1,
-			lightNum:20
-		};
+		}
 	},
 	watch: {
 		isShow(newVal, oldVal) {
@@ -81,50 +112,70 @@ export default {
 			}
 		}
 	},
+	mounted() {
+		if(!this.readSetting.isFollowSystemLight){
+			this.changeLight()
+		}
+	},
 	methods: {
-		changeLight(){
+		followSystemLight(res) {
+			if(res.value){//跟随
+				uni.setScreenBrightness({
+					value:'-1'
+				})
+				this.readSetting.isFollowSystemLight=true
+			}else{
+				this.changeLight()
+				console.log(this.readSetting)
+				this.readSetting.isFollowSystemLight=false
+			}
+			this.$store.commit('setting/SET_READ_SETTING', this.readSetting);
+		},
+		changeLight(value=null) {
+			value=value?value:this.lightNum / 100
 			uni.setScreenBrightness({
-				value:(this.lightNum/100),
-				success: ()=>{
-					console.log(this.lightNum/100)
+				value: value,
+				success: () => {
+					this.readSetting.lightNum=value
+					this.$store.commit('setting/SET_READ_SETTING', this.readSetting);
 				}
 			});
 		},
-		changeLightEnd(){
-			this.saveReadSetting()
+		changeLightEnd() {
+			this.saveReadSetting();
 		},
 		//保存阅读设置
-		saveReadSetting(){
-			this.$emit('changeReadSetting')
-			this.$store.commit('setting/SET_READ_SETTING',this.readSetting)
+		saveReadSetting() {
+			this.$emit('changeReadSetting');
+			this.$store.commit('setting/SET_READ_SETTING', this.readSetting);
 		},
 		//修改背景颜色
-		changeBgColor(index){
-			this.readSetting.currentBgColor=this.readSetting.bgColor[index]
-			this.saveReadSetting()
+		changeBgColor(index) {
+			this.readSetting.currentBgColor = this.readSetting.bgColor[index];
+			this.saveReadSetting();
 		},
 		//修改行高
-		changeLineHeight(dir){
-			if(dir){
-				if(this.readSetting.lineHeight<48){
-					this.readSetting.lineHeight+=2
-					this.saveReadSetting()
+		changeLineHeight(dir) {
+			if (dir) {
+				if (this.readSetting.lineHeight < 48) {
+					this.readSetting.lineHeight += 2;
+					this.saveReadSetting();
 				}
-			}else{
-				if(this.readSetting.lineHeight>16){
-					this.readSetting.lineHeight-=2
-					this.saveReadSetting()
+			} else {
+				if (this.readSetting.lineHeight > 16) {
+					this.readSetting.lineHeight -= 2;
+					this.saveReadSetting();
 				}
 			}
 		},
 		//改变字体大小
-		changeFontSize(dir){
-			if(dir){
-				this.readSetting.fontSize++
-			}else{
-				this.readSetting.fontSize--
+		changeFontSize(dir) {
+			if (dir) {
+				this.readSetting.fontSize++;
+			} else {
+				this.readSetting.fontSize--;
 			}
-			this.saveReadSetting()
+			this.saveReadSetting();
 		},
 		//打开工具栏详情
 		openTool(currentOpenTool = -1) {
@@ -145,7 +196,7 @@ export default {
 				this.showTool = true;
 				this.currentOpenTool = currentOpenTool;
 			}
-		},
+		}
 	}
 };
 </script>
@@ -158,7 +209,7 @@ export default {
 	position: fixed;
 	bottom: 0;
 	left: 0;
-	transition: all 0.5s;
+	transition: all 0.2s;
 	z-index: 10;
 	.tool {
 		position: absolute;
@@ -175,7 +226,7 @@ export default {
 			display: flex;
 			flex-direction: column;
 			justify-content: space-between;
-			height: 100%; 
+			height: 100%;
 			.row {
 				display: flex;
 				flex-direction: row;
@@ -191,16 +242,24 @@ export default {
 				flex-direction: row;
 				justify-content: center;
 				align-items: center;
-				.moon{
+				.moon {
 					width: 15px;
 					height: 15px;
 				}
 			}
-			.color-active{
-				border: 3px solid #007AFF;
+			.color-active {
+				border: 3px solid #007aff;
 			}
-			.lightSet{
-				// width: 70%;
+			.lightSet {
+				display: flex;
+				flex-direction: row;
+				justify-content: space-between;
+				align-items: center;
+				.slider-light{
+					flex-grow: 1;
+					margin-right: 10px;
+					height: 30rpx;
+				}
 			}
 		}
 		.font {
@@ -242,6 +301,9 @@ export default {
 		z-index: 10;
 		position: relative;
 		background-color: white;
+		.icon {
+			padding: 10px 20px;
+		}
 	}
 }
 </style>

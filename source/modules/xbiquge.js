@@ -138,7 +138,7 @@ const source={
 					status:1,
 					success:1
 				}
-				chapterTemp.text+=new HTMLParser(res.data).getElementById('content').innerHTML
+				chapterTemp.text+=new HTMLParser(res.data).getElementById('content').innerHTML.trim()
 				reslove(chapterTemp)
 			}).catch(err=>{
 				console.log(err)

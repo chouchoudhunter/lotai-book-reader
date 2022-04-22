@@ -168,8 +168,8 @@ export default {
 		},
 		//打开配置的原生子窗体
 		subnvue_open() {
-			const subNVue = uni.getSubNVueById('mask'); //通过id获取nvue子窗体
-			subNVue.show('none', 10);
+			// const subNVue = uni.getSubNVueById('mask'); //通过id获取nvue子窗体
+			// subNVue.show('none', 10);
 		},
 		//关闭配置的原生子窗体
 		subnvue_close() {

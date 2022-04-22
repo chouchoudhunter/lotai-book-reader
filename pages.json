@@ -29,7 +29,20 @@
 			}
 		},
 		{
-			"path":"pages/read/read"
+			"path":"pages/read/read",
+			"style":{
+				"app-plus":{
+					"subNVues":[{
+						"id":"leftTool",
+						"path":"pages/read/components/left-tool-n",
+						"type": "popup",
+						"style": {
+							"width": "75%",
+							"background":"transparent"
+						}
+					}]
+				}
+			}
 		}
 	    ,{
             "path" : "pages/search/search"  
