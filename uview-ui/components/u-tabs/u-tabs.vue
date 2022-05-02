@@ -61,6 +61,11 @@
 					return [];
 				}
 			},
+			//是否需要左右的边距
+			needlrPadding: {
+				type: Boolean,
+				default: true
+			},
 			// 当前活动tab的索引
 			current: {
 				type: [Number, String],
@@ -221,6 +226,9 @@
 						flex: this.isScroll ? 'auto' : '1',
 						width: this.$u.addUnit(this.itemWidth)
 					};
+					if(index===0 && !this.needlrPadding){
+						style.padding=this.isScroll ? `0 ${this.gutter}rpx 0 0` : ''
+					}
 					// 字体加粗
 					if (index == this.currentIndex && this.bold) style.fontWeight = 'bold';
 					if (index == this.currentIndex) {
@@ -286,7 +294,12 @@
 				let scrollLeft = offsetLeft - (this.componentWidth - tabWidth) / 2;
 				this.scrollLeft = scrollLeft < 0 ? 0 : scrollLeft;
 				// 当前活动item的中点点到左边的距离减去滑块宽度的一半，即可得到滑块所需的移动距离
-				let left = tabInfo.left + tabInfo.width / 2 - this.parentLeft;
+				let left=0
+				if(!this.needlrPadding &&this.currentIndex==0){
+					left = tabInfo.left + (tabInfo.width-this.gutter/2) / 2 - this.parentLeft;
+				}else{
+					left = tabInfo.left + tabInfo.width / 2 - this.parentLeft;
+				}
 				// 计算当前活跃item到组件左边的距离
 				this.scrollBarLeft = left - uni.upx2px(this.barWidth) / 2;
 				// 第一次移动滑块的时候，barFirstTimeMove为true，放到延时中将其设置false

@@ -13,7 +13,8 @@ const setting={
 		},
 		systemSetting:{
 			defaultSource:0,
-			sources:[]
+			sources:[],
+			customSources:[]
 		},
 		color:{
 			light:{
@@ -65,6 +66,10 @@ const setting={
 		},
 		SET_SOURCE:(state,sources)=>{
 			state.systemSetting.sources={...sources}
+			uni.setStorageSync('systemSetting',state.systemSetting)
+		},
+		ADD_CUSTOM_SOURCE:(state,source)=>{
+			state.systemSetting.customSources.push(source)
 			uni.setStorageSync('systemSetting',state.systemSetting)
 		},
 		INIT_SETTING:(state,data)=>{

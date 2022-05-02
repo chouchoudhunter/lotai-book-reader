@@ -4,7 +4,7 @@ const books = {
 		myBooks: [],
 		historyBooks: [],
 		historySearch: [],
-		features:[]
+		features:{select:[],tags:[]}
 	},
 	mutations: {
 		SET_BOOK_TOP: (state, book) => {

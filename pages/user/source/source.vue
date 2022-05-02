@@ -21,6 +21,7 @@
 				<scroll-view :scroll-y="true" class="main" v-for="(item, index) in feeds" :key="index" v-show="swiperFeed == index">
 				<view class="source-func">
 					<u-search :bg-color="color.searchBg" :show-action="false" v-model="keyword"></u-search>
+					<u-icon class="icon" :name="'/static/user/'+(isNightMode?'refresh-night':'refresh')+'.png'" size="35" @click="refreshSource"></u-icon>
 					<u-icon class="icon" :name="'/static/home/'+(isNightMode?'trash-night':'trash')+'.png'" size="35"></u-icon>
 				</view>
 				
@@ -158,9 +159,54 @@ export default {
 					},
 					{
 						type: 'discord',
-						method: 'get',
-						prefix: 'search.html?searchkey=',
-						xpath: ''
+						method: 'GET',
+						url: '',
+						xpaths: [
+							{
+								type: 'select',
+								xpath: "/html/body/div[3]/div[2]/div[1]/div[1]/div/div/div//a[1]/@href"
+							},
+							{
+								type: 'tag',
+								name:'玄幻奇幻',
+								xpath: "/html/body/div[3]/div[2]/div[2]/div[1]/div//a[@class='name']/@href|/html/body/div[3]/div[2]/div[2]/div[1]/div/div[2]/div[2]/h4/a/@href"
+							},
+							{
+								type: 'tag',
+								name:'武侠仙侠',
+								xpath: "/html/body/div[3]/div[2]/div[2]/div[2]/div//a[@class='name']/@href|/html/body/div[3]/div[2]/div[2]/div[2]/div/div[2]/div[2]/h4/a/@href"
+							},
+							{
+								type: 'tag',
+								name:'浪漫言情',
+								xpath: "/html/body/div[3]/div[2]/div[2]/div[3]/div//a[@class='name']/@href|/html/body/div[3]/div[2]/div[2]/div[3]/div/div[2]/div[2]/h4/a/@href"
+							},
+							{
+								type: 'tag',
+								name:'现代都市',
+								xpath: "/html/body/div[3]/div[2]/div[2]/div[4]/div//a[@class='name']/@href|/html/body/div[3]/div[2]/div[2]/div[4]/div/div[2]/div[2]/h4/a/@href"
+							},
+							{
+								type: 'tag',
+								name:'历史军事',
+								xpath: "/html/body/div[3]/div[2]/div[2]/div[5]/div//a[@class='name']/@href|/html/body/div[3]/div[2]/div[2]/div[5]/div/div[2]/div[2]/h4/a/@href"
+							},
+							{
+								type: 'tag',
+								name:'游戏竞技',
+								xpath: "/html/body/div[3]/div[2]/div[2]/div[6]/div//a[@class='name']/@href|/html/body/div[3]/div[2]/div[2]/div[6]/div/div[2]/div[2]/h4/a/@href"
+							},
+							{
+								type: 'tag',
+								name:'科幻灵异',
+								xpath: "/html/body/div[3]/div[2]/div[2]/div[7]/div//a[@class='name']/@href|/html/body/div[3]/div[2]/div[2]/div[7]/div/div[2]/div[2]/h4/a/@href"
+							},
+							{
+								type: 'tag',
+								name:'美文同人',
+								xpath: "/html/body/div[3]/div[2]/div[2]/div[8]/div//a[@class='name']/@href|/html/body/div[3]/div[2]/div[2]/div[8]/div/div[2]/div[2]/h4/a/@href"
+							}
+						]
 					}
 				]
 			}
@@ -191,6 +237,11 @@ export default {
 		});
 	},
 	methods: {
+		refreshSource(){
+			switch(this.swiperFeed){
+				case 0:this.requestSourceList();break;
+			}
+		},
 		requestSourceList(){
 			request('getSourceList').then((res)=>{
 				this.$store.commit('setting/SET_SOURCE',res.data.data)
@@ -211,7 +262,7 @@ export default {
 			});
 		},
 		async test() {
-			// const books = await sourceParser(this.sourceTest, 'chapter', { bookUrl: 'du/19/19410/', chapterUrl: '1120197.html' });
+			// const books = await sourceParser(this.sourceTest, 'discord');
 			// console.log(books);
 		}
 	}

@@ -90,7 +90,7 @@ import statusPlaceholder from '@/components/status-placeholder.vue';
 import commonTabbar from '@/components/common-tabbar.vue';
 import customModal from '@/components/custom-modal.vue';
 import { request } from '@/untils/http.js';
-import source from '@/source/index.js'; 
+import sourceParser from '@/untils/sourceParser.js';
 export default {
 	components: { statusPlaceholder, commonTabbar, customModal },
 	data() {
@@ -130,8 +130,11 @@ export default {
 				return '/static/home/top.png';
 			}
 		},
-		systemSetting() {
-			return this.$store.getters.getSystemSetting;
+		defaultSource(){
+			return this.$store.getters.getDefaultSource;
+		},
+		sources() {
+			return this.$store.getters.getSources;
 		}
 	},
 	onPageScroll(e) {
@@ -139,15 +142,15 @@ export default {
 	},
 	onLoad() {
 		this.checkAppUpdate();
-		this.getFeature()
+		this.getDiscord()
 	},
 	onShow() {
 		this.changeDate();
 	},
 	methods: {
 		//获得精选内容
-		getFeature() {
-			source[this.systemSetting.defaultSource].getFeature().then(data => {
+		getDiscord() {
+			sourceParser(this.sources[this.defaultSource].content, 'discord').then(data => {
 				this.$store.commit('books/SET_FEATURES',data)
 			});
 		},

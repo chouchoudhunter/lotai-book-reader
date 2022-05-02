@@ -16,65 +16,70 @@
 				@change="changeSwiper"
 			>
 				<swiper-item class="swiperItem">
-					<u-field
-						type="text"
-						:border-bottom="false"
-						:label-color="color.normalText"
-						:field-style="{ color: color.normalText }"
-						v-model="source.info.title"
-						label="标题"
-						placeholder="源显示的标题"
-						:clearable="true"
-					></u-field>
-					<u-field
-						type="text"
-						:border-bottom="false"
-						:label-color="color.normalText"
-						:field-style="{ color: color.normalText }"
-						v-model="source.info.host"
-						label="域名"
-						placeholder="源的域名(http://www.example.com/)"
-						:clearable="true"
-					></u-field>
-					<u-field
-						type="text"
-						:border-bottom="false"
-						:label-color="color.normalText"
-						:field-style="{ color: color.normalText }"
-						v-model="source.info.desc"
-						label="描述"
-						placeholder="源的描述"
-						:clearable="true"
-					></u-field>
+					<scroll-view :scroll-y="true" class="swiperItem-main">
+						<u-field
+							type="text"
+							:border-bottom="false"
+							:label-color="color.normalText"
+							:field-style="{ color: color.normalText }"
+							v-model="source.info.title"
+							label="标题"
+							placeholder="源显示的标题"
+							:clearable="true"
+						></u-field>
+						<u-field
+							type="text"
+							:border-bottom="false"
+							:label-color="color.normalText"
+							:field-style="{ color: color.normalText }"
+							v-model="source.info.host"
+							label="域名"
+							placeholder="源的域名(http://www.example.com/)"
+							:clearable="true"
+						></u-field>
+						<u-field
+							type="text"
+							:border-bottom="false"
+							:label-color="color.normalText"
+							:field-style="{ color: color.normalText }"
+							v-model="source.info.desc"
+							label="描述"
+							placeholder="源的描述"
+							:clearable="true"
+						></u-field>
+					</scroll-view>
 				</swiper-item>
 				<swiper-item class="swiperItem">
-					<view class="radio-label">
-						<view class="label" :style="{ color: color.normalText }">请求类型</view>
-						<u-radio-group v-model="source.operation[0].method">
-							<u-radio name="GET">GET</u-radio>
-							<u-radio name="POST">POST</u-radio>
-						</u-radio-group>
-					</view>
-					<u-field
-						type="text"
-						:border-bottom="false"
-						:label-color="color.normalText"
-						:field-style="{ color: color.normalText }"
-						v-model="source.operation[0].url"
-						label="搜索地址"
-						placeholder="输入搜索地址"
-						:clearable="true"
-					></u-field>
-					<u-field
-						type="text"
-						:border-bottom="false"
-						:label-color="color.normalText"
-						:field-style="{ color: color.normalText }"
-						v-model="source.operation[0].xpaths[0].xpath"
-						label="结果规则"
-						placeholder="输入xpath规则"
-						:clearable="true"
-					></u-field>
+					<scroll-view :scroll-y="true" class="swiperItem-main">
+						<view class="radio-label">
+							<view class="label" :style="{ color: color.normalText }">请求类型</view>
+							<u-radio-group v-model="source.operation[0].method">
+								<u-radio name="GET">GET</u-radio>
+								<u-radio name="POST">POST</u-radio>
+							</u-radio-group>
+						</view>
+						<u-field
+							type="text"
+							:border-bottom="false"
+							:label-color="color.normalText"
+							:field-style="{ color: color.normalText }"
+							v-model="source.operation[0].url"
+							label="搜索地址"
+							placeholder="输入搜索地址"
+							:clearable="true"
+						></u-field>
+						<u-field
+							type="text"
+							:border-bottom="false"
+							:label-color="color.normalText"
+							:field-style="{ color: color.normalText }"
+							v-model="source.operation[0].xpaths[0].xpath"
+							label="结果规则"
+							placeholder="输入xpath规则"
+							:clearable="true"
+						></u-field>
+						<u-button @click="openDebugToast('search')">测试</u-button>
+					</scroll-view>
 				</swiper-item>
 				<swiper-item class="swiperItem">
 					<scroll-view :scroll-y="true" class="swiperItem-main">
@@ -310,7 +315,21 @@
 				</swiper-item>
 			</swiper>
 		</view>
-		<custom-modal v-model="backToast" @confirm="backPage" title="确定退出吗？" content="未保存,如果点击确定会丢失所有数据">{{ JSON.stringify(this.source) }}</custom-modal>
+		<custom-modal v-model="backToast" @confirm="backPage" title="确定退出吗？" content="未保存,如果点击确定会丢失所有数据"></custom-modal>
+		<custom-modal v-model="debugToast" @confirm="backPage" :title="debugType+'测试'">
+			<view v-if="debugType==='search'">
+				<u-field
+					type="text"
+					:border-bottom="false"
+					:label-color="color.normalText"
+					:field-style="{ color: color.normalText }"
+					v-model="debugData.search.keyword"
+					label="关键词"
+					placeholder="输入搜索关键词"
+					:clearable="true"
+				></u-field>
+			</view>
+		</custom-modal>
 	</view>
 </template>
 
@@ -324,8 +343,14 @@ export default {
 			currentTag: 0,
 			swiperHeight: 0,
 			backToast: false,
+			debugToast: false,
+			debugType:"",
+			debugResult:null,
+			debugData:{
+				search:{keyword:''}
+			},
 			source: {
-				info: { title: '', desc: '', host: '',isOpen:true },
+				info: { title: '', desc: '', host: '', isOpen: true },
 				operation: [
 					{
 						type: 'search',
@@ -350,16 +375,13 @@ export default {
 						type: 'list',
 						method: 'GET',
 						url: '',
-						xpaths: [{type: 'chapter',xpath: ""}]
+						xpaths: [{ type: 'chapter', xpath: '' }]
 					},
 					{
 						type: 'chapter',
 						method: 'GET',
 						url: '',
-						xpaths: [
-							{type: 'title',xpath: "",reg:''},
-							{type: 'text',xpath: "",reg:''}
-						]
+						xpaths: [{ type: 'title', xpath: '', reg: '' }, { type: 'text', xpath: '', reg: '' }]
 					},
 					{
 						type: 'discord',
@@ -391,21 +413,28 @@ export default {
 		this.swiperHeight = systemInfo.windowHeight - systemInfo.statusBarHeight - 88;
 	},
 	onReady() {
-		this.subnvue_close()
+		this.subnvue_close();
 	},
 	onBackPress(event) {
 		if (event.from == 'backbutton') {
-			this.openBackToast()
+			this.openBackToast();
 			return true;
 		}
 	},
 	methods: {
+		openDebugToast(type){
+			this.debugToast=true
+			this.debugType=type
+			// switch(type){
+			// 	case 'search':this.debugResult=await sourceParser(this.sources[this.defaultSource].content,'search',{keyword:this.keyword});break;
+			// }
+		},
 		//关闭配置的原生子窗体
 		subnvue_close() {
 			const subNVue = uni.getSubNVueById('mask3'); //通过id获取nvue子窗体
 			subNVue.hide('none', 10);
 		},
-		openBackToast(){
+		openBackToast() {
 			this.backToast = true;
 		},
 		backPage() {

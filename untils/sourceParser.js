@@ -12,7 +12,40 @@ function parse(source, type, data) {
 		return getChapterList(source.operation[2], source.info, data)
 	} else if (type === 'chapter') {
 		return getChapter(source.operation[3], source.info, data)
+	} else if (type === 'discord') {
+		return getDiscord(source.operation[4], source.info)
 	}
+}
+async function getDiscord(operation, info) {
+	return new Promise(async (reslove, reject) => {
+		let data={
+			select:[],
+			tags:[]
+		}
+		const requestUrl = info.host + operation.url
+		const tempHtml = await getHtml(requestUrl, operation.method)
+		const doc = new DOMParser().parseFromString(tempHtml)
+		operation.xpaths.forEach(tempXpath => {
+			if (tempXpath.type === 'select') {
+				let nodes = xpath.select(tempXpath.xpath, doc);
+				nodes.forEach(node=>{
+					data.select.push(getString(node))
+				})
+			}
+			else if(tempXpath.type === 'tag') {
+				let dataTemp={
+					name:tempXpath.name,
+					books:[]
+				}
+				let nodes = xpath.select(tempXpath.xpath, doc);
+				nodes.forEach(node=>{
+					dataTemp.books.push(getString(node))
+				})
+				data.tags.push(dataTemp)
+			}
+		})
+		reslove(data)
+	})
 }
 async function getChapter(operation, info, data) {
 	return new Promise(async (reslove, reject) => {
