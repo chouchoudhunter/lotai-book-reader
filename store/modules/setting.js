@@ -27,6 +27,8 @@ const setting={
 				cardBg:"#f3f3f3",
 				//滑块背景
 				swiperBg:"#f3f3f3",
+				//搜索框背景色
+				searchBg:"#e1e1e1"
 			},
 			night:{
 				//页面背景色
@@ -38,7 +40,9 @@ const setting={
 				//卡片背景色
 				cardBg:"#272727",
 				//滑块背景
-				swiperBg:"#282828",
+				swiperBg:"#2d2d2d",
+				//搜索框背景色
+				searchBg:"#414141"
 			}
 		}
 	},

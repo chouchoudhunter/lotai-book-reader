@@ -19,11 +19,20 @@
 			</view>
 			<view class="right" :style="{ color: color.normalText }">
 				<scroll-view :scroll-y="true" class="main" v-for="(item, index) in feeds" :key="index" v-show="swiperFeed == index">
+				<view class="source-func">
+					<u-search :bg-color="color.searchBg" :show-action="false" v-model="keyword"></u-search>
+					<u-icon class="icon" :name="'/static/home/'+(isNightMode?'trash-night':'trash')+'.png'" size="35"></u-icon>
+				</view>
+				
 					<view v-if="index!=0"></view>
 					<view v-else>
 						<view v-for="(source,index) in sources" :key="index" class="source">
 							<view class="source-title">{{source.content.info.title}}</view>
 							<view class="source-desc">{{source.content.info.desc}}</view>
+							<view class="source-icon">
+								<u-icon name="eye" size="35"></u-icon>
+								<!-- <u-icon class="icon" :name="'/static/home/'+(isNightMode?'trash-night':'trash')+'.png'" size="35" @click="confirmClear()"></u-icon> -->
+							</view>
 						</view>
 					</view>
 				</scroll-view>
@@ -68,6 +77,7 @@ export default {
 			feedUrl: '',
 			swiperItemHeight: 800,
 			swiperFeed: 0,
+			keyword:'',
 			feeds: [{ title: 'LoTai源' }, { title: '自定义源' }],
 			sourceTest: {
 				info: {
@@ -201,8 +211,8 @@ export default {
 			});
 		},
 		async test() {
-			const books = await sourceParser(this.sourceTest, 'chapter', { bookUrl: 'du/19/19410/', chapterUrl: '1120197.html' });
-			console.log(books);
+			// const books = await sourceParser(this.sourceTest, 'chapter', { bookUrl: 'du/19/19410/', chapterUrl: '1120197.html' });
+			// console.log(books);
 		}
 	}
 };
@@ -271,18 +281,37 @@ export default {
 				height: 100%;
 				display: flex;
 				flex-direction: column;
+				.source-func{
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+					margin-bottom: 10px;
+					.icon{
+						margin-left: 10px;
+					}
+				}
 				.source{
 					display: flex;
 					flex-direction: row;
 					align-items: center;
+					height: 35px;
 					.source-title{
 						background-color: #2970ff;
 						border-radius: 3px;
 						padding: 2px 5px;
 						margin-right: 10px;
+						color: #fff;
 					}
 					.source-desc{
 						flex-grow: 1;
+					}
+					.source-icon{
+						display: flex;
+						flex-direction: row;
+						align-items: center;
+						.icon{
+							margin-left: 7px;
+						}
 					}
 				}
 			}
