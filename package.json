@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/chouchoudhunter/lotai-book-reader#readme",
   "dependencies": {
-    "urlencode": "^1.1.0"
+    "@xmldom/xmldom": "^0.8.2",
+    "urlencode": "^1.1.0",
+    "xpath": "0.0.32"
   }
 }

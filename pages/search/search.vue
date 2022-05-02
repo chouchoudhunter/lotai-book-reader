@@ -3,9 +3,6 @@
 		<u-navbar height="60px" :border-bottom="false" :background="{ backgroundColor: color.bgPage }">
 			<view class="navbar">
 				<u-search :bg-color="color.cardBg" :show-action="false" v-model="keyword" @search="search" @clear="clearKeyword"></u-search>
-				<view class="right">
-					<u-icon :name="'/static/tabs/source'+(isNightMode?'-night':'')+'.png'" size="45" @click="showSwitchSource"></u-icon>
-				</view>
 				</view>
 		</u-navbar>
 		<status-placeholder></status-placeholder>
@@ -26,7 +23,6 @@
 				<u-loadmore :status="status" margin-bottom="20" />
 			</scroll-view>
 		</view>
-		<switch-source v-model="isShowSourceSwitch" @confirm="clearKeyword"></switch-source>
 	</view>
 </template>
 
@@ -35,10 +31,10 @@ import statusPlaceholder from '@/components/status-placeholder.vue';
 import bookItem from '@/components/book-item.vue';
 import loadingAnime from '@/components/loading-anime.vue';
 import { request } from '@/untils/http.js';
+import sourceParser from '@/untils/sourceParser.js';
 import source from '@/source/index.js';
-import switchSource from '@/components/switch-source.vue';
 export default {
-	components: { statusPlaceholder, bookItem, loadingAnime,switchSource },
+	components: { statusPlaceholder, bookItem, loadingAnime},
 	data() {
 		return {
 			keyword: '',
@@ -52,7 +48,6 @@ export default {
 			status: 'loadmore',
 			swiperHeight: 0,
 			searchRes: [],
-			isShowSourceSwitch:false
 		};
 	},
 	computed: {
@@ -65,8 +60,11 @@ export default {
 		color() {
 			return this.$store.getters.getColor;
 		},
-		systemSetting() {
-			return this.$store.getters.getSystemSetting;
+		defaultSource(){
+			return this.$store.getters.getDefaultSource;
+		},
+		sources() {
+			return this.$store.getters.getSources;
 		}
 	},
 	onLoad() {
@@ -125,22 +123,13 @@ export default {
 			let index = startIndex;
 			this.status="loading"
 			for (; index < endIndex && index < this.searchRes.length; index++) {
-				//#ifdef APP-PLUS
-				await source[this.systemSetting.defaultSource].getBookInfo(this.searchRes[index]).then(res => {
+				await sourceParser(this.sources[this.defaultSource].content,'info',{bookUrl:this.searchRes[index]}).then(res => {
 					this.status="loadmore"
 					this.isSearching = false;
 					this.books.push(res);
 				});
-				//#endif
-				//#ifdef H5
-				await request('getBookInfo',{bookUrl:this.searchRes[index]}).then(res => {
-					this.status="loadmore"
-					this.isSearching = false;
-					this.books.push(res.data);
-				});
-				//#endif
 			}
-			if(i==this.searchRes.length){
+			if(index==this.searchRes.length){
 				this.status="nomore"
 			}
 		},
@@ -148,18 +137,10 @@ export default {
 			this.books = [];
 			this.isSearching = true;
 			this.searchEmpty = false;
-			//#ifdef APP-PLUS
-			source[this.systemSetting.defaultSource].getSearch(this.keyword).then(async res => {
+			sourceParser(this.sources[this.defaultSource].content,'search',{keyword:this.keyword}).then(res=>{
 				this.searchRes = res;
 				this.getBookInfo();
-			});
-			//#endif
-			//#ifdef H5
-			request('getSearchResult', { keyword: this.keyword }).then(async res => {
-				this.searchRes = res.data;
-				this.getBookInfo();
-			});
-			//#endif
+			})
 		}
 	}
 };

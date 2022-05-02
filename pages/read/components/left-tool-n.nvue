@@ -6,43 +6,49 @@
 			:style="{
 				'box-shadow': isNightMode ? 'none' : '0px 7px 10px -3px rgba(158, 158, 158, 0.1)'
 			}"
+			@click="() => {}"
 		>
-		<view class="top-top">
-			<view class="img"><image class="img" mode="aspectFill" :src="book.img" /></view>
-			<view class="info">
-				<view>
-					<text class="title" :style="{ color: color.normalText }">{{ book.title }}</text>
-					<!-- <u-icon size="30" name="arrow-right"></u-icon> -->
+			<view class="top-top">
+				<view class="img"><image class="img" mode="aspectFill" :src="book.img" /></view>
+				<view class="info">
+					<view>
+						<text class="title" :style="{ color: color.normalText }">{{ book.title }}</text>
+						<!-- <u-icon size="30" name="arrow-right"></u-icon> -->
+					</view>
+					<view>
+						<text class="info-text" :style="{ color: color.secText }">{{ book.author }}</text>
+					</view>
+					<view>
+						<text class="info-text" :style="{ color: color.secText }">
+							{{ '更新至 ' + (chapterList[chapterList.length - 1] ? chapterList[chapterList.length - 1].title : '') }}
+						</text>
+					</view>
+					<view>
+						<text class="info-text" :style="{ color: color.secText }">当前阅读进度{{ book.readPos }}%</text>
+					</view>
 				</view>
-				<view><text class="info-text" :style="{ color: color.secText }">{{ book.author }}</text></view>
-				<view><text class="info-text" :style="{ color: color.secText }">{{ '更新至 ' + (chapterList[chapterList.length - 1] ? chapterList[chapterList.length - 1].title : '') }}</text></view>
-				<view><text class="info-text" :style="{ color: color.secText }">当前阅读进度{{ book.readPos }}%</text></view>
+			</view>
+			<view class="tabs">
+				<view class="tabs-main">
+					<view class="tab"><text class="tab-text" :style="{ color: '#007aff' }">目录</text></view>
+				</view>
+				<image class="order-icon" mode="aspectFill" :src="oderIcon" @click="reverseChapterList" />
+				<view class="dot"></view>
 			</view>
 		</view>
-		<view class="tabs">
-			<view class="tabs-main">
-				<view><text class="tab-text" :style="{color:'#007aff'}">目录</text></view>
-				<view><text class="tab-text" :style="{color:color.normalText}">笔记</text></view>
-			</view>
-			<view class="dot"></view>
-		</view>
-		</view>
-		<list class="bottom" :style="{ height: toolHeight + 'px', backgroundColor: color.cardBg }">
+		<list class="bottom" :style="{ height: toolHeight + 'px', backgroundColor: color.cardBg, opacity: chapterLoaded ? '1' : '0' }">
 			<cell style="height: 10px;"></cell>
 			<cell v-for="(item, index) in chapterList" :key="index">
 				<view
-					:ref="index == book.readIndex?'chapterT':'chapter'+index"
+					:ref="index == readIndex ? 'chapterT' : 'chapter' + index"
 					:id="'chapter' + index"
 					@tap="changeChapter(index, item)"
 					:class="{
 						group: item.type == 'group',
-						chapter: item.type == 'chapter',
-						selected: index == book.readIndex
+						chapter: item.type == 'chapter'
 					}"
 				>
-					<text
-					class="text-style"
-					:style="`color:${index == book.readIndex?'#007aff':color.normalText }`">{{ item.title }}</text>
+					<text class="text-style" :style="`color:${index == readIndex ? '#007aff' : color.normalText}`">{{ item.title }}</text>
 				</view>
 			</cell>
 		</list>
@@ -51,9 +57,9 @@
 <script>
 import statusPlaceholder from '@/components/status-placeholder.vue';
 import { request } from '@/untils/http.js';
-const dom = uni.requireNativePlugin('dom')
+const dom = uni.requireNativePlugin('dom');
 export default {
-	components: { statusPlaceholder},
+	components: { statusPlaceholder },
 	data() {
 		return {
 			funcList: [{ name: '目录' }, { name: '书签' }],
@@ -61,7 +67,9 @@ export default {
 			toolHeight: 0,
 			scrollView: '',
 			chapterList: [],
-			book: {}
+			book: {},
+			chapterLoaded: false,
+			chaperListRe: false
 		};
 	},
 	computed: {
@@ -70,6 +78,16 @@ export default {
 		},
 		isNightMode() {
 			return this.$store.getters.getIsNightMode;
+		},
+		oderIcon() {
+			return this.chaperListRe ? '/static/read/order-re.png' : '/static/read/order.png';
+		},
+		readIndex() {
+			if (this.chaperListRe) {
+				return this.chapterList.length - 1 - this.book.readIndex;
+			} else {
+				return this.book.readIndex;
+			}
 		}
 	},
 	mounted() {
@@ -80,12 +98,8 @@ export default {
 			this.book = data.book;
 		});
 		uni.$on('leftToolTopen', data => {
-			const chapterT=this.$refs.chapterT
-			setTimeout(()=>{
-				dom.scrollToElement(chapterT[0],{
-				animated:false
-				})
-			},150)
+			this.chapterLoaded = false;
+			this.toChapterPos()
 		});
 	},
 	destroyed() {
@@ -93,8 +107,23 @@ export default {
 		uni.$off('leftToolTopen');
 	},
 	methods: {
-		goToNowChapter(){
-			uni.screen
+		toChapterPos(){
+			const chapterT = this.$refs.chapterT;
+			setTimeout(() => {
+				dom.scrollToElement(chapterT[0], {
+					animated: false
+				});
+				this.chapterLoaded = true;
+			}, 150);
+		},
+		reverseChapterList() {
+			this.chaperListRe = !this.chaperListRe;
+			this.chapterLoaded = false;
+			this.chapterList = this.chapterList.reverse();
+			this.toChapterPos()
+		},
+		goToNowChapter() {
+			uni.screen;
 		},
 		changeFunc(index) {
 			this.currentFunc = index;
@@ -120,26 +149,39 @@ export default {
 		padding: 15px 15px 0 15px;
 		position: relative;
 		z-index: 3;
-		.tabs{
+		.tabs {
 			width: 563rpx;
 			position: absolute;
 			bottom: 10px;
 			left: 0;
-			.tabs-main{
+			.tabs-main {
 				display: flex;
 				flex-direction: row;
 				align-items: center;
 				justify-content: space-around;
-				.tab-text{
-					font-size: 14px;
+				.tab {
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+					.tab-text {
+						font-size: 14px;
+					}
 				}
 			}
-			.dot{
+			.order-icon {
+				width: 22px;
+				height: 22px;
+				position: absolute;
+				top: 5px;
+				right: 15px;
+				padding: 2px;
+			}
+			.dot {
 				width: 35rpx;
-				height:5rpx;
+				height: 5rpx;
 				background-color: #007aff;
 				border-radius: 3rpx;
-				transform: translateX(123rpx);
+				transform: translateX(264rpx);
 				margin-top: 5px;
 			}
 		}
@@ -159,7 +201,7 @@ export default {
 				display: flex;
 				flex-direction: column;
 				justify-content: space-between;
-				.info-text{
+				.info-text {
 					font-size: 12px;
 				}
 				.title {
@@ -174,10 +216,13 @@ export default {
 		width: 563rpx;
 		position: relative;
 		z-index: 2;
+		opacity: 0;
+		transition-property: opacity;
+		transition-duration: 300ms;
 		.group,
 		.chapter {
 			width: 563rpx;
-			padding:10px;
+			padding: 10px;
 			overflow: hidden;
 			.text-style {
 				font-size: 14px;

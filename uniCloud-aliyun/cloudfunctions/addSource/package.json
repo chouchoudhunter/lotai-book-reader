@@ -1,0 +1,9 @@
+{
+  "name": "addSource",
+  "dependencies": {
+    "untils": "file:../common/untils"
+  },
+  "extensions": {
+    "uni-cloud-jql": {}
+  }
+}

@@ -12,7 +12,7 @@ const setting={
 			isFollowSystemLight:true
 		},
 		systemSetting:{
-			defaultSource:'xbiquwx',
+			defaultSource:0,
 			sources:[]
 		},
 		color:{
@@ -59,6 +59,10 @@ const setting={
 			state.systemSetting={...systemSetting}
 			uni.setStorageSync('systemSetting',systemSetting)
 		},
+		SET_SOURCE:(state,sources)=>{
+			state.systemSetting.sources={...sources}
+			uni.setStorageSync('systemSetting',state.systemSetting)
+		},
 		INIT_SETTING:(state,data)=>{
 			//初始化软件设置
 			if(!!data.readSetting){
@@ -67,20 +71,20 @@ const setting={
 			state.nightMode=data.nightMode
 			//初始化系统设置
 			if(!!data.systemSetting){
-				let temp={...state.systemSetting}
-				temp.defaultSource=data.systemSetting.defaultSource
-				temp.sources=[]
+				let temp={...data.systemSetting}
+				// temp.defaultSource=data.systemSetting.defaultSource
+				// temp.sources=[]
 				state.systemSetting=temp
 			}
-			for(let key in source){
-				if(source[key].isOpen){
-					let temp={
-						key:key,
-						desc:key+'：'+source[key].desc
-					}
-					state.systemSetting.sources.push(temp)
-				}
-			}
+			// for(let key in source){
+			// 	if(source[key].isOpen){
+			// 		let temp={
+			// 			key:key,
+			// 			desc:key+'：'+source[key].desc
+			// 		}
+			// 		state.systemSetting.sources.push(temp)
+			// 	}
+			// }
 		},
 	}
 }

@@ -37,8 +37,13 @@ export default {
 		}
 	},
 	watch:{
-		bookSource(newVal){
+		bookSource(newVal){//检查是否是图书换源
 			this.initSource(newVal)
+		},
+		systemSetting(){
+			if(!this.bookSource){
+				this.initSource()
+			}
 		}
 	},
 	mounted() {

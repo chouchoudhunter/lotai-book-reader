@@ -9,7 +9,7 @@
 					<u-icon size="32" :custom-style="iconStyle" :name="icon" :color="iconColor" class="u-icon"></u-icon>
 				</view>
 				<slot name="icon"></slot>
-				<text class="u-label-text" :class="[this.$slots.icon || icon ? 'u-label-left-gap' : '']">{{ label }}</text>
+				<text class="u-label-text" :style="{color:labelColor}" :class="[this.$slots.icon || icon ? 'u-label-left-gap' : '']">{{ label }}</text>
 			</view>
 			<view class="fild-body">
 				<view class="u-flex-1 u-flex" :style="[inputWrapStyle]">
@@ -89,6 +89,7 @@
 export default {
 	name:"u-field",
 	props: {
+		labelColor:String,
 		icon: String,
 		rightIcon: String,
 		// arrowDirection: {

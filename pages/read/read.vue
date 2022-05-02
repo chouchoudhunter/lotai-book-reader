@@ -50,6 +50,7 @@
 		</view>
 		<bottom-toolbar :isShow="isShowToolbar" v-model="readSetting" @openLeftTool="openLeftTool" @changeReadSetting="changeReadSetting"></bottom-toolbar>
 		<switch-source v-model="isShowSourceSwitch" :bookSource="book" @confirm="refreshSource"></switch-source>
+		<u-toast ref="uToast"></u-toast>
 	</view>
 </template>
 
@@ -121,6 +122,13 @@ export default {
 		uni.$on('changeChapter', res => {
 			this.changeChapter(res);
 		});
+		plus.key.addEventListener("keydown", (e)=>{
+			if(e.keyCode==25){
+				this.pageChange(1)
+			}else if(e.keyCode==24){
+				this.pageChange(0)
+			}
+		})
 	},
 	onBackPress(event) {
 		if (event.from == 'backbutton') {
@@ -328,6 +336,13 @@ export default {
 			}
 			if (dir == 1) {
 				if (this.book.readPage + 1 > this.totalPage) {
+					if (this.content.status == -1) {
+						this.$refs.uToast.show({
+							type:'success',
+							title: "你已经读完最新章节",
+						})
+						return;
+					}
 					this.isChangeChapter = true;
 					// #ifdef APP-PLUS
 					this.currentX -= this.screenWidth + 1;
