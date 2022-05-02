@@ -17,10 +17,14 @@
 					<text :style="{ color: color.normalText }" class="btn-text">{{ item.title }}</text>
 				</view>
 			</view>
-			<view class="right">
+			<view class="right" :style="{ color: color.normalText }">
 				<scroll-view :scroll-y="true" class="main" v-for="(item, index) in feeds" :key="index" v-show="swiperFeed == index">
-					<view>
-						<view v-for="(source,index) in sources" :key="index">{{source.content.info.title}}</view>
+					<view v-if="index!=0"></view>
+					<view v-else>
+						<view v-for="(source,index) in sources" :key="index" class="source">
+							<view class="source-title">{{source.content.info.title}}</view>
+							<view class="source-desc">{{source.content.info.desc}}</view>
+						</view>
 					</view>
 				</scroll-view>
 			</view>
@@ -137,7 +141,8 @@ export default {
 							},
 							{
 								type: 'text',
-								xpath: "//div[@id='content1']"
+								xpath: "//div[@id='content1']",
+								reg:"replace::<p.+?</p>"
 							}
 						]
 					},
@@ -165,8 +170,10 @@ export default {
 	onLoad() {
 		this.test();
 		const systemInfo = getApp().globalData.systemInfo;
-		this.swiperItemHeight = systemInfo.windowHeight - 44-systemInfo.statusBarHeight;
-		this.requestSourceList()
+		this.swiperItemHeight = systemInfo.windowHeight - 44 - systemInfo.statusBarHeight;
+		if(!this.sources.length){
+			this.requestSourceList()
+		}
 	},
 	onReady() {
 		uni.preloadPage({
@@ -194,11 +201,8 @@ export default {
 			});
 		},
 		async test() {
-			// const books=await sourceParser(this.sourceTest,'search',{keyword:'斗罗大陆'})
-			// const books=await sourceParser(this.sourceTest,'info',{bookUrl:'/Shtml38775.html'})
-			// const books=await sourceParser(this.sourceTest,'chapter',{chapterUrl:'du/19/19410/',bookUrl:'1120197.html'})
-			// const books = await sourceParser(this.sourceTest, 'chapter', { bookUrl: 'du/19/19410/', chapterUrl: '1120197.html' });
-			// console.log(books);
+			const books = await sourceParser(this.sourceTest, 'chapter', { bookUrl: 'du/19/19410/', chapterUrl: '1120197.html' });
+			console.log(books);
 		}
 	}
 };
@@ -265,6 +269,22 @@ export default {
 			padding-bottom: 0;
 			.main {
 				height: 100%;
+				display: flex;
+				flex-direction: column;
+				.source{
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+					.source-title{
+						background-color: #2970ff;
+						border-radius: 3px;
+						padding: 2px 5px;
+						margin-right: 10px;
+					}
+					.source-desc{
+						flex-grow: 1;
+					}
+				}
 			}
 		}
 	}

@@ -30,20 +30,17 @@ async function getChapter(operation, info, data) {
 			if (tempXpath.type === 'title') {
 				let nodes = xpath.select(tempXpath.xpath, doc);
 				let str=getString(nodes[0]).trim()
-				if(tempXpath.reg){
-					str = str.match(new RegExp(tempXpath.reg))
-				}
+				str=doReg(tempXpath.reg,str)
 				chapterTemp.title=str
 			}
 			else if(tempXpath.type === 'text') {
 				let nodes = xpath.select(tempXpath.xpath, doc);
 				let str=nodes.toString()
-				if(tempXpath.reg){
-					str = str.match(new RegExp(tempXpath.reg))
-				}
+				str=doReg(tempXpath.reg,str)
 				chapterTemp.text=str
 			}
 		})
+		chapterTemp.text=`<h3>${chapterTemp.title}</h3><br>`+chapterTemp.text
 		reslove(chapterTemp)
 	})
 }
@@ -157,5 +154,18 @@ function getHtml(url, method) {
 			reject(err)
 		})
 	})
+}
+function doReg(reg,str){
+	if(reg){
+		const tempReg=reg.split('::')
+		const flag=tempReg[0].split(',')[1]?tempReg[0].split(',')[1]:'g'
+		if(tempReg[0].indexOf("replace")!= -1){
+			const replaceStr=tempReg[0].split(',')[2]?tempReg[0].split(',')[2]:''
+			str = str.replace(new RegExp(tempReg[1],flag),replaceStr)
+		}else{
+			str = str.match(new RegExp(tempReg[1],flag))
+		}
+	}
+	return str
 }
 export default parse

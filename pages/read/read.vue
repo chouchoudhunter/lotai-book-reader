@@ -49,7 +49,6 @@
 			</view>
 		</view>
 		<bottom-toolbar :isShow="isShowToolbar" v-model="readSetting" @openLeftTool="openLeftTool" @changeReadSetting="changeReadSetting"></bottom-toolbar>
-		<switch-source v-model="isShowSourceSwitch" :bookSource="book" @confirm="refreshSource"></switch-source>
 		<u-toast ref="uToast"></u-toast>
 	</view>
 </template>
@@ -61,7 +60,7 @@ import leftTool from './components/left-tool.vue';
 import loadingAnime from '@/components/loading-anime.vue';
 import switchSource from '@/components/switch-source.vue';
 import { request } from '@/untils/http.js';
-import source from '@/source/index.js';
+import sourceParser from '@/untils/sourceParser.js';
 const tempContent = {
 	title: '',
 	text: '',
@@ -69,7 +68,7 @@ const tempContent = {
 	success: 1
 };
 export default {
-	components: { statusPlaceholder, bottomToolbar, loadingAnime, switchSource, leftTool },
+	components: { statusPlaceholder, bottomToolbar, loadingAnime, leftTool },
 	data() {
 		return {
 			isShowToolbar: false, //是否显示工具栏
@@ -103,6 +102,12 @@ export default {
 		},
 		color() {
 			return this.$store.getters.getColor;
+		},
+		defaultSource(){
+			return this.$store.getters.getDefaultSource;
+		},
+		sources() {
+			return this.$store.getters.getSources;
 		}
 	},
 	onLoad() {
@@ -158,7 +163,7 @@ export default {
 			// this.getChapterList();
 		},
 		showSwitchSource() {
-			this.isShowSourceSwitch = !this.isShowSourceSwitch;
+			// this.isShowSourceSwitch = !this.isShowSourceSwitch;
 		},
 		async changeReadSetting() {
 			await this.computePageNum(400);
@@ -202,8 +207,7 @@ export default {
 		//获得章节目录
 		getChapterList() {
 			this.isLoading=true
-			//#ifdef APP-PLUS
-			source[this.book.source].getChapterList(this.book.bookUrl).then(res => {
+			sourceParser(this.sources[this.book.source].content,'list',{bookUrl:this.book.bookUrl}).then(res => {
 				this.chapterList = res;
 				this.isLoading=false
 				uni.$emit('lt-chapter-list', { chapterList: res, book: this.book });
@@ -211,16 +215,6 @@ export default {
 					this.loadChapter(-1);
 				}
 			});
-			//#endif
-			//#ifdef H5
-			request('getChapterList', { bookUrl: this.book.bookUrl }).then(res => {
-				this.isLoading=false
-				this.chapterList = res.data;
-				if (!this.content.text) {
-					this.loadChapter(-1);
-				}
-			});
-			//#endif
 		},
 		//打开左边工具栏（目录）
 		openLeftTool() {
@@ -275,8 +269,7 @@ export default {
 			if (index == -1 || index == -2) {
 				return;
 			}
-			//#ifdef APP-PLUS
-			source[this.book.source].getChapter(this.book.bookUrl, this.chapterList[index]).then(res => {
+			sourceParser(this.sources[this.defaultSource].content, 'chapter', { bookUrl: this.book.bookUrl, chapterUrl:this.chapterList[index].url }).then(res => {
 				if (dir == 1) {
 					this.nextContent = res;
 					this.nextContent.index = index;
@@ -298,31 +291,7 @@ export default {
 					this.loadChapter(0);
 				}
 			});
-			//#endif
-			//#ifdef H5
-			request('getBookChapter', { bookUrl: this.chapterList[index].url }).then(res => {
-				if (dir == 1) {
-					this.nextContent = res.data;
-					this.nextContent.index = index;
-				} else if (dir == 0) {
-					this.preContent = res.data;
-					this.preContent.index = index;
-				} else {
-					this.isLoading = false;
-					this.content = { ...res.data };
-					this.needAnimation = false;
-					this.currentX = -this.screenWidth * (this.book.readPage - 1);
-					setTimeout(() => {
-						this.needAnimation = true;
-						this.isChangeChapter = false;
-					}, 500);
-					this.changeReadPos();
-					this.computePageNum();
-					this.loadChapter(1);
-					this.loadChapter(0);
-				}
-			});
-			//#endif
+			// source[this.book.source].getChapter(this.book.bookUrl, this.chapterList[index])
 		},
 		//左右翻页
 		async pageChange(dir = 1,isChangeFont=false) {
