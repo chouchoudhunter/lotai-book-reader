@@ -44,7 +44,7 @@ export default {
 	},
 	methods: {
 		tapBook() {
-			const data = this.$u.queryParams(this.book);
+			const data = this.$u.queryParams({data:JSON.stringify(this.book)});
 			uni.navigateTo({
 				url: '/pages/book-info/book-info' + data
 			});

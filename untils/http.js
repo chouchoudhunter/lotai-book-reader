@@ -1,5 +1,3 @@
-import Vue from "vue"
-let vm=new Vue()
 export function request(name='',data={}) {
 	return new Promise((resolve,reject)=>{
 		uniCloud.callFunction({
@@ -10,12 +8,12 @@ export function request(name='',data={}) {
 			if(res.status==1){
 				resolve(res)
 			}else{
-				vm.$u.toast('错误:'+res.msg, 3000);
+				uni.$lotai.toast('错误:'+res.msg,'error');
 				resolve(res)
 			}
 			
 		}).catch(err=>{
-			vm.$u.toast('err:'+JSON.stringify(err),3000);
+			uni.$lotai.toast('err:'+JSON.stringify(err),'error');
 		})
 	})
 

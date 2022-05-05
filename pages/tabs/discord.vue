@@ -10,7 +10,7 @@
 			</view>
 			<scroll-view :scroll-x="true" class="select">
 				<view class="select-books">
-					<view class="book" v-for="(book, index) in selectBooks" :key="index">
+					<view class="book" v-for="(book, index) in selectBooks" :key="index" @click="tapBook(book)">
 						<view class="img"><u-image width="100%" height="100%" mode="aspectFill" :src="book.img" /></view>
 						<view class="title" :style="{ color: color.normalText }">{{ book.title }}</view>
 						<view class="author" :style="{ color: color.secText }">{{ book.author }}</view>
@@ -66,9 +66,6 @@ export default {
 		defaultSource() {
 			return this.$store.getters.getDefaultSource;
 		},
-		sources() {
-			return this.$store.getters.getSources;
-		}
 	},
 	watch: {
 		features(newVal) {
@@ -80,7 +77,6 @@ export default {
 	},
 	onLoad() {
 		this.initDiscord();
-		// this.getDiscord();
 		const systemInfo = getApp().globalData.systemInfo;
 		this.statusBarHeight = systemInfo.statusBarHeight;
 		this.mainHeight = systemInfo.windowHeight - systemInfo.statusBarHeight - 152;
@@ -91,11 +87,10 @@ export default {
 		// #endif
 	},
 	methods: {
-		waitTime(time = 1000) {
-			return new Promise((reslove, reject) => {
-				setTimeout(() => {
-					reslove();
-				}, time);
+		tapBook(book) {
+			const data = this.$u.queryParams({data:JSON.stringify(book)});
+			uni.navigateTo({
+				url: '/pages/book-info/book-info' + data
 			});
 		},
 		initDiscord() {
@@ -113,19 +108,14 @@ export default {
 			this.featurePages = [];
 			this.getFeature();
 		},
-		//获得分类
-		getDiscord() {
-			sourceParser(this.sources[this.defaultSource].content, 'discord').then(data => {
-				this.$store.commit('books/SET_FEATURES', data);
-			});
-		},
 		async getSelectBooks() {
 			if(this.selectBooks.length){
 				return
 			}
 			let tempBook = this.features.select;
 			for (var i = 0; i < tempBook.length; i++) {
-				await sourceParser(this.sources[this.defaultSource].content, 'info', { bookUrl: tempBook[i] }).then(res => {
+				await sourceParser(this.defaultSource.content, 'info', { bookUrl: tempBook[i] }).then(res => {
+					res.source=this.defaultSource.source
 					this.selectBooks.push(res);
 				});
 			}
@@ -140,7 +130,8 @@ export default {
 			}
 			let tempBook = this.features.tags[this.currentTag].books;
 			for (var i = 0; i < tempBook.length; i++) {
-				await sourceParser(this.sources[this.defaultSource].content, 'info', { bookUrl: tempBook[i] }).then(res => {
+				await sourceParser(this.defaultSource.content, 'info', { bookUrl: tempBook[i] }).then(res => {
+					res.source=this.defaultSource.source
 					this.featureBooks[this.currentTag].push(res);
 					this.featureBooks = { ...this.featureBooks };
 				});

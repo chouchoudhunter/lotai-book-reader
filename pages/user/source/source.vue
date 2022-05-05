@@ -14,26 +14,39 @@
 					<view class="btn-active-blue"></view>
 				</view>
 				<view class="btn" v-for="(item, index) in feeds" :key="index" @click="changeSwiperFeed(index)">
-					<text :style="{ color: color.normalText }" class="btn-text">{{ item.title }}</text>
+					<text :style="{ color: color.normalText }" class="btn-text">{{ item.name }}</text>
 				</view>
 			</view>
 			<view class="right" :style="{ color: color.normalText }">
 				<scroll-view :scroll-y="true" class="main" v-for="(item, index) in feeds" :key="index" v-show="swiperFeed == index">
-				<view class="source-func">
-					<u-search :bg-color="color.searchBg" :show-action="false" v-model="keyword"></u-search>
-					<u-icon class="icon" :name="'/static/user/'+(isNightMode?'refresh-night':'refresh')+'.png'" size="35" @click="refreshSource"></u-icon>
-					<u-icon class="icon" :name="'/static/home/'+(isNightMode?'trash-night':'trash')+'.png'" size="35"></u-icon>
-				</view>
-				
-					<view v-if="index!=0"></view>
-					<view v-else>
-						<view v-for="(source,index) in sources" :key="index" class="source">
-							<view class="source-title">{{source.content.info.title}}</view>
-							<view class="source-desc">{{source.content.info.desc}}</view>
-							<view class="source-icon">
-								<u-icon name="eye" size="35"></u-icon>
-								<!-- <u-icon class="icon" :name="'/static/home/'+(isNightMode?'trash-night':'trash')+'.png'" size="35" @click="confirmClear()"></u-icon> -->
-							</view>
+					<view class="source-func">
+						<u-search :bg-color="color.searchBg" :show-action="false" v-model="keyword"></u-search>
+						<u-icon class="icon" :name="'/static/user/' + (isNightMode ? 'refresh-night' : 'refresh') + '.png'" size="35" @click="refreshSource"></u-icon>
+					</view>
+					<view class="source-func">
+						<view class="source-func-left">
+							<view v-show="isBatch" style="margin-right: 10px;"><u-checkbox v-show="isBatch" @change="allSelect(index)" v-model="isAllSelect" style="width: 26px;"></u-checkbox>全选</view>
+							<view @click="openBatch()">{{isBatch?'取消批量':'开启批量'}}</view>
+						</view>
+						<u-icon name="checkmark-circle" class="icon" :color="color.normalText" size="35"></u-icon>
+						<u-icon class="icon" :name="'/static/home/' + (isNightMode ? 'trash-night' : 'trash') + '.png'" size="35"></u-icon>
+					</view>
+					<view v-for="(source, i) in feeds[index].list" :key="i" class="source">
+						<u-checkbox class="source-check" v-show="isBatch" v-model="source.content.info.isOpen"></u-checkbox>
+						<view class="source-title">{{ source.content.info.title }}</view>
+						<view class="source-desc">{{ source.content.info.desc }}</view>
+						<view class="source-icon">
+							<u-icon v-show="source.content.info.isOpen" name="checkmark-circle" class="source-icon-item" color="#2970ff" size="35"></u-icon>
+							<drop-down-menu class="source-icon-item">
+								<view class="drop-menu-item">
+									<u-icon class="icon" name="edit-pen" size="35"></u-icon>
+									<view>编辑</view>
+								</view>
+								<view class="drop-menu-item" @click="openDeleteSourceToast({feedIndex:index,sourceIndex:i})">
+									<u-icon class="icon" :name="'/static/home/' + (isNightMode ? 'trash-night' : 'trash') + '.png'" size="32"></u-icon>
+									<view>删除</view>
+								</view>
+							</drop-down-menu>
 						</view>
 					</view>
 				</scroll-view>
@@ -60,16 +73,18 @@
 				<view v-show="currentFeedType === '本地导入'"><view @click="selectFromLocal">施工中</view></view>
 			</view>
 		</custom-modal>
+		<custom-modal v-model="deleteSourceToast" @confirm="deleteSource()" title="删除源" content="确定删除吗?"></custom-modal>
 	</view>
 </template>
 
 <script>
 import statusPlaceholder from '@/components/status-placeholder.vue';
 import customModal from '@/components/custom-modal.vue';
+import dropDownMenu from '@/components/drop-down-menu.vue';
 import sourceParser from '@/untils/sourceParser.js';
 import { request } from '@/untils/http.js';
 export default {
-	components: { statusPlaceholder, customModal },
+	components: { statusPlaceholder, customModal, dropDownMenu },
 	data() {
 		return {
 			feedTypeList: [{ name: '网络导入' }, { name: '本地导入' }],
@@ -78,138 +93,11 @@ export default {
 			feedUrl: '',
 			swiperItemHeight: 800,
 			swiperFeed: 0,
-			keyword:'',
-			feeds: [{ title: 'LoTai源' }, { title: '自定义源' }],
-			sourceTest: {
-				info: {
-					title: '奇书网',
-					desc: '网文',
-					host: 'https://www.kankezw.com/'
-				},
-				operation: [
-					{
-						type: 'search',
-						method: 'GET',
-						url: 'search.html?searchkey={{key}}',
-						xpaths: [
-							{
-								type: 'bookUrl',
-								xpath: "//table[@class='grid']//td[@class='even']/a/@href"
-							}
-						]
-					},
-					{
-						type: 'info',
-						method: 'GET',
-						url: '{{bookUrl}}',
-						xpaths: [
-							{
-								type: 'img',
-								xpath: "//div[@class='detail_pic']/img/@src"
-							},
-							{
-								type: 'title',
-								xpath: '/html/body/div[4]/div[2]/div[1]/div/div[2]/div/h1/text()'
-							},
-							{
-								type: 'author',
-								xpath: '/html/body/div[4]/div[2]/div[1]/div/div[2]/div/ul/li[6]/text()',
-								reg: '(?<=书籍作者：).*'
-							},
-							{
-								type: 'desc',
-								xpath: '/html/body/div[4]/div[2]/div[2]/div[2]/p/text()'
-							},
-							{
-								type: 'bookUrl',
-								xpath: '/html/body/div[4]/div[2]/div[3]/div[2]/ul/li[1]/a/@href'
-							},
-							{
-								type: 'tags',
-								xpath: '/html/body/div[3]/span/a[2]/text()'
-							}
-						]
-					},
-					{
-						type: 'list',
-						method: 'GET',
-						url: '{{bookUrl}}',
-						xpaths: [
-							{
-								type: 'chapter',
-								xpath: "(//div[@class='pc_list'])[2]/ul/li"
-							}
-						]
-					},
-					{
-						type: 'chapter',
-						method: 'GET',
-						url: '{{bookUrl}}{{chapterUrl}}',
-						xpaths: [
-							{
-								type: 'title',
-								xpath: "//div[@id='info']/div[1]/h1/text()"
-							},
-							{
-								type: 'text',
-								xpath: "//div[@id='content1']",
-								reg:"replace::<p.+?</p>"
-							}
-						]
-					},
-					{
-						type: 'discord',
-						method: 'GET',
-						url: '',
-						xpaths: [
-							{
-								type: 'select',
-								xpath: "/html/body/div[3]/div[2]/div[1]/div[1]/div/div/div//a[1]/@href"
-							},
-							{
-								type: 'tag',
-								name:'玄幻奇幻',
-								xpath: "/html/body/div[3]/div[2]/div[2]/div[1]/div//a[@class='name']/@href|/html/body/div[3]/div[2]/div[2]/div[1]/div/div[2]/div[2]/h4/a/@href"
-							},
-							{
-								type: 'tag',
-								name:'武侠仙侠',
-								xpath: "/html/body/div[3]/div[2]/div[2]/div[2]/div//a[@class='name']/@href|/html/body/div[3]/div[2]/div[2]/div[2]/div/div[2]/div[2]/h4/a/@href"
-							},
-							{
-								type: 'tag',
-								name:'浪漫言情',
-								xpath: "/html/body/div[3]/div[2]/div[2]/div[3]/div//a[@class='name']/@href|/html/body/div[3]/div[2]/div[2]/div[3]/div/div[2]/div[2]/h4/a/@href"
-							},
-							{
-								type: 'tag',
-								name:'现代都市',
-								xpath: "/html/body/div[3]/div[2]/div[2]/div[4]/div//a[@class='name']/@href|/html/body/div[3]/div[2]/div[2]/div[4]/div/div[2]/div[2]/h4/a/@href"
-							},
-							{
-								type: 'tag',
-								name:'历史军事',
-								xpath: "/html/body/div[3]/div[2]/div[2]/div[5]/div//a[@class='name']/@href|/html/body/div[3]/div[2]/div[2]/div[5]/div/div[2]/div[2]/h4/a/@href"
-							},
-							{
-								type: 'tag',
-								name:'游戏竞技',
-								xpath: "/html/body/div[3]/div[2]/div[2]/div[6]/div//a[@class='name']/@href|/html/body/div[3]/div[2]/div[2]/div[6]/div/div[2]/div[2]/h4/a/@href"
-							},
-							{
-								type: 'tag',
-								name:'科幻灵异',
-								xpath: "/html/body/div[3]/div[2]/div[2]/div[7]/div//a[@class='name']/@href|/html/body/div[3]/div[2]/div[2]/div[7]/div/div[2]/div[2]/h4/a/@href"
-							},
-							{
-								type: 'tag',
-								name:'美文同人',
-								xpath: "/html/body/div[3]/div[2]/div[2]/div[8]/div//a[@class='name']/@href|/html/body/div[3]/div[2]/div[2]/div[8]/div/div[2]/div[2]/h4/a/@href"
-							}
-						]
-					}
-				]
-			}
+			keyword: '',
+			isBatch: false,
+			isAllSelect:false,
+			deleteSourceToast:false,
+			deleteSourceInfo:{}
 		};
 	},
 	computed: {
@@ -219,17 +107,13 @@ export default {
 		color() {
 			return this.$store.getters.getColor;
 		},
-		sources() {
-			return this.$store.getters.getSources;
+		feeds() {
+			return this.$store.getters.getFeeds;
 		}
 	},
 	onLoad() {
-		this.test();
 		const systemInfo = getApp().globalData.systemInfo;
 		this.swiperItemHeight = systemInfo.windowHeight - 44 - systemInfo.statusBarHeight;
-		if(!this.sources.length){
-			this.requestSourceList()
-		}
 	},
 	onReady() {
 		uni.preloadPage({
@@ -237,15 +121,38 @@ export default {
 		});
 	},
 	methods: {
-		refreshSource(){
-			switch(this.swiperFeed){
-				case 0:this.requestSourceList();break;
-			}
+		openBatch(){
+			this.isBatch=!this.isBatch
 		},
-		requestSourceList(){
-			request('getSourceList').then((res)=>{
-				this.$store.commit('setting/SET_SOURCE',res.data.data)
-			})
+		allSelect() {
+			//
+		},
+		editSource(source){
+			//
+		},
+		openDeleteSourceToast(data){
+			this.deleteSourceToast=true
+			this.deleteSourceInfo=data
+		},
+		deleteSource(){
+			this.$store.commit('setting/DELETE_SOURCE',this.deleteSourceInfo)
+			this.$lotai.toast('删除完成','success')
+		},
+		refreshSource() {
+			this.$u.throttle(() => {
+				switch (this.swiperFeed) {
+					case 0:
+						this.requestLotai();
+						break;
+				}
+			}, 600);
+		},
+		requestLotai() {
+			this.$store.dispatch('setting/getLotaiFeed', {
+				success: () => {
+					this.$lotai.toast('更新成功', 'success');
+				}
+			});
 		},
 		changeSwiperFeed(index) {
 			this.swiperFeed = index;
@@ -260,10 +167,6 @@ export default {
 			uni.navigateTo({
 				url: '/pages/user/source/subPage/addSource'
 			});
-		},
-		async test() {
-			// const books = await sourceParser(this.sourceTest, 'discord');
-			// console.log(books);
 		}
 	}
 };
@@ -326,42 +229,62 @@ export default {
 		.right {
 			width: calc(100% - 70px);
 			height: 100%;
-			padding: 10px;
+			padding: 0 10px 10px 10px;
 			padding-bottom: 0;
 			.main {
 				height: 100%;
 				display: flex;
 				flex-direction: column;
-				.source-func{
+				.source-func {
 					display: flex;
 					flex-direction: row;
 					align-items: center;
-					margin-bottom: 10px;
-					.icon{
-						margin-left: 10px;
+					margin: 10px 0;
+					// justify-content: space-between;
+					.source-func-left{
+						flex-grow: 1;
+						display: flex;
+						flex-direction: row;
+						align-items: center;
+					}
+					.icon {
+						// margin-left: 10px;
+						padding: 5px;
 					}
 				}
-				.source{
+				.source {
 					display: flex;
 					flex-direction: row;
 					align-items: center;
 					height: 35px;
-					.source-title{
+					.source-check{
+						width: 26px;
+					}
+					.source-title {
 						background-color: #2970ff;
 						border-radius: 3px;
 						padding: 2px 5px;
 						margin-right: 10px;
 						color: #fff;
 					}
-					.source-desc{
+					.source-desc {
 						flex-grow: 1;
 					}
-					.source-icon{
+					.source-icon {
 						display: flex;
 						flex-direction: row;
 						align-items: center;
-						.icon{
-							margin-left: 7px;
+						.source-icon-item{
+							padding: 5px;
+						}
+						.drop-menu-item {
+							padding: 8px 10px;
+							display: flex;
+							flex-direction: row;
+							align-items: center;
+							.icon {
+								margin: 0 5px;
+							}
 						}
 					}
 				}

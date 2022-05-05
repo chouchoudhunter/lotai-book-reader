@@ -1,6 +1,6 @@
 <template>
 	<view class="custom-modal">
-		<u-modal :title-style="{color:color.secText}" :bgColor="color.cardBg" :cancel-style="{color:color.secText}" :content-style="{color:color.normalText}" v-model="valueT" :title="title" :content="content" :showConfirmButton="showConfirmButton" :showCancelButton="showCancelButton" @confirm="confirm" :async-close="asyncClose">
+		<u-modal ref="modal" :title-style="{color:color.secText}" :bgColor="color.cardBg" :cancel-style="{color:color.secText}" :content-style="{color:color.normalText}" v-model="valueT" :title="title" :content="content" :showConfirmButton="showConfirmButton" :showCancelButton="showCancelButton" @confirm="confirm" :async-close="asyncClose" :cancel-text="$attrs['cancel-text']" :confirm-text="$attrs['confirm-text']">
 			<slot></slot>
 		</u-modal>
 	</view>
@@ -53,6 +53,9 @@
 			}
 		},
 		methods:{
+			clearLoading(){
+				this.$refs.modal.clearLoading()
+			},
 			confirm(){
 				this.$emit('confirm')
 			}

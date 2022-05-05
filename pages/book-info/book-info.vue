@@ -58,10 +58,7 @@ export default {
 		}
 	},
 	onLoad: function(option) {
-		this.book = option;
-		if(this.book.tags){
-			this.book.tags=this.book.tags.split(',')
-		}
+		this.book = JSON.parse(option.data);
 	},
 	methods:{
 		initBookInfo(){
@@ -69,7 +66,6 @@ export default {
 			data.readIndex=0//新书初始化阅读章节
 			data.readPage=1//初始化阅读页数
 			data.readPos=0//初始化阅读位置
-			data.source=this.systemSetting.defaultSource//初始化阅读源
 			return data
 		},
 		switchToMyBooks(){

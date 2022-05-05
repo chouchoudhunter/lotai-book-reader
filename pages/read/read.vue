@@ -49,7 +49,6 @@
 			</view>
 		</view>
 		<bottom-toolbar :isShow="isShowToolbar" v-model="readSetting" @openLeftTool="openLeftTool" @changeReadSetting="changeReadSetting"></bottom-toolbar>
-		<u-toast ref="uToast"></u-toast>
 	</view>
 </template>
 
@@ -103,11 +102,8 @@ export default {
 		color() {
 			return this.$store.getters.getColor;
 		},
-		defaultSource(){
-			return this.$store.getters.getDefaultSource;
-		},
-		sources() {
-			return this.$store.getters.getSources;
+		bookSource(){
+			return this.$store.getters.getBookSource(this.book.source);
 		}
 	},
 	onLoad() {
@@ -127,6 +123,7 @@ export default {
 		uni.$on('changeChapter', res => {
 			this.changeChapter(res);
 		});
+		//#ifdef APP-PLUS
 		plus.key.addEventListener("keydown", (e)=>{
 			if(e.keyCode==25){
 				this.pageChange(1)
@@ -134,6 +131,7 @@ export default {
 				this.pageChange(0)
 			}
 		})
+		//#endif
 	},
 	onBackPress(event) {
 		if (event.from == 'backbutton') {
@@ -158,7 +156,7 @@ export default {
 	},
 	methods: {
 		refreshSource() {
-			this.$u.toast('书本换源装修中...', 3000);
+			this.$lotai.toast('书本换源装修中...')
 			// this.content={...tempContent}
 			// this.getChapterList();
 		},
@@ -207,7 +205,7 @@ export default {
 		//获得章节目录
 		getChapterList() {
 			this.isLoading=true
-			sourceParser(this.sources[this.book.source].content,'list',{bookUrl:this.book.bookUrl}).then(res => {
+			sourceParser(this.bookSource.content,'list',{bookUrl:this.book.bookUrl}).then(res => {
 				this.chapterList = res;
 				this.isLoading=false
 				uni.$emit('lt-chapter-list', { chapterList: res, book: this.book });
@@ -269,7 +267,7 @@ export default {
 			if (index == -1 || index == -2) {
 				return;
 			}
-			sourceParser(this.sources[this.defaultSource].content, 'chapter', { bookUrl: this.book.bookUrl, chapterUrl:this.chapterList[index].url }).then(res => {
+			sourceParser(this.bookSource.content, 'chapter', { bookUrl: this.book.bookUrl, chapterUrl:this.chapterList[index].url }).then(res => {
 				if (dir == 1) {
 					this.nextContent = res;
 					this.nextContent.index = index;
@@ -306,10 +304,7 @@ export default {
 			if (dir == 1) {
 				if (this.book.readPage + 1 > this.totalPage) {
 					if (this.content.status == -1) {
-						this.$refs.uToast.show({
-							type:'success',
-							title: "你已经读完最新章节",
-						})
+						this.$lotai.toast("你已经读完最新章节",'success')
 						return;
 					}
 					this.isChangeChapter = true;
@@ -388,12 +383,10 @@ export default {
 		//时间
 		refreshTime() {
 			const time = new Date();
-			const [hour, minute] = [time.getHours(), time.getMinutes()];
-			this.currentTime = hour + ':' + minute;
+			this.currentTime = this.$u.timeFormat(time,'hh:MM')
 			this.timer = setInterval(() => {
 				const time = new Date();
-				const [hour, minute] = [time.getHours(), time.getMinutes()];
-				this.currentTime = hour + ':' + minute;
+				this.currentTime = this.$u.timeFormat(time,'hh:MM')
 			}, 6000);
 		},
 		//计算当前章节总页数
@@ -488,6 +481,9 @@ export default {
 				// height: calc(100% - 60px);
 				columns: calc(750rpx - 24px) 1;
 				column-gap: 24px;
+				& /deep/ p{
+					text-indent: 2em;
+				}
 				.text-loading {
 					display: flex;
 					flex-direction: column;

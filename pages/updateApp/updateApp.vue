@@ -44,6 +44,11 @@ export default {
 			this.closeModal();
 		},
 		confirm() {
+			//
+			if(Number(this.content.nowVersion.replace(/\./g,''))<245){
+				uni.clearStorage()
+			}
+			//
 			this.isDownload = true;
 			const downloadTask = uni.downloadFile({
 				url: this.content.url,

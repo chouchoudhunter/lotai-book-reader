@@ -1,4 +1,6 @@
 import source from '@/source/index.js'
+import sourceParser from '@/untils/sourceParser.js';
+import { request } from '@/untils/http.js';
 const setting={
 	namespaced: true,
 	state:{
@@ -12,9 +14,17 @@ const setting={
 			isFollowSystemLight:true
 		},
 		systemSetting:{
-			defaultSource:0,
-			sources:[],
-			customSources:[]
+			defaultSource:{
+				feedName:'LoTai源',
+				sourceHost:'https://www.kankezw.com/'
+			},
+			feeds:[{
+				name:'LoTai源',
+				list:[]
+			},{
+				name:'自定义源',
+				list:[]
+			}],
 		},
 		color:{
 			light:{
@@ -64,12 +74,17 @@ const setting={
 			state.systemSetting={...systemSetting}
 			uni.setStorageSync('systemSetting',systemSetting)
 		},
-		SET_SOURCE:(state,sources)=>{
-			state.systemSetting.sources={...sources}
+		SET_FEED:(state,data)=>{
+			state.systemSetting.feeds[data.feedIndex]={...data.feed}
+			state.systemSetting={...state.systemSetting}
 			uni.setStorageSync('systemSetting',state.systemSetting)
 		},
-		ADD_CUSTOM_SOURCE:(state,source)=>{
-			state.systemSetting.customSources.push(source)
+		DELETE_SOURCE:(state,data)=>{
+			state.systemSetting.feeds[data.feedIndex].list.splice(data.sourceIndex,1)
+			uni.setStorageSync('systemSetting',state.systemSetting)
+		},
+		ADD_SOURCE:(state,source)=>{
+			state.systemSetting.feeds[1].list.push(source)
 			uni.setStorageSync('systemSetting',state.systemSetting)
 		},
 		INIT_SETTING:(state,data)=>{
@@ -81,20 +96,17 @@ const setting={
 			//初始化系统设置
 			if(!!data.systemSetting){
 				let temp={...data.systemSetting}
-				// temp.defaultSource=data.systemSetting.defaultSource
-				// temp.sources=[]
 				state.systemSetting=temp
 			}
-			// for(let key in source){
-			// 	if(source[key].isOpen){
-			// 		let temp={
-			// 			key:key,
-			// 			desc:key+'：'+source[key].desc
-			// 		}
-			// 		state.systemSetting.sources.push(temp)
-			// 	}
-			// }
 		},
+	},
+	actions:{
+		getLotaiFeed:(store,data)=>{
+			request('getSourceList').then(res => {
+				store.commit('SET_FEED', {feed:res.data,feedIndex:0});
+				data.success()
+			});
+		}
 	}
 }
 export default setting

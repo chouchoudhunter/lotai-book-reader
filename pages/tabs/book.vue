@@ -132,9 +132,6 @@ export default {
 		},
 		defaultSource(){
 			return this.$store.getters.getDefaultSource;
-		},
-		sources() {
-			return this.$store.getters.getSources;
 		}
 	},
 	onPageScroll(e) {
@@ -150,9 +147,14 @@ export default {
 	methods: {
 		//获得精选内容
 		getDiscord() {
-			sourceParser(this.sources[this.defaultSource].content, 'discord').then(data => {
-				this.$store.commit('books/SET_FEATURES',data)
-			});
+			this.$store.dispatch('setting/getLotaiFeed',{
+				success:()=>{
+					sourceParser(this.defaultSource.content, 'discord').then(data => {
+						this.$store.commit('books/SET_FEATURES',data)
+					});
+				}
+			})
+
 		},
 		//设置书本置顶
 		setTop() {

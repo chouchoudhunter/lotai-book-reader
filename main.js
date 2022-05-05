@@ -2,7 +2,9 @@ import App from './App'
 // main.js
 import uView from "uview-ui";
 import store from './store'
+import lotai from './untils/common.js'
 Vue.use(uView);
+Vue.use(lotai);
 
 // #ifndef VUE3
 import Vue from 'vue'

@@ -16,17 +16,6 @@
 				>
 					<view slot="right-icon"><u-switch v-model="isNight" @change="changeNight" size="40"></u-switch></view>
 				</u-cell-item>
-				<u-cell-item
-					:border-bottom="false"
-					:title-style="{ color: color.normalText }"
-					title="切换源"
-					hover-class="cell-hover-class"
-					:arrow="false"
-					:bg-color="color.bgPage"
-					@click="showSwitchSource"
-					:hover-class="isNightMode?'cell-hover-class-night':'cell-hover-class'"
-				>
-				</u-cell-item>
 				<!-- #ifdef APP-PLUS -->
 				<u-cell-item
 					:border-bottom="false"
@@ -48,9 +37,17 @@
 					:hover-class="isNightMode?'cell-hover-class-night':'cell-hover-class'"
 				></u-cell-item>
 				<!-- #endif -->
+				<u-cell-item
+					:border-bottom="false"
+					:title-style="{ color: color.normalText }"
+					title="清除loaclstorage"
+					hover-class="cell-hover-class"
+					:bg-color="color.bgPage"
+					@click="clearStorage"
+					:hover-class="isNightMode?'cell-hover-class-night':'cell-hover-class'"
+				></u-cell-item>
 			</u-cell-group>
 		</view>
-		<switch-source v-model="isShowSourceSwitch"></switch-source>
 		<custom-modal v-model="toastImgDelete" @confirm="clearImage" :async-close="true">
 			<view style="padding: 5px 15px;text-align: center;">
 				{{`当前缓存图片${imgNum.all}张,未使用图片${imgNum.use}张`}}<br>
@@ -63,15 +60,13 @@
 
 <script>
 import { request } from '@/untils/http.js';
-import switchSource from '@/components/switch-source.vue';
 import customModal from '@/components/custom-modal.vue';
 export default {
-	components:{switchSource,customModal},
+	components:{customModal},
 	data() {
 		return {
 			isNight: false,
 			version: '',
-			isShowSourceSwitch:false,
 			toastImgDelete:false,
 			updateToast:false,
 			imgNum:{
@@ -99,6 +94,9 @@ export default {
 		//#endif
 	},
 	methods: {
+		clearStorage(){
+			uni.clearStorage()
+		},
 		confirmClearImage(){
 			this.toastImgDelete=!this.toastImgDelete
 			uni.getSavedFileList({
@@ -126,9 +124,6 @@ export default {
 				})
 			}
 			this.toastImgDelete=false
-		},
-		showSwitchSource(){
-			this.isShowSourceSwitch=!this.isShowSourceSwitch
 		},
 		checkAppUpdate() {
 			//#ifdef APP-PLUS

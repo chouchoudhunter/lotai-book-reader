@@ -21,8 +21,37 @@ const getters = {
 	},
 	getReadSetting:state =>state.setting.readSetting,
 	getSystemSetting:state =>state.setting.systemSetting,
-	getSources:state =>state.setting.systemSetting.sources,
-	getDefaultSource:state =>state.setting.systemSetting.defaultSource,
+	getFeeds:state =>state.setting.systemSetting.feeds,
+	getOpenSources:state =>{
+		const sources=[]
+		state.setting.systemSetting.feeds.forEach(feed=>{
+			feed.list.forEach(source=>{
+				source.name=source.content.info.title
+				source.feed=feed.name
+				if(source.content.info.isOpen) sources.push(source)
+			})
+		})
+		return sources
+	},
+	getBookSource:state=>bookSource=>{
+		const feed=state.setting.systemSetting.feeds.find(item=>{
+			return item.name==bookSource.feedName
+		})
+		const source=feed.list.find(item=>{
+			return item.content.info.host==bookSource.sourceHost
+		})
+		return source
+	},
+	getDefaultSource:state =>{
+		const feed=state.setting.systemSetting.feeds.find(item=>{
+			return item.name==state.setting.systemSetting.defaultSource.feedName
+		})
+		const source=feed.list.find(item=>{
+			return item.content.info.host==state.setting.systemSetting.defaultSource.sourceHost
+		})
+		source.source=state.setting.systemSetting.defaultSource
+		return source
+	},
 	getFeatures:state=>!!state.books.features?state.books.features:[]
 }
 export default getters

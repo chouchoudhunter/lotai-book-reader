@@ -28,16 +28,23 @@
 					</view>
 				</view>
 			</view>
-			<view class="tabs">
-				<view class="tabs-main">
-					<view class="tab"><text class="tab-text" :style="{ color: '#007aff' }">目录</text></view>
+			<view class="menu-block">
+				<view class="tabs">
+					<view class="tabs-main">
+						<view class="tab"><text class="tab-text" :style="{ color: '#007aff' }">目录</text></view>
+					</view>
+					<view class="dot"></view>
 				</view>
-				<image class="order-icon" mode="aspectFill" :src="oderIcon" @click="reverseChapterList" />
-				<view class="dot"></view>
+				<view class="menu-func">
+					<image mode="aspectFill" class="menu-func-icon" src="/static/read/to-center.png" @click="toChapterPos" />
+					<image mode="aspectFill" class="menu-func-icon" :src="toTopBottom" @click="toTopOrBottom" />
+					<image mode="aspectFill" class="menu-func-icon" :src="oderIcon" @click="reverseChapterList" />999
+				</view>
 			</view>
 		</view>
 		<list class="bottom" :style="{ height: toolHeight + 'px', backgroundColor: color.cardBg, opacity: chapterLoaded ? '1' : '0' }">
 			<cell style="height: 10px;"></cell>
+			<cell ref="top"></cell>
 			<cell v-for="(item, index) in chapterList" :key="index">
 				<view
 					:ref="index == readIndex ? 'chapterT' : 'chapter' + index"
@@ -51,6 +58,7 @@
 					<text class="text-style" :style="`color:${index == readIndex ? '#007aff' : color.normalText}`">{{ item.title }}</text>
 				</view>
 			</cell>
+			<cell ref="bottom"></cell>
 		</list>
 	</view>
 </template>
@@ -69,7 +77,8 @@ export default {
 			chapterList: [],
 			book: {},
 			chapterLoaded: false,
-			chaperListRe: false
+			chaperListRe: false,
+			isTop: true
 		};
 	},
 	computed: {
@@ -81,6 +90,9 @@ export default {
 		},
 		oderIcon() {
 			return this.chaperListRe ? '/static/read/order-re.png' : '/static/read/order.png';
+		},
+		toTopBottom() {
+			return this.isTop ? '/static/read/to-top.png' : '/static/read/to-bottom.png';
 		},
 		readIndex() {
 			if (this.chaperListRe) {
@@ -99,7 +111,7 @@ export default {
 		});
 		uni.$on('leftToolTopen', data => {
 			this.chapterLoaded = false;
-			this.toChapterPos()
+			this.toChapterPos();
 		});
 	},
 	destroyed() {
@@ -107,20 +119,33 @@ export default {
 		uni.$off('leftToolTopen');
 	},
 	methods: {
-		toChapterPos(){
+		toTopOrBottom() {
+			let chapter = this.$refs.top;
+			if (this.isTop) {
+				chapter = this.$refs.bottom;
+			}
+			this.isTop=!this.isTop
+			setTimeout(() => {
+				dom.scrollToElement(chapter, {
+					animated: false
+				});
+				this.chapterLoaded = true;
+			}, 50);
+		},
+		toChapterPos() {
 			const chapterT = this.$refs.chapterT;
 			setTimeout(() => {
 				dom.scrollToElement(chapterT[0], {
 					animated: false
 				});
 				this.chapterLoaded = true;
-			}, 150);
+			}, 50);
 		},
 		reverseChapterList() {
 			this.chaperListRe = !this.chaperListRe;
-			this.chapterLoaded = false;
+			// this.chapterLoaded = false;
 			this.chapterList = this.chapterList.reverse();
-			this.toChapterPos()
+			this.toChapterPos();
 		},
 		goToNowChapter() {
 			uni.screen;
@@ -146,48 +171,72 @@ export default {
 	.top {
 		height: 170px;
 		width: 563rpx;
-		padding: 15px 15px 0 15px;
+		padding-left: 30rpx;
+		padding-right: 30rpx;
+		padding-top: 30rpx;
 		position: relative;
 		z-index: 3;
-		.tabs {
-			width: 563rpx;
-			position: absolute;
-			bottom: 10px;
-			left: 0;
-			.tabs-main {
+		.menu-block {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			position: relative;
+			height: 55px;
+			width: 502.5rpx;
+			.menu-func {
 				display: flex;
 				flex-direction: row;
 				align-items: center;
-				justify-content: space-around;
-				.tab {
+				position: absolute;
+				height: 55px;
+				right: 0;
+				top: 6px;
+				z-index: 5;
+				.menu-func-icon {
+					width: 22px;
+					height: 22px;
+					padding: 2px;
+					margin-left: 6rpx;
+				}
+			}
+			.tabs {
+				width: 502.5rpx;
+				position: absolute;
+				height: 55px;
+				top: 10rpx;
+				left: 0;
+				z-index: 5;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				.tabs-main {
 					display: flex;
 					flex-direction: row;
 					align-items: center;
-					.tab-text {
-						font-size: 14px;
+					justify-content: space-around;
+					.tab {
+						display: flex;
+						flex-direction: row;
+						align-items: center;
+						.tab-text {
+							font-size: 14px;
+						}
 					}
 				}
-			}
-			.order-icon {
-				width: 22px;
-				height: 22px;
-				position: absolute;
-				top: 5px;
-				right: 15px;
-				padding: 2px;
-			}
-			.dot {
-				width: 35rpx;
-				height: 5rpx;
-				background-color: #007aff;
-				border-radius: 3rpx;
-				transform: translateX(264rpx);
-				margin-top: 5px;
+				.dot {
+					width: 35rpx;
+					height: 5rpx;
+					background-color: #007aff;
+					border-radius: 3rpx;
+					transform: translateX(233rpx);
+					margin-top: 5px;
+				}
 			}
 		}
 		.top-top {
 			display: flex;
 			flex-direction: row;
+			height: 100px;
 			.img {
 				width: 75px;
 				height: 100px;
