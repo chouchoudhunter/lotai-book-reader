@@ -17,6 +17,7 @@
 			<scroll-view :scroll-y="true" @scrolltolower="loadMore" class="search-detail" v-show="showSearchDetail">			
 			<u-tabs
 					ref="tabs"
+					class="tabs"
 					:inactive-color="color.normalText"
 					:bg-color="color.bgPage"
 					:list="openSources"
@@ -25,6 +26,7 @@
 					@change="changeSource"
 					 v-show="showSearchDetail"
 				></u-tabs>
+				<view style="height:40px"></view>
 				<u-empty v-show="searchEmpty" text="没有找到书籍 建议输入完整书名" mode="search"></u-empty>
 				<loading-anime v-show="isSearching"></loading-anime>
 				<book-item v-for="(book, i) in books[currentSource]" :key="i" :book="book"></book-item>
@@ -102,6 +104,7 @@ export default {
 			});
 		},
 		search(key, isHistory = false) {
+			this.initArray()
 			if (isHistory) {
 				this.keyword = key;
 				this.showSearchDetail = true;
@@ -110,6 +113,9 @@ export default {
 				this.showSearchDetail = true;
 				this.getBooks();
 			}
+			this.$nextTick(()=>{
+				this.$refs.tabs.init()
+			})
 		},
 		clearKeyword() {
 			this.showSearchDetail = false;
@@ -150,6 +156,8 @@ export default {
 			}
 		},
 		initArray(){
+			this.books=[]
+			this.searchPage=[]
 			this.openSources.forEach(item=>{
 				this.searchPage.push(0)
 				this.books.push([])
@@ -220,6 +228,12 @@ export default {
 		.search-detail {
 			height: 100%;
 			width: 100%;
+			.tabs{
+				width: 100%;
+				position: fixed;
+				z-index: 50;
+				left: 0;
+			}
 		}
 	}
 }
