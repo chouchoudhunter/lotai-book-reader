@@ -173,7 +173,16 @@
 							:field-style="{ color: color.normalText }"
 							v-model="source.operation[1].xpaths[4].xpath"
 							label="书本地址"
-							placeholder="输入目书本地址xpath规则"
+							placeholder="输入书本地址xpath规则"
+						></u-field>
+						<u-field
+							type="textarea"
+							:border-bottom="false"
+							:label-color="color.normalText"
+							:field-style="{ color: color.normalText }"
+							v-model="source.operation[1].xpaths[4].reg"
+							label="地址正则"
+							placeholder="对书本地址进行正则处理"
 						></u-field>
 						<u-field
 							type="textarea"
@@ -319,8 +328,8 @@
 							label="精选正则"
 							placeholder="对书本地址进行正则"
 						></u-field>
-						<view v-for="(item,index) in source.operation[4].xpaths" :key="index">
-							<view v-if="index!=0">
+						<view v-for="(item, index) in source.operation[4].xpaths" :key="index">
+							<view v-if="index != 0">
 								<u-field
 									type="text"
 									:border-bottom="false"
@@ -350,14 +359,16 @@
 								></u-field>
 							</view>
 						</view>
-						<view class="cate-func-btn"><u-button type="primary" @click="addCate()">增加分类</u-button>
-						<u-button type="primary" @click="addCate(false)">减少分类</u-button></view>
+						<view class="cate-func-btn">
+							<u-button type="primary" @click="addCate()">增加分类</u-button>
+							<u-button type="primary" @click="addCate(false)">减少分类</u-button>
+						</view>
 						<view style="height: 50px;"></view>
 					</scroll-view>
 				</swiper-item>
 			</swiper>
 		</view>
-		<custom-modal v-model="backToast" @confirm="backPage" title="确定退出吗？" content="未保存,如果点击确定会丢失所有数据"></custom-modal>
+		<custom-modal v-model="backToast" @confirm="backPage" title="确定退出吗？" content="如果点击确定会丢失未保存数据"></custom-modal>
 		<custom-modal
 			ref="debug"
 			v-model="debugToast"
@@ -445,54 +456,53 @@ export default {
 			debugToast: false,
 			debugResult: '',
 			isAsyncClose: true,
+			isEdit: false,
+			editSourceIndex: {},
 			debugData: {
 				search: { keyword: '' },
 				info: { bookUrl: '' },
 				list: { bookUrl: '' },
-				chapter: { bookUrl: '51_51139/', chapterUrl: '5917314.html' }
+				chapter: { bookUrl: '', chapterUrl: '' }
 			},
 			source: {
-				info: { title: '笔趣阁(biquwx)', desc: '网文', host: 'https://www.xbiquwx.la/', isOpen: true },
+				info: { title: '', desc: '', host: '', isOpen: true },
 				operation: [
 					{
 						type: 'search',
 						method: 'GET',
-						url: 'modules/article/search.php?searchkey={{key}}',
-						xpaths: [{ type: 'bookUrl', xpath: "//*[@id='wrapper']/table/tr/td[@class='odd'][1]/a/@href", reg: '' }]
+						url: '',
+						xpaths: [{ type: 'bookUrl', xpath: '', reg: '' }]
 					},
 					{
 						type: 'info',
 						method: 'GET',
-						url: '{{bookUrl}}',
+						url: '',
 						xpaths: [
-							{ type: 'img', xpath: "//*[@id='fmimg']/img/@src" },
-							{ type: 'title', xpath: '//*[@id="info"]/h1/text()', reg: '' },
-							{ type: 'author', xpath: '//*[@id="info"]/p[1]/text()', reg: '(?<=:).*' },
-							{ type: 'desc', xpath: '//*[@id="intro"]/p[1]', reg: '' },
-							{ type: 'bookUrl', xpath: '/html//meta[4]/@content', reg: '(?<=la/).*' },
-							{ type: 'tags', xpath: '//*[@id="info"]/p[2]/text()', reg: '(?<=:).*' }
+							{ type: 'img', xpath: '' },
+							{ type: 'title', xpath: '', reg: '' },
+							{ type: 'author', xpath: '', reg: '' },
+							{ type: 'desc', xpath: '', reg: '' },
+							{ type: 'bookUrl', xpath: '', reg: '' },
+							{ type: 'tags', xpath: '', reg: '' }
 						]
 					},
 					{
 						type: 'list',
 						method: 'GET',
-						url: '{{bookUrl}}',
-						xpaths: [{ type: 'chapter', xpath: '//*[@id="list"]/dl//dd' }]
+						url: '',
+						xpaths: [{ type: 'chapter', xpath: '' }]
 					},
 					{
 						type: 'chapter',
 						method: 'GET',
-						url: '{{bookUrl}}{{chapterUrl}}',
-						xpaths: [
-							{ type: 'title', xpath: '//*[@id="wrapper"]/div[5]/div/div[2]/h1/text()', reg: '' },
-							{ type: 'text', xpath: '//*[@id="content"]//text()', reg: '' }
-						]
+						url: '',
+						xpaths: [{ type: 'title', xpath: '', reg: '' }, { type: 'text', xpath: '', reg: '' }]
 					},
 					{
 						type: 'discord',
 						method: 'GET',
 						url: '',
-						xpaths: [{ type: 'select', xpath: '//*[@id="hotcontent"]/div[1]/div//a[1]/@href',reg:'(?<=la/).*'},{type: 'tag',name:'玄幻',xpath: '//*[@id="main"]/div[3]/div[1]/div/dl/dt/a/@href|//*[@id="main"]/div[3]/div[1]/ul/li/a/@href',reg:'(?<=la/).*'},{type: 'tag',name:'修真',xpath: '//*[@id="main"]/div[3]/div[2]/div/dl/dt/a/@href|//*[@id="main"]/div[3]/div[2]/ul/li/a/@href',reg:'(?<=la/).*'},{type: 'tag',name:'网文',xpath: '//*[@id="main"]/div[3]/div[3]/div/dl/dt/a/@href|//*[@id="main"]/div[3]/div[3]/ul/li/a/@href',reg:'(?<=la/).*'},{type: 'tag',name:'穿越',xpath: '//*[@id="main"]/div[4]/div[1]/div/dl/dt/a/@href|//*[@id="main"]/div[4]/div[1]/ul/li/a/@href',reg:'(?<=la/).*'},{type: 'tag',name:'都市',xpath: '//*[@id="main"]/div[4]/div[2]/div/dl/dt/a/@href|//*[@id="main"]/div[4]/div[2]/ul/li/a/@href',reg:'(?<=la/).*'},{type: 'tag',name:'科幻',xpath: '//*[@id="main"]/div[4]/div[3]/div/dl/dt/a/@href|//*[@id="main"]/div[4]/div[3]/ul/li/a/@href',reg:'(?<=la/).*'}]
+						xpaths: [{ type: 'select', xpath: '', reg: '' }, { type: 'tag', name: '', xpath: '', reg: '' }]
 					}
 				]
 			}
@@ -513,9 +523,15 @@ export default {
 			}
 		}
 	},
-	onLoad() {
+	onLoad: function(option) {
 		const systemInfo = getApp().globalData.systemInfo;
 		this.swiperHeight = systemInfo.windowHeight - systemInfo.statusBarHeight - 88;
+		if (option.data) {
+			const data = JSON.parse(option.data);
+			this.source = data.source;
+			this.editSourceIndex = data.index;
+			this.isEdit = true;
+		}
 	},
 	onReady() {
 		//#ifdef APP-PLUS
@@ -529,19 +545,28 @@ export default {
 		}
 	},
 	methods: {
-		saveSource(){
-			this.$store.commit('setting/ADD_SOURCE',{content:this.source})
-			this.$lotai.toast('保存完成！','success')
-			console.log(JSON.stringify(this.source))
-			this.backPage()
+		saveSource() {
+			if (this.isEdit) {
+				this.$store.commit('setting/CHANGE_SOURCE', { index: this.editSourceIndex, source: this.source });
+				setTimeout(() => {
+					this.$lotai.toast('修改完成！', 'success');
+					this.backPage();
+				}, 1);
+			} else {
+				this.$store.commit('setting/ADD_SOURCE', { content: this.source });
+				setTimeout(() => {
+					this.$lotai.toast('保存完成！', 'success');
+					 this.backPage();
+				}, 1);
+			}
 		},
-		addCate(isAdd=true){
-			if(isAdd){
-				const temp={type: 'tag',name:'',xpath: "",reg:''}
-				this.source.operation[4].xpaths.push(temp)
-			}else{
-				if(this.source.operation[4].xpaths.length>2){
-					this.source.operation[4].xpaths.pop()
+		addCate(isAdd = true) {
+			if (isAdd) {
+				const temp = { type: 'tag', name: '', xpath: '', reg: '' };
+				this.source.operation[4].xpaths.push(temp);
+			} else {
+				if (this.source.operation[4].xpaths.length > 2) {
+					this.source.operation[4].xpaths.pop();
 				}
 			}
 		},
@@ -569,7 +594,7 @@ export default {
 				if (!this.source.operation[3].url) toastText.push('请填写[正文地址]');
 				type = 'chapter';
 				data = { bookUrl: this.debugData.chapter.bookUrl, chapterUrl: this.debugData.chapter.chapterUrl };
-			}else if (this.currentTag === 5) {
+			} else if (this.currentTag === 5) {
 				type = 'discord';
 				data = {};
 			}
@@ -581,6 +606,17 @@ export default {
 			}
 			sourceParser(this.source, type, data).then(res => {
 				this.debugResult = res;
+				if (this.currentTag === 1) {//搜索
+					this.debugData.info.bookUrl=res[0]
+				} else if (this.currentTag === 2) {//书本信息
+					this.debugData.list.bookUrl=res.bookUrl
+				} else if (this.currentTag === 3) {//目录
+					this.debugData.chapter.bookUrl=this.debugData.list.bookUrl
+					const tempItem=res.find(item=>{
+						return item.type!='group'
+					})
+					this.debugData.chapter.chapterUrl=tempItem.url
+				}
 				this.$refs.debug.clearLoading();
 			});
 		},
@@ -640,7 +676,7 @@ export default {
 				}
 			}
 		}
-		.cate-func-btn{
+		.cate-func-btn {
 			display: flex;
 			flex-direction: row;
 			justify-content: space-around;

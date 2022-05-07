@@ -27,7 +27,7 @@ instance.interceptors.response.use(
   },
   error => {
     // 对响应错误做些什么
-	uni.$lotai.toast('错误:'+JSON.stringify(error),'error');
+	uni.$lotai.toast(`错误${error.statusCode}:${error.data}`);
     return Promise.reject(error)
   }
 )

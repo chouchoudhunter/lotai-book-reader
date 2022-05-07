@@ -144,10 +144,7 @@ export default {
 				await sourceParser(this.openSources[this.currentSource].content, 'info', { bookUrl: this.searchRes[this.currentSource][index] }).then(res => {
 					this.status = 'loadmore';
 					this.isSearching = false;
-					res.source={
-						feedName:this.openSources[this.currentSource].feed,
-						sourceHost:this.openSources[this.currentSource].content.info.host
-					}
+					res.source=this.openSources[this.currentSource].source
 					this.books[this.currentSource].push(res);
 				});
 			}

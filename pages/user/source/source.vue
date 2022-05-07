@@ -25,8 +25,11 @@
 					</view>
 					<view class="source-func">
 						<view class="source-func-left">
-							<view v-show="isBatch" style="margin-right: 10px;"><u-checkbox v-show="isBatch" @change="allSelect(index)" v-model="isAllSelect" style="width: 26px;"></u-checkbox>全选</view>
-							<view @click="openBatch()">{{isBatch?'取消批量':'开启批量'}}</view>
+							<view v-show="isBatch" style="margin-right: 10px;">
+								<u-checkbox v-show="isBatch" @change="allSelect(index)" v-model="isAllSelect" style="width: 26px;"></u-checkbox>
+								全选
+							</view>
+							<view @click="openBatch()">{{ isBatch ? '取消批量' : '开启批量' }}</view>
 						</view>
 						<u-icon name="checkmark-circle" class="icon" :color="color.normalText" size="35"></u-icon>
 						<u-icon class="icon" :name="'/static/home/' + (isNightMode ? 'trash-night' : 'trash') + '.png'" size="35"></u-icon>
@@ -36,13 +39,23 @@
 						<view class="source-title">{{ source.content.info.title }}</view>
 						<view class="source-desc">{{ source.content.info.desc }}</view>
 						<view class="source-icon">
-							<u-icon v-show="source.content.info.isOpen" name="checkmark-circle" class="source-icon-item" color="#2970ff" size="35"></u-icon>
-							<drop-down-menu class="source-icon-item">
-								<view class="drop-menu-item">
+							<u-icon
+								name="checkmark-circle"
+								class="source-icon-item"
+								:color="source.content.info.isOpen ? '#2970ff' : color.normalText"
+								size="35"
+								@click="changeOpen([{ feedIndex: index, sourceIndex: i }])"
+							></u-icon>
+							<drop-down-menu class="source-icon-item" :bgColor="color.bgPage">
+								<view class="drop-menu-item" @click="editSource(source.content, { feedIndex: index, sourceIndex: i })">
 									<u-icon class="icon" name="edit-pen" size="35"></u-icon>
 									<view>编辑</view>
 								</view>
-								<view class="drop-menu-item" @click="openDeleteSourceToast({feedIndex:index,sourceIndex:i})">
+								<view class="drop-menu-item" @click="coppySourceJSON(source)">
+									<u-icon class="icon" name="fingerprint" size="35"></u-icon>
+									<view>复制</view>
+								</view>
+								<view class="drop-menu-item" @click="openDeleteSourceToast({ feedIndex: index, sourceIndex: i })">
 									<u-icon class="icon" :name="'/static/home/' + (isNightMode ? 'trash-night' : 'trash') + '.png'" size="32"></u-icon>
 									<view>删除</view>
 								</view>
@@ -95,9 +108,9 @@ export default {
 			swiperFeed: 0,
 			keyword: '',
 			isBatch: false,
-			isAllSelect:false,
-			deleteSourceToast:false,
-			deleteSourceInfo:{}
+			isAllSelect: false,
+			deleteSourceToast: false,
+			deleteSourceInfo: {}
 		};
 	},
 	computed: {
@@ -121,22 +134,42 @@ export default {
 		});
 	},
 	methods: {
-		openBatch(){
-			this.isBatch=!this.isBatch
+		coppySourceJSON(source) {
+			uni.setClipboardData({
+				data: JSON.stringify(source.content),
+				showToast:false,
+				success: ()=>{
+					this.$lotai.toast('复制完成', 'success');
+				}
+			});
+		},
+		changeOpen(list) {
+			this.$store.commit('setting/CHANGE_SOURCE_OPEN', list);
+			this.$lotai.toast('操作完成', 'success');
+		},
+		openBatch() {
+			this.isBatch = !this.isBatch;
 		},
 		allSelect() {
 			//
 		},
-		editSource(source){
-			//
+		editSource(source, index) {
+			let data = {
+				source: source,
+				index: index
+			};
+			data = this.$u.queryParams({ data: JSON.stringify(data) });
+			uni.navigateTo({
+				url: '/pages/user/source/subPage/addSource' + data
+			});
 		},
-		openDeleteSourceToast(data){
-			this.deleteSourceToast=true
-			this.deleteSourceInfo=data
+		openDeleteSourceToast(data) {
+			this.deleteSourceToast = true;
+			this.deleteSourceInfo = data;
 		},
-		deleteSource(){
-			this.$store.commit('setting/DELETE_SOURCE',this.deleteSourceInfo)
-			this.$lotai.toast('删除完成','success')
+		deleteSource() {
+			this.$store.commit('setting/DELETE_SOURCE', this.deleteSourceInfo);
+			this.$lotai.toast('删除完成', 'success');
 		},
 		refreshSource() {
 			this.$u.throttle(() => {
@@ -149,6 +182,7 @@ export default {
 		},
 		requestLotai() {
 			this.$store.dispatch('setting/getLotaiFeed', {
+				force: true,
 				success: () => {
 					this.$lotai.toast('更新成功', 'success');
 				}
@@ -241,7 +275,7 @@ export default {
 					align-items: center;
 					margin: 10px 0;
 					// justify-content: space-between;
-					.source-func-left{
+					.source-func-left {
 						flex-grow: 1;
 						display: flex;
 						flex-direction: row;
@@ -257,7 +291,7 @@ export default {
 					flex-direction: row;
 					align-items: center;
 					height: 35px;
-					.source-check{
+					.source-check {
 						width: 26px;
 					}
 					.source-title {
@@ -274,11 +308,11 @@ export default {
 						display: flex;
 						flex-direction: row;
 						align-items: center;
-						.source-icon-item{
+						.source-icon-item {
 							padding: 5px;
 						}
 						.drop-menu-item {
-							padding: 8px 10px;
+							padding: 12px 10px;
 							display: flex;
 							flex-direction: row;
 							align-items: center;

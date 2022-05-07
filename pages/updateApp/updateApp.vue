@@ -58,7 +58,7 @@ export default {
 							res.tempFilePath,
 							{force: false},
 							function() {
-								plus.runtime.restart();
+								// plus.runtime.restart();
 							},
 							function(e) {
 								this.$u.toast('安装失败:'+JSON.stringify(e));

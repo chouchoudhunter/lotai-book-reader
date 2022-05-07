@@ -4,19 +4,19 @@
 		<view class="u-tips u-border-bottom" v-if="tips.text" :style="[tipsStyle]">
 			{{tips.text}}
 		</view>
-		<block v-for="(item, index) in list" :key="index">
-			<view 
-				@touchmove.stop.prevent 
-				@tap="itemClick(index)" 
-				:style="[itemStyle(index)]" 
-				class="u-action-sheet-item u-line-1" 
-				:class="[index < list.length - 1 ? 'u-border-bottom' : '']"
-				:hover-stay-time="150"
-			>
-				<text>{{item.text}}</text>
-				<text class="u-action-sheet-item__subtext u-line-1" v-if="item.subText">{{item.subText}}</text>
-			</view>
-		</block>
+			<block v-for="(item, index) in list" :key="index">
+				<view 
+					@touchmove.stop.prevent 
+					@tap="itemClick(index)" 
+					:style="[itemStyle(index)]" 
+					class="u-action-sheet-item u-line-1" 
+					:class="[index < list.length - 1 ? 'u-border-bottom' : '']"
+					:hover-stay-time="150"
+				>
+					<text>{{item.text}}</text>
+					<text class="u-action-sheet-item__subtext u-line-1" v-if="item.subText">{{item.subText}}</text>
+				</view>
+			</block>
 		<view class="u-gab" v-if="cancelBtn">
 		</view>
 		<view @touchmove.stop.prevent class="u-actionsheet-cancel u-action-sheet-item" hover-class="u-hover-class"

@@ -74,6 +74,11 @@ const setting={
 			state.systemSetting={...systemSetting}
 			uni.setStorageSync('systemSetting',systemSetting)
 		},
+		SET_DEFAULT_SOURCE:(state,data)=>{
+			state.systemSetting.defaultSource.feedName=data.feedName
+			state.systemSetting.defaultSource.sourceHost=data.sourceHost
+			uni.setStorageSync('systemSetting',state.systemSetting)
+		},
 		SET_FEED:(state,data)=>{
 			state.systemSetting.feeds[data.feedIndex]={...data.feed}
 			state.systemSetting={...state.systemSetting}
@@ -85,6 +90,16 @@ const setting={
 		},
 		ADD_SOURCE:(state,source)=>{
 			state.systemSetting.feeds[1].list.push(source)
+			uni.setStorageSync('systemSetting',state.systemSetting)
+		},
+		CHANGE_SOURCE:(state,data)=>{
+			state.systemSetting.feeds[data.index.feedIndex].list[data.index.sourceIndex].content={...data.source}
+			uni.setStorageSync('systemSetting',state.systemSetting)
+		},
+		CHANGE_SOURCE_OPEN:(state,list)=>{
+			list.forEach(item=>{
+				state.systemSetting.feeds[item.feedIndex].list[item.sourceIndex].content.info.isOpen=!state.systemSetting.feeds[item.feedIndex].list[item.sourceIndex].content.info.isOpen
+			})
 			uni.setStorageSync('systemSetting',state.systemSetting)
 		},
 		INIT_SETTING:(state,data)=>{
@@ -102,10 +117,20 @@ const setting={
 	},
 	actions:{
 		getLotaiFeed:(store,data)=>{
-			request('getSourceList').then(res => {
-				store.commit('SET_FEED', {feed:res.data,feedIndex:0});
-				data.success()
-			});
+			if(data.force){
+				request('getSourceList').then(res => {
+					store.commit('SET_FEED', {feed:res.data,feedIndex:0});
+					data.success()
+				});	
+			}else if(!store.state.systemSetting.feeds[0].list.length){
+				request('getSourceList').then(res => {
+					store.commit('SET_FEED', {feed:res.data,feedIndex:0});
+					data.success()
+				});				
+			}else{
+				 data.success()
+			}
+
 		}
 	}
 }

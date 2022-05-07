@@ -372,6 +372,9 @@ export default {
 				font-size: 16px;
 			}
 			.info {
+				text-overflow: ellipsis;
+				white-space:nowrap; 
+				overflow: hidden;
 				font-size: 12px;
 			}
 		}
@@ -407,7 +410,12 @@ export default {
 			}
 			.name {
 				font-size: 14px;
-				margin: 5px 0;
+				margin: 5px 0;				
+				overflow: hidden;
+				text-overflow: ellipsis;
+				-webkit-line-clamp: 2; /* 设置超出多少行隐藏 */
+				-webkit-box-orient: vertical;
+				display: -webkit-box; /* 设置 display 为 -webkit-box 或者 -webkit-inline-box 时为隐藏状态 */
 			}
 
 			.img {

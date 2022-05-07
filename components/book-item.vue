@@ -10,7 +10,7 @@
 				<view :class="isNightMode ? 'tags-night' : 'tags'">
 					<view class="tag" v-for="(item, index) in book.tags" :key="index">{{ item }}</view>
 				</view>
-				<view class="star"><u-rate :count="5" current="4" active-color="#f5e100" :disabled="true"></u-rate></view>
+				<view class="star" v-show="book.star"><u-rate :count="5" current="4" active-color="#f5e100" :disabled="true"></u-rate></view>
 			</view>
 		</view>
 	</view>
@@ -29,7 +29,7 @@ export default {
 		showStatus: {
 			type: Boolean,
 			default: true
-		},
+		}
 	},
 	data() {
 		return {};
@@ -44,7 +44,7 @@ export default {
 	},
 	methods: {
 		tapBook() {
-			const data = this.$u.queryParams({data:JSON.stringify(this.book)});
+			const data = this.$u.queryParams({ data: JSON.stringify(this.book) });
 			uni.navigateTo({
 				url: '/pages/book-info/book-info' + data
 			});
@@ -75,15 +75,22 @@ export default {
 			flex-direction: column;
 			justify-content: space-between;
 			.title {
-				font-size: 18px;
+				font-size: 18px;				
+				overflow: hidden;
+				text-overflow: ellipsis;
+				-webkit-line-clamp: 1;
+				-webkit-box-orient: vertical;
+				display: -webkit-box;
 			}
 			.desc {
 				font-size: 12px;
 				color: #c6c6c6;
-				height: 32px;
+				width: 100%;
 				overflow: hidden;
+				text-overflow: ellipsis;
+				-webkit-line-clamp: 3;
 				-webkit-box-orient: vertical;
-				-webkit-line-clamp: 2;
+				display: -webkit-box;
 			}
 			.tags {
 				display: flex;

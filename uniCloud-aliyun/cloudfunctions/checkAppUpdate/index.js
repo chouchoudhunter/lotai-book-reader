@@ -7,6 +7,11 @@ exports.main = async (event, context) => {
 	const version=event.version
 	const collection=uniCloud.database().collection('app_version').orderBy('_id', 'desc')
 	const res=await collection.limit(1).get()
+	if(event.queryStringParameters && event.queryStringParameters.isWebUrl){
+		let temp=res.data[0]
+		delete temp._id
+		return toJson(temp)
+	}
 	if(res.data[0]){
 		let temp=res.data[0]
 		delete temp._id

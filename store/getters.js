@@ -27,7 +27,10 @@ const getters = {
 		state.setting.systemSetting.feeds.forEach(feed=>{
 			feed.list.forEach(source=>{
 				source.name=source.content.info.title
-				source.feed=feed.name
+				source.source={
+					feedName:feed.name,
+					sourceHost:source.content.info.host
+				}
 				if(source.content.info.isOpen) sources.push(source)
 			})
 		})

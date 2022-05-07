@@ -12,6 +12,15 @@
 					"subNVues": [{
 						"id": "mask",
 						"path": "pages/mask/mask"
+					},{
+						"id": "actionSheet",
+						"path": "pages/tabs/subNuve/action-sheet-n",
+						"type": "popup",
+						"style": {
+							"height": "35%",
+							"bottom": "0",
+							"background": "transparent"
+						}
 					}]
 				}
 			}

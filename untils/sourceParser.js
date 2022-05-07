@@ -32,7 +32,7 @@ async function getDiscord(operation, info) {
 				if (tempXpath.type === 'select') {
 					let nodes = xpath.select(tempXpath.xpath, doc);
 					nodes.forEach(node => {
-						data.select.push(doReg(tempXpath.reg,getString(node)))
+						data.select.push(doReg(tempXpath.reg, getString(node)))
 					})
 				} else if (tempXpath.type === 'tag') {
 					let dataTemp = {
@@ -41,7 +41,7 @@ async function getDiscord(operation, info) {
 					}
 					let nodes = xpath.select(tempXpath.xpath, doc);
 					nodes.forEach(node => {
-						dataTemp.books.push(doReg(tempXpath.reg,getString(node)))
+						dataTemp.books.push(doReg(tempXpath.reg, getString(node)))
 					})
 					data.tags.push(dataTemp)
 				}
@@ -102,7 +102,11 @@ async function getChapterList(operation, info, data) {
 							url: ''
 						}
 						const nodeDoc = new DOMParser().parseFromString(node.toString())
-						temp.title = getString(xpath.select("//text()", nodeDoc)[0])
+						let tempNode = xpath.select("//text()", nodeDoc)
+						tempNode = tempNode.find(item => {
+							return getString(item).trim()
+						})
+						temp.title = getString(tempNode)
 						temp.title = doReg(tempXpath.reg, temp.title).trim()
 						temp.url = getString(xpath.select("//a/@href", nodeDoc)[0])
 						if (temp.url) {
@@ -206,20 +210,40 @@ function getHtml(url, method) {
 	})
 }
 
+// function postHtml(url, method,) {
+// 	return new Promise((reslove, reject) => {
+// 		request({
+// 			method: method,
+// 			params:
+// 			url: url
+// 		}).then(res => {
+// 			const content = res.data.replace(/<html\s.*?>/g, "<html>").replace(/&.*?;/g, ' ')
+// 			reslove(content)
+// 		}).catch(err => {
+// 			console.log(err)
+// 			reject(err)
+// 		})
+// 	})
+// }
+
 function doReg(reg, str) {
-	if (reg) {
-		const tempReg = reg.split('::')
-		const flag = tempReg[0].split(',')[1] ? tempReg[0].split(',')[1] : 'g'
-		reg = tempReg[1] ? tempReg[1] : tempReg[0]
-		if (tempReg[0].indexOf("replace") != -1) {
-			const replaceStr = tempReg[0].split(',')[2] ? tempReg[0].split(',')[2] : ''
-			str = str.replace(new RegExp(reg, flag), replaceStr)
-		} else {
-			const strTemp = str.match(new RegExp(reg, flag))
-			if (strTemp && strTemp[0]) {
-				str = strTemp[0]
+	try {
+		if (reg) {
+			const tempReg = reg.split('::')
+			const flag = tempReg[0].split(',')[1] ? tempReg[0].split(',')[1] : 'g'
+			reg = tempReg[1] ? tempReg[1] : tempReg[0]
+			if (tempReg[0].indexOf("replace") != -1) {
+				const replaceStr = tempReg[0].split(',')[2] ? tempReg[0].split(',')[2] : ''
+				str = str.replace(new RegExp(reg, flag), replaceStr)
+			} else {
+				const strTemp = str.match(new RegExp(reg, flag))
+				if (strTemp && strTemp[0]) {
+					str = strTemp[0]
+				}
 			}
 		}
+	} catch (e) {
+		uni.$lotai.toast(e.name+':'+e.message,'error')
 	}
 	return str
 }

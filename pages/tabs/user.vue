@@ -48,6 +48,13 @@
 						@click="goDeclaration()"
 					></u-cell-item>
 					<u-cell-item
+						title="分享软件"
+						:hover-class="isNightMode ? 'cell-hover-class-night' : 'cell-hover-class'"
+						:title-style="{ color: color.normalText }"
+						:border-bottom="false"
+						@click="shareLotai()"
+					></u-cell-item>
+					<u-cell-item
 						title="软件设置"
 						:hover-class="isNightMode ? 'cell-hover-class-night' : 'cell-hover-class'"
 						:title-style="{ color: color.normalText }"
@@ -86,6 +93,16 @@ export default {
 		}
 	},
 	methods: {
+		shareLotai(){
+			plus.share.sendWithSystem({
+				type:"image",
+				pictures:['/static/user/lotai-book.png']
+			}, ()=>{
+				//
+			}, (e)=>{
+				console.log(e)
+			});
+		},
 		goSource(){
 			uni.navigateTo({
 				url: '../user/source/source'

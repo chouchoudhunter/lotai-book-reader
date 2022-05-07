@@ -1,8 +1,8 @@
 <template>
-	<view id="drop-down-menu">
+	<view id="drop-down-menu" @touchmove.stop.prevent="preventHandle">
 		<view class="mask" v-show="isShow" @click="switchMenu()"></view>
-		<u-icon name="more-dot-fill" size="35" id="func-btn" @click="switchMenu()"></u-icon>
-		<view class="menu" :style="menuStyle" id="menu"><slot></slot></view>
+		<u-icon :name="icon" size="35" id="func-btn" @click="switchMenu()"></u-icon>
+		<view class="menu" :style="menuStyle" id="menu" @click.capture="switchMenu()"><slot></slot></view>
 		<view class="menuT" :style="menuTStyle"></view>
 	</view>
 </template>
@@ -13,6 +13,14 @@ export default {
 		offestY: {
 			type: Number,
 			default: 15
+		},
+		icon:{
+			type:String,
+			default:'more-dot-fill'
+		},
+		bgColor:{
+			type:String,
+			default:'#fff'
 		}
 	},
 	data() {
@@ -25,9 +33,12 @@ export default {
 		};
 	},
 	computed: {
+		preventHandle(){
+			return false
+		},
 		menuStyle() {
 			let style = {
-				backgroundColor: this.color.bgPage ,
+				backgroundColor: this.bgColor,
 				right: this.menuPosition.right + 'px',
 				top: this.menuPosition.top + 'px',
 				opacity: this.isShow?1:0,
@@ -37,7 +48,7 @@ export default {
 		},
 		menuTStyle(){
 			let style = {
-				borderColor: `transparent transparent ${this.color.bgPage} transparent`,
+				borderColor: `transparent transparent ${this.bgColor} transparent`,
 				right: this.menuPosition.right+1 + 'px',
 				top: this.menuPosition.top-15 + 'px',
 				opacity: this.isShow?1:0,
