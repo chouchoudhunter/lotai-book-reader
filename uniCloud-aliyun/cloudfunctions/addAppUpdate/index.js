@@ -3,7 +3,7 @@ exports.main = async (event, context) => {
 	const version=event.version
 	const collection=uniCloud.database().collection('app_version')
 	await collection.add({
-		version:"2.5.5 ",
+		version:"2.6.0 ",
 		desc:`<h3>更新说明</h3>
 		1、ui优化<br>
 		2、优化错误提示<br>
