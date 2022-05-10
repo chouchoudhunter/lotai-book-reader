@@ -1,4 +1,3 @@
-import source from '@/source/index.js'
 import sourceParser from '@/untils/sourceParser.js';
 import { request } from '@/untils/http.js';
 const setting={

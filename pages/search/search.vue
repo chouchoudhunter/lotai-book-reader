@@ -42,7 +42,6 @@ import bookItem from '@/components/book-item.vue';
 import loadingAnime from '@/components/loading-anime.vue';
 import { request } from '@/untils/http.js';
 import sourceParser from '@/untils/sourceParser.js';
-import source from '@/source/index.js';
 export default {
 	components: { statusPlaceholder, bookItem, loadingAnime },
 	data() {

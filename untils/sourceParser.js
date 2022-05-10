@@ -62,6 +62,7 @@ async function getChapter(operation, info, data) {
 		requestUrl = requestUrl.replace("{{chapterUrl}}", data.chapterUrl)
 		const tempHtml = await getHtml(requestUrl, operation.method)
 		const doc = new DOMParser().parseFromString(tempHtml)
+		let isPrevJ=true//上一段结尾是否是句号
 		operation.xpaths.forEach(tempXpath => {
 			if (tempXpath.xpath) {
 				if (tempXpath.type === 'title') {
@@ -74,8 +75,19 @@ async function getChapter(operation, info, data) {
 					nodes.forEach(node => {
 						let str = getString(node)
 						str = doReg(tempXpath.reg, str).trim()
+						const endChar=str.charAt(str.length-1)
 						if (str) {
-							chapterTemp.text += `<br><p>${str}</p>`
+							if(isPrevJ){
+								chapterTemp.text +='<br><p>'
+							}
+							chapterTemp.text +=str
+							if(endChar.match(/[。！”…]/)){
+								isPrevJ=true
+								chapterTemp.text += '</p>'
+							}else{
+								isPrevJ=false
+							}
+							
 						}
 					})
 				}

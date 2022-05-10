@@ -24,7 +24,9 @@
             }
         },
         /* 模块配置 */
-        "modules" : {},
+        "modules" : {
+            "Share" : {}
+        },
         /* 应用发布信息 */
         "distribute" : {
             /* android打包配置 */
@@ -51,7 +53,8 @@
             "ios" : {},
             /* SDK配置 */
             "sdkConfigs" : {
-                "ad" : {}
+                "ad" : {},
+                "share" : {}
             },
             "splashscreen" : {
                 "androidStyle" : "default"
