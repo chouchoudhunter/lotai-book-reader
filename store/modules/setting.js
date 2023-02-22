@@ -15,7 +15,7 @@ const setting={
 		systemSetting:{
 			defaultSource:{
 				feedName:'LoTai源',
-				sourceHost:'https://www.kankezw.com/'
+				sourceHost:'https://www.1biquge.net/'
 			},
 			feeds:[{
 				name:'LoTai源',

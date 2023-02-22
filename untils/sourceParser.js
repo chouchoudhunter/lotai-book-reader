@@ -211,7 +211,8 @@ function getHtml(url, method) {
 	return new Promise((reslove, reject) => {
 		request({
 			method: method,
-			url: url
+			url: url,
+			sslVerify:false
 		}).then(res => {
 			const content = res.data.replace(/<html\s.*?>/g, "<html>").replace(/&.*?;/g, ' ')
 			reslove(content)

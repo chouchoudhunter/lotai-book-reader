@@ -113,7 +113,7 @@ export default {
 			}
 		};
 	},
-	computed: {
+	computed: { 
 		isNightMode() {
 			return this.$store.getters.getIsNightMode;
 		},
@@ -139,7 +139,7 @@ export default {
 	},
 	onLoad() {
 		this.checkAppUpdate();
-		this.getDiscord()
+		this.getDiscord();
 	},
 	onShow() {
 		this.changeDate();
