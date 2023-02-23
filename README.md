@@ -4,22 +4,22 @@
 uniapp,vue2,vuex
 # 功能概览
 ## 1.书架
-![](document\assets\书架.jpg)
+![](https://github.com/chouchoudhunter/lotai-book-reader/blob/beta/document/assets/书架.jpg)
 ## 2.发现
-![](document\assets\发现.jpg)
+![](https://github.com/chouchoudhunter/lotai-book-reader/blob/beta/document/assets/发现.jpg)
 ## 3.我的
-![](document\assets\我的.jpg)
+![](https://github.com/chouchoudhunter/lotai-book-reader/blob/beta/document/assets/我的.jpg)
 ## 4.源管理
-![](document\assets\源1.jpg)
-![](document\assets\源2.jpg)
+![](https://github.com/chouchoudhunter/lotai-book-reader/blob/beta/document/assets/源1.jpg)
+![](https://github.com/chouchoudhunter/lotai-book-reader/blob/beta/document/assets/源2.jpg)
 ## 5.夜间模式
-![](document\assets\夜间1.jpg)
-![](document\assets\夜间2.jpg)
-![](document\assets\夜间3.jpg)
+![](https://github.com/chouchoudhunter/lotai-book-reader/blob/beta/document/assets/夜间1.jpg)
+![](https://github.com/chouchoudhunter/lotai-book-reader/blob/beta/document/assets/夜间2.jpg)
+![](https://github.com/chouchoudhunter/lotai-book-reader/blob/beta/document/assets/夜间3.jpg)
 ## 6.阅读
-![](document\assets\阅读1.jpg)
-![](document\assets\阅读2.jpg)
-![](document\assets\阅读3.jpg)
+![](https://github.com/chouchoudhunter/lotai-book-reader/blob/beta/document/assets/阅读1.jpg)
+![](https://github.com/chouchoudhunter/lotai-book-reader/blob/beta/document/assets/阅读2.jpg)
+![](https://github.com/chouchoudhunter/lotai-book-reader/blob/beta/document/assets/阅读3.jpg)
 # 自定义源教程
 [链接](https://github.com/chouchoudhunter/lotai-book-reader/blob/beta/document/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%BA%90%E6%95%99%E7%A8%8B.md)
 # todo list
