@@ -4,6 +4,7 @@
 uniapp,vue2,vuex
 # 功能概览
 ## 1.书架
+![document\assets\书架.jpg](书架.jpg)
 ## 2.发现
 ## 3.设置
 ## 4.源管理
@@ -11,7 +12,7 @@ uniapp,vue2,vuex
 ## 6.阅读
 
 # 自定义源教程
-
+[链接](https://github.com/chouchoudhunter/lotai-book-reader/blob/beta/document/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%BA%90%E6%95%99%E7%A8%8B.md)
 # todo list
 ### read页面加载失败处理
 ### 分享功能
